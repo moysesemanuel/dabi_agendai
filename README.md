@@ -5,18 +5,27 @@
 </p>
 
 <p align="center">
-  <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js">
-  <img alt="React" src="https://img.shields.io/badge/React-19-20232A?style=for-the-badge&logo=react">
-  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white">
-  <img alt="Prisma" src="https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma">
-  <img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-Database-4169E1?style=for-the-badge&logo=postgresql&logoColor=white">
+  <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js" />
+  <img alt="React" src="https://img.shields.io/badge/React-19-20232A?style=for-the-badge&logo=react" />
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
+  <img alt="Prisma" src="https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma" />
+  <img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-Database-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" />
 </p>
 
 ---
 
+## Demo
+
+- **Home:** `http://localhost:3001`
+- **Agendamento:** `http://localhost:3001/agendamento`
+- **Fidelidade:** `http://localhost:3001/fidelidade`
+- **Admin:** `http://localhost:3001/admin`
+
+> Se publicar o projeto, troque os links locais pela URL pública.
+
 ## O que é o projeto
 
-O **Prime Cut Barbershop** é um projeto full stack desenvolvido como case de portfólio para simular a operação de uma barbearia moderna em um cenário mais próximo do mundo real.
+O **Prime Cut Barbershop** é um projeto full stack desenvolvido como case de portfólio para representar a operação de uma barbearia moderna em um cenário próximo do real.
 
 A aplicação foi pensada para ir além de uma landing page, reunindo em um único produto:
 
@@ -28,15 +37,15 @@ A aplicação foi pensada para ir além de uma landing page, reunindo em um úni
 
 ## Problema que resolve
 
-Muitas barbearias ainda operam com processos fragmentados, como agenda no WhatsApp, confirmação manual de horários, catálogo pouco organizado e ausência de uma experiência digital integrada.
+Muitas barbearias ainda operam com processos fragmentados, como agenda no WhatsApp, confirmação manual, catálogo pouco estruturado e pouca integração entre atendimento e operação.
 
 Isso normalmente gera:
 
 - conflitos de agenda
 - demora para marcar ou remarcar atendimentos
 - experiência inconsistente para o cliente
-- retrabalho no atendimento
-- pouca visibilidade sobre recorrência, fidelização e operação
+- retrabalho operacional
+- baixa visibilidade sobre recorrência, fidelização e rotina do negócio
 
 O projeto resolve esse cenário ao centralizar a jornada pública e a operação interna em uma única plataforma.
 
@@ -110,16 +119,14 @@ yarn dev
 
 A aplicação ficará disponível em:
 
-```bash
-http://localhost:3001
-http://localhost:3001/agendamento
-http://localhost:3001/fidelidade
-http://localhost:3001/admin
-```
+- `http://localhost:3001`
+- `http://localhost:3001/agendamento`
+- `http://localhost:3001/fidelidade`
+- `http://localhost:3001/admin`
 
-### Estrutura básica
+## Estrutura básica
 
-```bash
+```text
 .
 |-- prisma/
 |   `-- schema.prisma
@@ -139,40 +146,56 @@ http://localhost:3001/admin
 
 ### Organização
 
-`src/app:` rotas da aplicação e endpoints  
-`src/components/projects/barbershop:` componentes principais da interface  
-`src/components/shared:` componentes e utilitários compartilhados  
-`src/lib:` regras de negócio, integrações e acesso ao banco  
-`prisma/schema.prisma:` modelagem do banco de dados  
+- `src/app`: rotas da aplicação e endpoints
+- `src/components/projects/barbershop`: componentes principais da interface
+- `src/components/shared`: componentes e utilitários compartilhados
+- `src/lib`: regras de negócio, integrações e acesso ao banco
+- `prisma/schema.prisma`: modelagem do banco de dados
 
-### Desafios técnicos
+## Desafios técnicos
 
-* estruturar uma aplicação com áreas públicas e administrativas no mesmo projeto
-* organizar regras de agendamento e disponibilidade de forma consistente
-* modelar entidades centrais do negócio com Prisma e PostgreSQL
-* manter a experiência do usuário simples em um fluxo com múltiplas etapas
-* preparar integrações externas sem acoplar a aplicação a serviços obrigatórios desde o início
+- estruturar uma aplicação com áreas públicas e administrativas no mesmo projeto
+- organizar regras de agendamento e disponibilidade de forma consistente
+- modelar entidades centrais do negócio com Prisma e PostgreSQL
+- manter a experiência do usuário simples em um fluxo com múltiplas etapas
+- preparar integrações externas sem acoplar o projeto a serviços obrigatórios desde o início
 
-### Aprendizados
+## Aprendizados
 
-* construção de uma aplicação full stack orientada a produto
-* modelagem de dados para um cenário operacional real
-* separação de responsabilidades entre interface, regras de negócio e persistência
-* organização de frontend com App Router e componentes reutilizáveis
-* evolução de um projeto de portfólio para algo próximo de um MVP
+- construção de uma aplicação full stack orientada a produto
+- modelagem de dados para um cenário operacional real
+- separação de responsabilidades entre interface, regras de negócio e persistência
+- organização de frontend com App Router e componentes reutilizáveis
+- evolução de um projeto de portfólio para algo próximo de um MVP
 
-### Destaques
+## Por que esse projeto se destaca
 
-* projeto com visão de produto completa, não apenas interface visual
-* integração entre frontend, backend e banco de dados
-* preocupação com experiência do usuário e fluxo operacional
-* base sólida para evoluir para um MVP real ou produto comercial
-* demonstra domínio prático de stack moderna com Next.js, React, TypeScript e Prisma
-  
-### Contato
+- não é apenas uma interface visual, mas uma solução com fluxo de negócio completo
+- conecta frontend, backend e banco de dados dentro de um mesmo contexto de produto
+- demonstra preocupação com experiência do usuário e rotina operacional
+- mostra capacidade de estruturar um projeto escalável com stack moderna
+- serve como base realista para MVP, produto comercial ou expansão futura
+
+## Destaques para recrutador
+
+- visão de produto completa
+- domínio prático de Next.js, React, TypeScript e Prisma
+- integração entre interface, lógica de negócio e persistência
+- preocupação com usabilidade, operação e consistência técnica
+- projeto com perfil forte de portfólio profissional
+
+## Próximos passos
+
+- autenticação administrativa mais robusta
+- deploy em produção
+- integração real com serviços externos de mensagens
+- dashboard com métricas operacionais
+- evolução da fidelidade para resgate dentro do fluxo do cliente
+
+## Contato
 
 Se quiser conversar sobre o projeto, arquitetura ou oportunidades, este repositório representa bem meu estilo de construção: foco em produto, organização técnica e execução ponta a ponta.
 
-GitHub: [https://github.com/moysesemanuel]  
-LinkedIn: [https://www.linkedin.com/in/moysesemanuel/]  
-Portfólio: [https://portfolio-dabitech-beryl.vercel.app/]
+- **GitHub:** `SEU_GITHUB_AQUI`
+- **LinkedIn:** `SEU_LINKEDIN_AQUI`
+- **Portfólio:** `SEU_PORTFOLIO_AQUI`
