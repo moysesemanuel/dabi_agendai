@@ -227,12 +227,16 @@ yarn dev
 
 Esse sistema pode evoluir para um produto real ou ser adaptado para outros tipos de negócio.
 
-Se quiser conversar sobre:
+## 💼 Aplicação prática
 
-* uso comercial
-* arquitetura
-* personalização
-Entre em contato 👇
+Esse projeto pode ser utilizado como base para:
+
+- Sistemas de agendamento para pequenos negócios  
+- Plataformas de serviços locais  
+- MVPs de produtos digitais  
+
+---
+
 
 ### 📬 Contato
 * GitHub: https://github.com/moysesemanuel  
