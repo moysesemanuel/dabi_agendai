@@ -123,11 +123,11 @@ A aplicação está disponível online e pode ser explorada nas principais área
 
 ### Home
 
-![Preview da home](./public/img/localhost_3001_portfolio_barbearia.png)
+![Preview da home](./public/img/home.png)
 
 ### Painel administrativo
 
-![Preview do painel administrativo](./public/img/localhost_3001_admin_agenda.png)
+![Preview do painel administrativo](./public/img/admin-dashboard.png)
 
 ---
 
