@@ -5,9 +5,13 @@
 </p>
 
 <p align="center">
-  <a href="https://portfolio-dabitech-beryl.vercel.app" target="_blank"><strong>Ver aplicação online</strong></a> •
-  <a href="https://portfolio-dabitech-beryl.vercel.app/agendamento" target="_blank"><strong>Agendamento</strong></a> •
-  <a href="https://portfolio-dabitech-beryl.vercel.app/admin" target="_blank"><strong>Painel administrativo</strong></a>
+  Full stack • Next.js • Node.js • Prisma • PostgreSQL • Deploy na Vercel
+</p>
+
+<p align="center">
+  <a href="..." target="_blank"><strong>🔗 Ver aplicação</strong></a> •
+  <a href="..." target="_blank"><strong>📅 Testar agendamento</strong></a> •
+  <a href="..." target="_blank"><strong>⚙️ Acessar painel admin</strong></a>
 </p>
 
 <p align="center">
@@ -106,14 +110,12 @@ A aplicação está disponível online e pode ser explorada nas principais área
 
 ---
 
-## 🛠️ Stack
+## 🛠️ Stack e responsabilidades
 
-- Next.js 16  
-- React 19  
-- TypeScript  
-- Prisma  
-- PostgreSQL  
-- CSS Modules  
+- Frontend: Next.js (App Router), React, TypeScript  
+- Backend: API integrada com regras de negócio  
+- Banco de dados: PostgreSQL com Prisma ORM  
+- Deploy: Vercel  
 
 ---
 
@@ -197,6 +199,14 @@ yarn dev
 * modelagem de dados orientada ao domínio
 * uso de Prisma com PostgreSQL
 * frontend estruturado com App Router
+
+### 🧠 Desafios técnicos resolvidos
+
+- Implementação de lógica de agendamento com bloqueio de horários concorrentes  
+- Organização de regras de negócio no backend utilizando separação por camadas  
+- Integração entre frontend e backend em ambiente full stack  
+- Modelagem relacional utilizando Prisma ORM  
+- Estruturação de rotas com App Router (Next.js)  
 
 ### 🚀 Por que esse projeto se destaca
 
