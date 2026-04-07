@@ -1,7 +1,13 @@
-# Prime Cut Barbershop
+# 💈 Prime Cut Barbershop
 
 <p align="center">
-  Plataforma web full stack para barbearias, com foco em experiência do cliente, operação comercial e gestão administrativa.
+  Sistema completo para barbearias modernas, unindo presença digital, agendamento online e gestão administrativa em um único produto.
+</p>
+
+<p align="center">
+  <a href="https://portfolio-dabitech-beryl.vercel.app" target="_blank"><strong>Ver aplicação online</strong></a> •
+  <a href="https://portfolio-dabitech-beryl.vercel.app/agendamento" target="_blank"><strong>Agendamento</strong></a> •
+  <a href="https://portfolio-dabitech-beryl.vercel.app/admin" target="_blank"><strong>Painel administrativo</strong></a>
 </p>
 
 <p align="center">
@@ -14,64 +20,104 @@
 
 ---
 
-## Demo
+## 🚀 O que é o produto
 
-- **Home:** `http://localhost:3001`
-- **Agendamento:** `http://localhost:3001/agendamento`
-- **Fidelidade:** `http://localhost:3001/fidelidade`
-- **Admin:** `http://localhost:3001/admin`
+O **Prime Cut Barbershop** é uma aplicação full stack desenvolvida como um MVP real para barbearias que desejam profissionalizar sua operação.
 
-> Se publicar o projeto, troque os links locais pela URL pública.
+A plataforma centraliza:
 
-## O que é o projeto
+- presença digital  
+- agendamento online  
+- relacionamento com clientes  
+- gestão administrativa  
 
-O **Prime Cut Barbershop** é um projeto full stack desenvolvido como case de portfólio para representar a operação de uma barbearia moderna em um cenário próximo do real.
+Tudo em um único sistema.
 
-A aplicação foi pensada para ir além de uma landing page, reunindo em um único produto:
+---
 
-- site institucional
-- agendamento online
-- área de fidelidade
-- carrinho
-- painel administrativo
+## 💡 O que esse sistema resolve
 
-## Problema que resolve
+Barbearias que utilizam WhatsApp ou processos manuais enfrentam:
 
-Muitas barbearias ainda operam com processos fragmentados, como agenda no WhatsApp, confirmação manual, catálogo pouco estruturado e pouca integração entre atendimento e operação.
+- conflitos de agenda  
+- perda de tempo com confirmações  
+- experiência inconsistente para o cliente  
+- retrabalho operacional  
+- baixa visibilidade sobre o negócio  
 
-Isso normalmente gera:
+O sistema resolve esse cenário ao estruturar toda a jornada do cliente e a operação interna em uma única plataforma.
 
-- conflitos de agenda
-- demora para marcar ou remarcar atendimentos
-- experiência inconsistente para o cliente
-- retrabalho operacional
-- baixa visibilidade sobre recorrência, fidelização e rotina do negócio
+---
 
-O projeto resolve esse cenário ao centralizar a jornada pública e a operação interna em uma única plataforma.
+## 🚀 O que você ganha com esse sistema
 
-## Principais funcionalidades
+- Agenda organizada e automatizada  
+- Redução de retrabalho manual  
+- Melhor experiência para o cliente  
+- Aumento de fidelização  
+- Base pronta para crescimento do negócio  
 
-- site institucional com apresentação da marca, serviços e diferenciais
-- fluxo de agendamento por serviço, profissional, data e horário
-- validação de disponibilidade com bloqueio de horários ocupados
-- carrinho para produtos e complementos
-- área de fidelidade com planos, progresso e recompensas
-- sessão de cliente com login/cadastro
-- avaliações com fallback local e estrutura preparada para Google Reviews
-- painel administrativo para gestão operacional
-- gerenciamento de catálogo, agenda, bloqueios de data e conteúdo do site
-- atalhos de contato e confirmação via WhatsApp
+---
 
-## Stack
+## 📌 Status do projeto
 
-- **Next.js 16**
-- **React 19**
-- **TypeScript**
-- **Prisma**
-- **PostgreSQL**
-- **CSS Modules**
+- ✅ MVP funcional  
+- ✅ Publicado na Vercel  
+- ✅ Estrutura full stack integrada  
+- 🔄 Em evolução contínua  
 
-## Imagens
+---
+
+## 🌐 Ambiente publicado
+
+A aplicação está disponível online e pode ser explorada nas principais áreas:
+
+- Home  
+- Agendamento  
+- Fidelidade  
+- Painel administrativo  
+
+🔗 https://portfolio-dabitech-beryl.vercel.app
+
+---
+
+## 🧩 Módulos do sistema
+
+### 📅 Agendamento inteligente
+- Escolha de serviço, profissional e horário  
+- Bloqueio automático de horários ocupados  
+
+### 👤 Área do cliente
+- Cadastro e login  
+- Histórico e fidelidade  
+
+### 🎁 Fidelidade
+- Planos e recompensas  
+- Acompanhamento de progresso  
+
+### 🛒 Produtos e serviços
+- Carrinho integrado  
+- Complementos ao atendimento  
+
+### ⚙️ Painel administrativo
+- Gestão de agenda  
+- Controle de serviços  
+- Configuração do sistema  
+
+---
+
+## 🛠️ Stack
+
+- Next.js 16  
+- React 19  
+- TypeScript  
+- Prisma  
+- PostgreSQL  
+- CSS Modules  
+
+---
+
+## 🖼️ Imagens
 
 ### Home
 
@@ -81,13 +127,15 @@ O projeto resolve esse cenário ao centralizar a jornada pública e a operação
 
 ![Preview do painel administrativo](./public/img/localhost_3001_admin_agenda.png)
 
-## Como rodar
+---
+
+## ⚙️ Como rodar o projeto
 
 ### Pré-requisitos
 
-- Node.js 20+
-- Yarn 1.x
-- PostgreSQL
+- Node.js 20+  
+- Yarn 1.x  
+- PostgreSQL  
 
 ### Instalação
 
@@ -106,7 +154,6 @@ GOOGLE_PLACE_ID=""
 ```
 
 ### Banco de dados
-
 ```bash
 yarn db:push
 ```
@@ -117,16 +164,8 @@ yarn db:push
 yarn dev
 ```
 
-A aplicação ficará disponível em:
-
-- `http://localhost:3001`
-- `http://localhost:3001/agendamento`
-- `http://localhost:3001/fidelidade`
-- `http://localhost:3001/admin`
-
-## Estrutura básica
-
-```text
+📁 Estrutura do projeto
+```bash
 .
 |-- prisma/
 |   `-- schema.prisma
@@ -144,58 +183,48 @@ A aplicação ficará disponível em:
     `-- lib/
 ```
 
-### Organização
+### 🧠 Organização
+`src/app:` rotas da aplicação e endpoints  
+`src/components/projects/barbershop:` componentes principais  
+`src/components/shared:` componentes reutilizáveis  
+`src/lib:` regras de negócio e integrações  
+`prisma/schema.prisma:` modelagem do banco  
 
-- `src/app`: rotas da aplicação e endpoints
-- `src/components/projects/barbershop`: componentes principais da interface
-- `src/components/shared`: componentes e utilitários compartilhados
-- `src/lib`: regras de negócio, integrações e acesso ao banco
-- `prisma/schema.prisma`: modelagem do banco de dados
+### 🧠 Visão técnica
 
-## Desafios técnicos
+* arquitetura full stack integrada
+* separação clara entre interface, regras de negócio e persistência
+* modelagem de dados orientada ao domínio
+* uso de Prisma com PostgreSQL
+* frontend estruturado com App Router
 
-- estruturar uma aplicação com áreas públicas e administrativas no mesmo projeto
-- organizar regras de agendamento e disponibilidade de forma consistente
-- modelar entidades centrais do negócio com Prisma e PostgreSQL
-- manter a experiência do usuário simples em um fluxo com múltiplas etapas
-- preparar integrações externas sem acoplar o projeto a serviços obrigatórios desde o início
+### 🚀 Por que esse projeto se destaca
 
-## Aprendizados
+* não é apenas uma interface visual, mas uma solução com fluxo de negócio completo
+* conecta frontend, backend e banco de dados dentro de um mesmo contexto
+* projeto publicado em ambiente real (Vercel), demonstrando entrega ponta a ponta
+* demonstra preocupação com experiência do usuário e operação
+* serve como base realista para MVP ou produto comercial
 
-- construção de uma aplicação full stack orientada a produto
-- modelagem de dados para um cenário operacional real
-- separação de responsabilidades entre interface, regras de negócio e persistência
-- organização de frontend com App Router e componentes reutilizáveis
-- evolução de um projeto de portfólio para algo próximo de um MVP
+### 📈 Próximos passos
+* autenticação administrativa mais robusta
+* deploy com domínio customizado
+* integração real com serviços de mensagens
+* dashboard com métricas operacionais
+* evolução da fidelidade dentro do fluxo do cliente
 
-## Por que esse projeto se destaca
+### 💬 Interesse no projeto
 
-- não é apenas uma interface visual, mas uma solução com fluxo de negócio completo
-- conecta frontend, backend e banco de dados dentro de um mesmo contexto de produto
-- demonstra preocupação com experiência do usuário e rotina operacional
-- mostra capacidade de estruturar um projeto escalável com stack moderna
-- serve como base realista para MVP, produto comercial ou expansão futura
+Esse sistema pode evoluir para um produto real ou ser adaptado para outros tipos de negócio.
 
-## Destaques para recrutador
+Se quiser conversar sobre:
 
-- visão de produto completa
-- domínio prático de Next.js, React, TypeScript e Prisma
-- integração entre interface, lógica de negócio e persistência
-- preocupação com usabilidade, operação e consistência técnica
-- projeto com perfil forte de portfólio profissional
+* uso comercial
+* arquitetura
+* personalização
+Entre em contato 👇
 
-## Próximos passos
-
-- autenticação administrativa mais robusta
-- deploy em produção
-- integração real com serviços externos de mensagens
-- dashboard com métricas operacionais
-- evolução da fidelidade para resgate dentro do fluxo do cliente
-
-## Contato
-
-Se quiser conversar sobre o projeto, arquitetura ou oportunidades, este repositório representa bem meu estilo de construção: foco em produto, organização técnica e execução ponta a ponta.
-
-- **GitHub:** `SEU_GITHUB_AQUI`
-- **LinkedIn:** `SEU_LINKEDIN_AQUI`
-- **Portfólio:** `SEU_PORTFOLIO_AQUI`
+### 📬 Contato
+* GitHub: https://github.com/moysesemanuel  
+* LinkedIn: https://www.linkedin.com/in/moysesemanuel  
+* Portfólio: https://portfolio-dabitech-beryl.vercel.app/portfolio/barbearia
