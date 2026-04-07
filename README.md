@@ -1,142 +1,93 @@
 # Prime Cut Barbershop
 
-Plataforma web para barbearia com site institucional, agendamento online, carrinho, fidelidade e backoffice administrativo.
+<p align="center">
+  Plataforma web full stack para barbearias, com foco em experiência do cliente, operação comercial e gestão administrativa.
+</p>
 
-## Visão geral
+<p align="center">
+  <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js">
+  <img alt="React" src="https://img.shields.io/badge/React-19-20232A?style=for-the-badge&logo=react">
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white">
+  <img alt="Prisma" src="https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma">
+  <img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-Database-4169E1?style=for-the-badge&logo=postgresql&logoColor=white">
+</p>
 
-Este projeto foi construído como case de portfólio com foco em um fluxo comercial real para barbearias e estúdios de estética. A aplicação combina:
+---
 
-- site público com posicionamento comercial
-- área de agendamento separada da home
-- login de cliente com e-mail e senha
-- painel admin com operação de agenda e gestão de conteúdo
-- base pronta para evoluir para dashboard e deploy em produção
+## O que é o projeto
 
-## Funcionalidades atuais
+O **Prime Cut Barbershop** é um projeto full stack desenvolvido como case de portfólio para simular a operação de uma barbearia moderna em um cenário mais próximo do mundo real.
 
-- home institucional com hero, galeria, serviços, clube e contato
-- página exclusiva de agendamento em `/agendamento`
-- agendamento por serviço, profissional, data e horário
-- bloqueio automático de horários ocupados
-- login e cadastro de cliente com e-mail e senha
-- carrinho para serviços e produtos
-- página de fidelidade com níveis, progresso e recompensas
-- avaliações locais + adapter preparado para avaliações do Google
-- backoffice com CRUD de:
-  - serviços
-  - planos do clube
-  - barbeiros
-  - imagens
-  - datas bloqueadas
-  - recompensas e níveis de fidelidade
-- agenda operacional no admin com:
-  - criação manual de agendamento
-  - confirmação, cancelamento e remarcação
-  - visão diária por barbeiro
-  - alerta visual de novo agendamento
-  - alerta sonoro opcional
-  - atalho para confirmação rápida via WhatsApp
-- página de dados do admin com base para dashboard:
-  - clientes
-  - pontos de fidelidade
-  - receita
-  - atendimentos recentes
+A aplicação foi pensada para ir além de uma landing page, reunindo em um único produto:
+
+- site institucional
+- agendamento online
+- área de fidelidade
+- carrinho
+- painel administrativo
+
+## Problema que resolve
+
+Muitas barbearias ainda operam com processos fragmentados, como agenda no WhatsApp, confirmação manual de horários, catálogo pouco organizado e ausência de uma experiência digital integrada.
+
+Isso normalmente gera:
+
+- conflitos de agenda
+- demora para marcar ou remarcar atendimentos
+- experiência inconsistente para o cliente
+- retrabalho no atendimento
+- pouca visibilidade sobre recorrência, fidelização e operação
+
+O projeto resolve esse cenário ao centralizar a jornada pública e a operação interna em uma única plataforma.
+
+## Principais funcionalidades
+
+- site institucional com apresentação da marca, serviços e diferenciais
+- fluxo de agendamento por serviço, profissional, data e horário
+- validação de disponibilidade com bloqueio de horários ocupados
+- carrinho para produtos e complementos
+- área de fidelidade com planos, progresso e recompensas
+- sessão de cliente com login/cadastro
+- avaliações com fallback local e estrutura preparada para Google Reviews
+- painel administrativo para gestão operacional
+- gerenciamento de catálogo, agenda, bloqueios de data e conteúdo do site
+- atalhos de contato e confirmação via WhatsApp
 
 ## Stack
 
-- Next.js 16
-- React 19
-- TypeScript
-- Prisma
+- **Next.js 16**
+- **React 19**
+- **TypeScript**
+- **Prisma**
+- **PostgreSQL**
+- **CSS Modules**
+
+## Imagens
+
+### Home
+
+![Preview da home](./public/img/localhost_3001_portfolio_barbearia.png)
+
+### Painel administrativo
+
+![Preview do painel administrativo](./public/img/localhost_3001_admin_agenda.png)
+
+## Como rodar
+
+### Pré-requisitos
+
+- Node.js 20+
+- Yarn 1.x
 - PostgreSQL
-- CSS Modules
 
-## Como rodar localmente
-
-1. Instale as dependências:
+### Instalação
 
 ```bash
 yarn install
-```
-
-2. Crie o arquivo `.env` com base no exemplo:
-
-```bash
 cp .env.example .env
 ```
 
-3. Configure a `DATABASE_URL` no `.env` apontando para o seu Postgres:
-
-Exemplo:
-
-```bash
-DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DATABASE?sslmode=require"
-DIRECT_URL="postgresql://USER:PASSWORD@HOST:5432/DATABASE?sslmode=require"
-```
-
-4. Gere o banco:
-
-```bash
-yarn db:push
-```
-
-5. Rode o projeto:
-
-```bash
-yarn dev
-```
-
-Abra:
-
-- site público: `http://localhost:3001`
-- agendamento: `http://localhost:3001/agendamento`
-- carrinho: `http://localhost:3001/agendamento/carrinho`
-- fidelidade: `http://localhost:3001/fidelidade`
-- admin: `http://localhost:3001/admin`
-
-## Scripts
-
-```bash
-yarn dev
-yarn build
-yarn start
-yarn lint
-yarn prisma:generate
-yarn db:push
-```
-
-## Rotas principais
-
-### Público
-
-- `/`
-- `/agendamento`
-- `/agendamento/carrinho`
-- `/fidelidade`
-
-### Admin
-
-- `/admin`
-- `/admin/site`
-- `/admin/catalogo`
-- `/admin/agenda`
-- `/admin/dados`
-
-### API
-
-- `/api/appointments`
-- `/api/appointments/[id]`
-- `/api/availability`
-- `/api/customers/session`
-- `/api/customers/loyalty`
-- `/api/google-reviews`
-- `/api/address/by-cep`
-- `/api/holidays/by-cep`
-- `/api/admin/site-sync`
-
-## Variáveis de ambiente
-
-Arquivo base: `.env.example`
+### Variáveis de ambiente
 
 ```bash
 DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DATABASE?sslmode=require"
@@ -145,45 +96,83 @@ GOOGLE_PLACES_API_KEY=""
 GOOGLE_PLACE_ID=""
 ```
 
-Observações:
+### Banco de dados
 
-- hoje o projeto está preparado para Postgres
-- o adapter de avaliações do Google já está preparado, mas usa fallback local enquanto as credenciais não forem configuradas
+```bash
+yarn db:push
+```
 
-## Estrutura
+### Ambiente de desenvolvimento
 
-- `src/app`
-  rotas App Router e endpoints da aplicação
-- `src/components/projects/barbershop`
-  home, agendamento, fidelidade, carrinho e componentes públicos
-- `src/components/shared`
-  config compartilhada, helpers e branding
-- `src/lib`
-  Prisma, regras de agenda, adapter do Google e utilitários server-side
-- `prisma/schema.prisma`
-  modelagem do banco
+```bash
+yarn dev
+```
 
-## Produção
+A aplicação ficará disponível em:
 
-Hoje o projeto está pronto para desenvolvimento local e deploy simples com banco hospedado.
+```bash
+http://localhost:3001
+http://localhost:3001/agendamento
+http://localhost:3001/fidelidade
+http://localhost:3001/admin
+```
 
-Para produção e portfólio, o caminho recomendado é:
+### Estrutura básica
 
-- Vercel para o app
-- Postgres gerenciado para o banco, como Supabase ou Neon
+```bash
+.
+|-- prisma/
+|   `-- schema.prisma
+|-- public/
+|   `-- img/
+`-- src/
+    |-- app/
+    |   |-- admin/
+    |   |-- agendamento/
+    |   |-- fidelidade/
+    |   `-- api/
+    |-- components/
+    |   |-- projects/barbershop/
+    |   `-- shared/
+    `-- lib/
+```
 
-Fluxo sugerido:
+### Organização
 
-1. criar um banco no Supabase ou Neon
-2. copiar a `DATABASE_URL`
-3. rodar `yarn db:push`
-4. subir o repositório na Vercel
-5. cadastrar as variáveis de ambiente na Vercel
+`src/app:` rotas da aplicação e endpoints  
+`src/components/projects/barbershop:` componentes principais da interface  
+`src/components/shared:` componentes e utilitários compartilhados  
+`src/lib:` regras de negócio, integrações e acesso ao banco  
+`prisma/schema.prisma:` modelagem do banco de dados  
 
-## Próximos passos sugeridos
+### Desafios técnicos
 
-- autenticação real de admin
-- integração automática com API de WhatsApp
-- dashboard com gráficos por período
-- gestão de estoque de produtos no backoffice
-- resgate real de fidelidade dentro do fluxo do cliente
+* estruturar uma aplicação com áreas públicas e administrativas no mesmo projeto
+* organizar regras de agendamento e disponibilidade de forma consistente
+* modelar entidades centrais do negócio com Prisma e PostgreSQL
+* manter a experiência do usuário simples em um fluxo com múltiplas etapas
+* preparar integrações externas sem acoplar a aplicação a serviços obrigatórios desde o início
+
+### Aprendizados
+
+* construção de uma aplicação full stack orientada a produto
+* modelagem de dados para um cenário operacional real
+* separação de responsabilidades entre interface, regras de negócio e persistência
+* organização de frontend com App Router e componentes reutilizáveis
+* evolução de um projeto de portfólio para algo próximo de um MVP
+
+### Destaques
+
+* projeto com visão de produto completa, não apenas interface visual
+* integração entre frontend, backend e banco de dados
+* preocupação com experiência do usuário e fluxo operacional
+* base sólida para evoluir para um MVP real ou produto comercial
+* demonstra domínio prático de stack moderna com Next.js, React, TypeScript e Prisma
+  
+### Contato
+
+Se quiser conversar sobre o projeto, arquitetura ou oportunidades, este repositório representa bem meu estilo de construção: foco em produto, organização técnica e execução ponta a ponta.
+
+GitHub: [https://github.com/moysesemanuel]  
+LinkedIn: [https://www.linkedin.com/in/moysesemanuel/]  
+Portfólio: [https://portfolio-dabitech-beryl.vercel.app/]
