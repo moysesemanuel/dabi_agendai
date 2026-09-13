@@ -11,7 +11,7 @@ export function DaBiTechLogo({ className }: DaBiTechLogoProps) {
       role="img"
       aria-label="DaBi Tech Digital Solutions"
     >
-      <g transform="translate(90,85)">
+      <g transform="translate(120,85)">
         <rect x="0" y="0" width="110" height="110" rx="24" ry="24" fill="#0B2A57" />
 
         <g transform="translate(5,0)">
@@ -28,7 +28,7 @@ export function DaBiTechLogo({ className }: DaBiTechLogoProps) {
       </g>
 
       <text
-        x="255"
+        x="285"
         y="145"
         fontSize="64"
         fontFamily="Inter, system-ui, Arial, sans-serif"
@@ -38,7 +38,7 @@ export function DaBiTechLogo({ className }: DaBiTechLogoProps) {
         DaBi Tech
       </text>
       <text
-        x="258"
+        x="288"
         y="190"
         fontSize="24"
         fontFamily="Inter, system-ui, Arial, sans-serif"
