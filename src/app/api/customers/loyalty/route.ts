@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { AppointmentStatus } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { getSessionFromRequest } from "@/lib/session";
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,12 +14,19 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const session = await getSessionFromRequest(request);
+
+    if (!session || (session.role !== "ADMIN" && session.id !== customerId)) {
+      return NextResponse.json(
+        { error: "Voce nao tem permissao para ver essa fidelidade." },
+        { status: 403 },
+      );
+    }
+
     const completedAppointments = await prisma.appointment.count({
       where: {
         customerId,
-        status: {
-          not: AppointmentStatus.CANCELLED,
-        },
+        status: AppointmentStatus.COMPLETED,
       },
     });
 

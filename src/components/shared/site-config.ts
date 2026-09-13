@@ -8,7 +8,6 @@ import {
   testimonials,
 } from "@/components/projects/barbershop/data";
 
-export const SITE_CONFIG_STORAGE_KEY = "dabi-agendai-site-config";
 export const SITE_CONFIG_UPDATED_EVENT = "dabi-agendai-site-config-updated";
 export const LEGACY_BUSINESS_TAG_PREFIX = "Barbearia premium em ";
 
@@ -171,55 +170,45 @@ function normalizeServiceImages(items: ServiceItem[]) {
   }));
 }
 
-export function readSiteConfig(): SiteConfig {
-  if (typeof window === "undefined") {
+export function mergeSiteConfig(parsed: Partial<SiteConfig> | null | undefined): SiteConfig {
+  if (!parsed) {
     return defaultSiteConfig;
   }
 
+  const mergedConfig = {
+    ...defaultSiteConfig,
+    ...parsed,
+    plans: parsed.plans ?? defaultSiteConfig.plans,
+    services: normalizeServiceImages(parsed.services ?? defaultSiteConfig.services),
+    showcaseImages: normalizeShowcaseImages(parsed.showcaseImages ?? defaultSiteConfig.showcaseImages),
+    barbers: parsed.barbers ?? defaultSiteConfig.barbers,
+    stats: parsed.stats ?? defaultSiteConfig.stats,
+    testimonials: parsed.testimonials ?? defaultSiteConfig.testimonials,
+    loyaltyTiers: parsed.loyaltyTiers ?? defaultSiteConfig.loyaltyTiers,
+    loyaltyRewards: parsed.loyaltyRewards ?? defaultSiteConfig.loyaltyRewards,
+    availableTimes: parsed.availableTimes ?? defaultSiteConfig.availableTimes,
+    closedDates: parsed.closedDates ?? defaultSiteConfig.closedDates,
+    ignoredHolidayDates: parsed.ignoredHolidayDates ?? defaultSiteConfig.ignoredHolidayDates,
+  };
+
+  if (
+    mergedConfig.businessTag.startsWith(LEGACY_BUSINESS_TAG_PREFIX) &&
+    mergedConfig.city
+  ) {
+    mergedConfig.businessTag = `${LEGACY_BUSINESS_TAG_PREFIX}${mergedConfig.city}`;
+  }
+
+  return mergedConfig;
+}
+
+export async function fetchSiteConfig(): Promise<SiteConfig> {
   try {
-    const raw = window.localStorage.getItem(SITE_CONFIG_STORAGE_KEY);
-    if (!raw) {
-      return defaultSiteConfig;
-    }
-
-    const parsed = JSON.parse(raw) as Partial<SiteConfig>;
-
-    const mergedConfig = {
-      ...defaultSiteConfig,
-      ...parsed,
-      plans: parsed.plans ?? defaultSiteConfig.plans,
-      services: normalizeServiceImages(parsed.services ?? defaultSiteConfig.services),
-      showcaseImages: normalizeShowcaseImages(parsed.showcaseImages ?? defaultSiteConfig.showcaseImages),
-      barbers: parsed.barbers ?? defaultSiteConfig.barbers,
-      stats: parsed.stats ?? defaultSiteConfig.stats,
-      testimonials: parsed.testimonials ?? defaultSiteConfig.testimonials,
-      loyaltyTiers: parsed.loyaltyTiers ?? defaultSiteConfig.loyaltyTiers,
-      loyaltyRewards: parsed.loyaltyRewards ?? defaultSiteConfig.loyaltyRewards,
-      availableTimes: parsed.availableTimes ?? defaultSiteConfig.availableTimes,
-      closedDates: parsed.closedDates ?? defaultSiteConfig.closedDates,
-      ignoredHolidayDates: parsed.ignoredHolidayDates ?? defaultSiteConfig.ignoredHolidayDates,
-    };
-
-    if (
-      mergedConfig.businessTag.startsWith(LEGACY_BUSINESS_TAG_PREFIX) &&
-      mergedConfig.city
-    ) {
-      mergedConfig.businessTag = `${LEGACY_BUSINESS_TAG_PREFIX}${mergedConfig.city}`;
-    }
-
-    return mergedConfig;
+    const response = await fetch("/api/site-config", { cache: "no-store" });
+    const payload = (await response.json()) as { config?: Partial<SiteConfig> };
+    return mergeSiteConfig(payload.config);
   } catch {
     return defaultSiteConfig;
   }
-}
-
-export function writeSiteConfig(config: SiteConfig) {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  window.localStorage.setItem(SITE_CONFIG_STORAGE_KEY, JSON.stringify(config));
-  window.dispatchEvent(new CustomEvent(SITE_CONFIG_UPDATED_EVENT));
 }
 
 export function getDisplayStats(config: SiteConfig, averageRatingValue?: string) {
@@ -243,25 +232,3 @@ export function getBusinessLocationLabel(config: SiteConfig) {
   return locationParts.length > 0 ? locationParts.join(" - ") : "Localização da barbearia";
 }
 
-let cachedClientRawConfig: string | null = null;
-let cachedClientParsedConfig: SiteConfig = defaultSiteConfig;
-
-export function getClientSiteConfigSnapshot() {
-  if (typeof window === "undefined") {
-    return defaultSiteConfig;
-  }
-
-  const raw = window.localStorage.getItem(SITE_CONFIG_STORAGE_KEY);
-
-  if (raw === cachedClientRawConfig) {
-    return cachedClientParsedConfig;
-  }
-
-  cachedClientRawConfig = raw;
-  cachedClientParsedConfig = readSiteConfig();
-  return cachedClientParsedConfig;
-}
-
-export function getServerSiteConfigSnapshot() {
-  return defaultSiteConfig;
-}

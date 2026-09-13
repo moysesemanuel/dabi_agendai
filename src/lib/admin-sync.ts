@@ -117,8 +117,17 @@ async function syncClosedDates(closedDates: ClosedDateItem[]) {
   });
 }
 
+async function saveSiteConfig(config: SiteConfig) {
+  await prisma.siteSettings.upsert({
+    where: { id: "singleton" },
+    update: { data: config },
+    create: { id: "singleton", data: config },
+  });
+}
+
 export async function syncOperationalData(config: SiteConfig) {
   await syncServices(config.services);
   await syncBarbers(config.barbers);
   await syncClosedDates(config.closedDates);
+  await saveSiteConfig(config);
 }

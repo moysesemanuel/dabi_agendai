@@ -87,7 +87,6 @@ export function LoyaltyPage() {
         <Header
           config={config}
           homeLinks
-          homeBasePath="/portfolio/barbearia"
           profileHref="/fidelidade"
           profileTitle={customerSession ? `Perfil de ${customerSession.name}` : "Acesso do cliente"}
           profileName={customerSession?.name}

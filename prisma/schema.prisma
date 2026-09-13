@@ -54,6 +54,12 @@ model Service {
   updatedAt       DateTime      @updatedAt
 }
 
+model SiteSettings {
+  id        String   @id @default("singleton")
+  data      Json
+  updatedAt DateTime @updatedAt
+}
+
 model ClosedDate {
   id        String   @id @default(cuid())
   date      String   @unique
