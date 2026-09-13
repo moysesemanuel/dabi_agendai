@@ -8,8 +8,8 @@ import {
   testimonials,
 } from "@/components/projects/barbershop/data";
 
-export const SITE_CONFIG_STORAGE_KEY = "prime-cut-site-config";
-export const SITE_CONFIG_UPDATED_EVENT = "prime-cut-site-config-updated";
+export const SITE_CONFIG_STORAGE_KEY = "dabi-agendai-site-config";
+export const SITE_CONFIG_UPDATED_EVENT = "dabi-agendai-site-config-updated";
 export const LEGACY_BUSINESS_TAG_PREFIX = "Barbearia premium em ";
 
 export type PlanItem = {
