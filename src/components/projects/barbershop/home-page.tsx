@@ -4,11 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import bookingStyles from "./home-booking.module.css";
-import {
-  BOOKING_CART_EVENT,
-  PRODUCT_CART_EVENT,
-  getTotalCartCount,
-} from "./cart-storage";
+import { BOOKING_CART_EVENT, getTotalCartCount } from "./cart-storage";
 import {
   CUSTOMER_SESSION_EVENT,
   type CustomerSession,
@@ -187,12 +183,10 @@ export function Header({
 
     syncCartCount();
     window.addEventListener(BOOKING_CART_EVENT, syncCartCount);
-    window.addEventListener(PRODUCT_CART_EVENT, syncCartCount);
     window.addEventListener("storage", syncCartCount);
 
     return () => {
       window.removeEventListener(BOOKING_CART_EVENT, syncCartCount);
-      window.removeEventListener(PRODUCT_CART_EVENT, syncCartCount);
       window.removeEventListener("storage", syncCartCount);
     };
   }, []);

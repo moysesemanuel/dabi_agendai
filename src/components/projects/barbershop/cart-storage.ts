@@ -1,9 +1,7 @@
 "use client";
 
 export const BOOKING_CART_STORAGE_KEY = "dabi-agendai-booking-cart";
-export const PRODUCT_CART_STORAGE_KEY = "dabi-agendai-product-cart";
 export const BOOKING_CART_EVENT = "dabi-agendai-booking-cart-change";
-export const PRODUCT_CART_EVENT = "dabi-agendai-product-cart-change";
 
 function readStorageList<T>(storageKey: string) {
   if (typeof window === "undefined") {
@@ -35,14 +33,6 @@ export function writeBookingCart<T>(items: T[]) {
   writeStorageList(BOOKING_CART_STORAGE_KEY, BOOKING_CART_EVENT, items);
 }
 
-export function readProductCart() {
-  return readStorageList<string>(PRODUCT_CART_STORAGE_KEY);
-}
-
-export function writeProductCart(items: string[]) {
-  writeStorageList(PRODUCT_CART_STORAGE_KEY, PRODUCT_CART_EVENT, items);
-}
-
 export function getTotalCartCount() {
-  return readBookingCart<unknown>().length + readProductCart().length;
+  return readBookingCart<unknown>().length;
 }
