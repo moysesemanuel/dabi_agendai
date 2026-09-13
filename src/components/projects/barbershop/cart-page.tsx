@@ -88,7 +88,7 @@ export function CartPage() {
   return (
     <div className={styles.page}>
       <section className={styles.heroShell}>
-        <Header config={config} homeLinks homeBasePath="/portfolio/barbearia" />
+        <Header config={config} homeLinks />
         <main className={styles.main}>
           <div className={styles.intro}>
             <span>Seu carrinho</span>

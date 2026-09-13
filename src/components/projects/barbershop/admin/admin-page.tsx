@@ -14,7 +14,7 @@ import {
   type PlanItem,
   type LoyaltyRewardItem,
   type LoyaltyTierItem,
-  writeSiteConfig,
+  SITE_CONFIG_UPDATED_EVENT,
 } from "@/components/shared/site-config";
 import { useToast } from "@/components/shared/toast-provider";
 import { buildWhatsappUrl } from "@/components/shared/whatsapp";
@@ -1105,7 +1105,7 @@ export function AdminPage({ section = "overview" }: { section?: AdminSectionView
         throw new Error(payload.error ?? "Nao foi possivel sincronizar os dados.");
       }
 
-      writeSiteConfig(config);
+      window.dispatchEvent(new CustomEvent(SITE_CONFIG_UPDATED_EVENT));
       setStatusMessage("Alterações salvas no site e sincronizadas com a agenda.");
       showToast({ variant: "success", message: "Alterações salvas no site e sincronizadas com a agenda." });
     } catch (error) {

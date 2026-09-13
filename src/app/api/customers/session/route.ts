@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { ensureBookingSeedData, upsertCustomerProfile } from "@/lib/booking";
 import { verifyPassword, hashPassword } from "@/lib/password";
 import { prisma } from "@/lib/prisma";
+import {
+  clearSessionCookie,
+  createSessionToken,
+  getSessionFromRequest,
+  setSessionCookie,
+} from "@/lib/session";
 
 type CustomerSessionBody = {
   action?: "login" | "register";
@@ -113,7 +119,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({
+    const token = await createSessionToken({ id: customer.id, role: customer.role });
+    const response = NextResponse.json({
       customer: {
         id: customer.id,
         name: customer.name,
@@ -122,6 +129,9 @@ export async function POST(request: NextRequest) {
         role: customer.role,
       },
     });
+    setSessionCookie(response, token);
+
+    return response;
   } catch (error) {
     return NextResponse.json(
       {
@@ -133,4 +143,36 @@ export async function POST(request: NextRequest) {
       { status: 500 },
     );
   }
+}
+
+export async function GET(request: NextRequest) {
+  const session = await getSessionFromRequest(request);
+
+  if (!session) {
+    return NextResponse.json({ customer: null });
+  }
+
+  const customer = await prisma.customer.findUnique({ where: { id: session.id } });
+
+  if (!customer) {
+    const response = NextResponse.json({ customer: null });
+    clearSessionCookie(response);
+    return response;
+  }
+
+  return NextResponse.json({
+    customer: {
+      id: customer.id,
+      name: customer.name,
+      phone: customer.phone,
+      email: customer.email,
+      role: customer.role,
+    },
+  });
+}
+
+export async function DELETE() {
+  const response = NextResponse.json({ message: "Sessao encerrada." });
+  clearSessionCookie(response);
+  return response;
 }

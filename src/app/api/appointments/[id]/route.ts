@@ -2,6 +2,7 @@ import { AppointmentStatus } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { ensureBookingSeedData, rescheduleAppointment } from "@/lib/booking";
+import { getSessionFromRequest } from "@/lib/session";
 
 const allowedStatus = new Set<AppointmentStatus>([
   AppointmentStatus.CONFIRMED,
@@ -16,11 +17,47 @@ export async function PATCH(
   try {
     await ensureBookingSeedData();
     const { id } = await params;
+
+    const session = await getSessionFromRequest(request);
+
+    if (!session) {
+      return NextResponse.json(
+        { error: "Faca login para gerenciar este agendamento." },
+        { status: 401 },
+      );
+    }
+
+    const existingAppointment = await prisma.appointment.findUnique({ where: { id } });
+
+    if (!existingAppointment) {
+      return NextResponse.json(
+        { error: "Agendamento nao encontrado." },
+        { status: 404 },
+      );
+    }
+
+    const isOwner = existingAppointment.customerId === session.id;
+    const isAdmin = session.role === "ADMIN";
+
+    if (!isOwner && !isAdmin) {
+      return NextResponse.json(
+        { error: "Voce nao tem permissao para alterar este agendamento." },
+        { status: 403 },
+      );
+    }
+
     const body = (await request.json()) as {
       status?: AppointmentStatus;
       date?: string;
       time?: string;
     };
+
+    if (!isAdmin && body.status && body.status !== AppointmentStatus.CANCELLED) {
+      return NextResponse.json(
+        { error: "Apenas o estabelecimento pode confirmar ou concluir agendamentos." },
+        { status: 403 },
+      );
+    }
 
     if (body.date && body.time) {
       const appointment = await rescheduleAppointment({

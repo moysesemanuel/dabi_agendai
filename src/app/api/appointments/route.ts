@@ -4,9 +4,11 @@ import {
   ensureBookingSeedData,
   getBarberByName,
   getServiceByName,
+  SAO_PAULO_OFFSET,
   upsertCustomerProfile,
 } from "@/lib/booking";
 import { prisma } from "@/lib/prisma";
+import { getSessionFromRequest } from "@/lib/session";
 
 type CreateAppointmentBody = {
   serviceName?: string;
@@ -25,14 +27,40 @@ export async function GET(request: NextRequest) {
   try {
     await ensureBookingSeedData();
 
+    const session = await getSessionFromRequest(request);
     const date = request.nextUrl.searchParams.get("date");
-    const customerId = request.nextUrl.searchParams.get("customerId");
+    const requestedCustomerId = request.nextUrl.searchParams.get("customerId");
+
+    if (!session) {
+      return NextResponse.json(
+        { error: "Faca login para consultar agendamentos." },
+        { status: 401 },
+      );
+    }
+
+    const isAdmin = session.role === "ADMIN";
+
+    if (!isAdmin && requestedCustomerId && requestedCustomerId !== session.id) {
+      return NextResponse.json(
+        { error: "Voce nao tem permissao para ver esses agendamentos." },
+        { status: 403 },
+      );
+    }
+
+    if (!isAdmin && !requestedCustomerId) {
+      return NextResponse.json(
+        { error: "Informe o seu customerId para consultar seus agendamentos." },
+        { status: 403 },
+      );
+    }
+
+    const customerId = isAdmin ? requestedCustomerId : session.id;
     const where = {
       ...(date
         ? {
             startsAt: {
-              gte: new Date(`${date}T00:00:00`),
-              lte: new Date(`${date}T23:59:59`),
+              gte: new Date(`${date}T00:00:00${SAO_PAULO_OFFSET}`),
+              lte: new Date(`${date}T23:59:59${SAO_PAULO_OFFSET}`),
             },
           }
         : {}),
@@ -99,6 +127,17 @@ export async function POST(request: NextRequest) {
         { error: "Preencha os campos obrigatorios para concluir o agendamento." },
         { status: 400 },
       );
+    }
+
+    if (body.customerId?.trim()) {
+      const session = await getSessionFromRequest(request);
+
+      if (!session || session.id !== body.customerId.trim()) {
+        return NextResponse.json(
+          { error: "Faca login novamente para agendar com sua conta." },
+          { status: 401 },
+        );
+      }
     }
 
     const [service, barber] = await Promise.all([

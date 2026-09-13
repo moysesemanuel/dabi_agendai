@@ -404,6 +404,7 @@ export function Header({
                         className={styles.profileLogoutButton}
                         onClick={() => {
                           setIsProfileMenuOpen(false);
+                          void fetch("/api/customers/session", { method: "DELETE" });
                           onProfileLogout();
                         }}
                         type="button"
