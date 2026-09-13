@@ -799,7 +799,8 @@
 .barberAppointmentCustomer {
   color: #f5efe6;
   min-width: 0;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 .barberAppointmentMeta {
@@ -814,7 +815,8 @@
   color: rgba(245, 239, 230, 0.74);
   line-height: 1.35;
   min-width: 0;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 .barberAppointmentMeta span {
