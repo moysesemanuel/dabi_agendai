@@ -126,8 +126,8 @@ type AdminAppointment = {
   serviceName: string;
 };
 
-const ADMIN_NOTIFICATIONS_STORAGE_KEY = "prime-cut-admin-browser-notifications";
-const ADMIN_SOUND_ALERTS_STORAGE_KEY = "prime-cut-admin-sound-alerts";
+const ADMIN_NOTIFICATIONS_STORAGE_KEY = "dabi-agendai-admin-browser-notifications";
+const ADMIN_SOUND_ALERTS_STORAGE_KEY = "dabi-agendai-admin-sound-alerts";
 
 type AvailabilityPayload = {
   slots?: string[];
@@ -1223,7 +1223,7 @@ export function AdminPage({ section = "overview" }: { section?: AdminSectionView
     void loadAverageRating();
 
     function handleStorage(event: StorageEvent) {
-      if (event.key === "prime-cut-customer-reviews") {
+      if (event.key === "dabi-agendai-customer-reviews") {
         void loadAverageRating();
       }
     }

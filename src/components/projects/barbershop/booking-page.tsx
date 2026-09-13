@@ -29,7 +29,7 @@ const styles = {
   ...bookingPageStyles,
 };
 
-const REVIEW_STORAGE_KEY = "prime-cut-customer-reviews";
+const REVIEW_STORAGE_KEY = "dabi-agendai-customer-reviews";
 
 const tabItems = [
   "Serviços",
