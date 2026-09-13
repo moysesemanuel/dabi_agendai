@@ -1,5 +1,8 @@
-import { AppointmentStatus, type Barber, type Service } from "@prisma/client";
+import { AppointmentStatus, Prisma, type Barber, type Service } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+
+type PrismaTransactionClient = Prisma.TransactionClient;
+type DbClient = typeof prisma | PrismaTransactionClient;
 import { hashPassword } from "@/lib/password";
 
 const SLOT_INTERVAL_MINUTES = 30;
@@ -262,19 +265,16 @@ export async function upsertCustomerProfile(params: {
   });
 }
 
-async function listBookableAppointments(barberId: string, dateKey: string) {
-  return listBookableAppointmentsWithOptions(barberId, dateKey);
-}
-
 async function listBookableAppointmentsWithOptions(
   barberId: string,
   dateKey: string,
   excludeAppointmentId?: string,
+  client: DbClient = prisma,
 ) {
-  const startOfDay = new Date(`${dateKey}T00:00:00`);
-  const endOfDay = new Date(`${dateKey}T23:59:59`);
+  const startOfDay = new Date(`${dateKey}T00:00:00${SAO_PAULO_OFFSET}`);
+  const endOfDay = new Date(`${dateKey}T23:59:59${SAO_PAULO_OFFSET}`);
 
-  return prisma.appointment.findMany({
+  return client.appointment.findMany({
     where: {
       id: excludeAppointmentId ? { not: excludeAppointmentId } : undefined,
       barberId,
@@ -438,29 +438,42 @@ export async function createAppointment(params: {
     throw new Error("Escolha um horario futuro.");
   }
 
-  const appointments = await listBookableAppointments(barber.id, date);
-  const hasOverlap = appointments.some((appointment) =>
-    overlaps(startsAt, endsAt, appointment.startsAt, appointment.endsAt),
-  );
+  try {
+    return await prisma.$transaction(
+      async (tx) => {
+        const appointments = await listBookableAppointmentsWithOptions(barber.id, date, undefined, tx);
+        const hasOverlap = appointments.some((appointment) =>
+          overlaps(startsAt, endsAt, appointment.startsAt, appointment.endsAt),
+        );
 
-  if (hasOverlap) {
-    throw new Error("Esse horario acabou de ser reservado. Escolha outro.");
+        if (hasOverlap) {
+          throw new Error("Esse horario acabou de ser reservado. Escolha outro.");
+        }
+
+        return tx.appointment.create({
+          data: {
+            customerId,
+            barberId: barber.id,
+            serviceId: service.id,
+            customerName,
+            customerPhone,
+            customerEmail: customerEmail?.trim() ? customerEmail.trim() : null,
+            preferSilent: Boolean(preferSilent),
+            notes: notes?.trim() ? notes.trim() : null,
+            startsAt,
+            endsAt,
+          },
+        });
+      },
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+    );
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034") {
+      throw new Error("Esse horario acabou de ser reservado. Escolha outro.");
+    }
+
+    throw error;
   }
-
-  return prisma.appointment.create({
-    data: {
-      customerId,
-      barberId: barber.id,
-      serviceId: service.id,
-      customerName,
-      customerPhone,
-      customerEmail: customerEmail?.trim() ? customerEmail.trim() : null,
-      preferSilent: Boolean(preferSilent),
-      notes: notes?.trim() ? notes.trim() : null,
-      startsAt,
-      endsAt,
-    },
-  });
 }
 
 export async function rescheduleAppointment(params: {
@@ -512,29 +525,43 @@ export async function rescheduleAppointment(params: {
     throw new Error("Escolha um horario futuro.");
   }
 
-  const appointments = await listBookableAppointmentsWithOptions(
-    appointment.barberId,
-    date,
-    appointmentId,
-  );
-  const hasOverlap = appointments.some((item) =>
-    overlaps(startsAt, endsAt, item.startsAt, item.endsAt),
-  );
+  try {
+    return await prisma.$transaction(
+      async (tx) => {
+        const appointments = await listBookableAppointmentsWithOptions(
+          appointment.barberId,
+          date,
+          appointmentId,
+          tx,
+        );
+        const hasOverlap = appointments.some((item) =>
+          overlaps(startsAt, endsAt, item.startsAt, item.endsAt),
+        );
 
-  if (hasOverlap) {
-    throw new Error("Esse horario acabou de ser reservado. Escolha outro.");
+        if (hasOverlap) {
+          throw new Error("Esse horario acabou de ser reservado. Escolha outro.");
+        }
+
+        return tx.appointment.update({
+          where: { id: appointmentId },
+          data: {
+            startsAt,
+            endsAt,
+            status: AppointmentStatus.SCHEDULED,
+          },
+          include: {
+            barber: true,
+            service: true,
+          },
+        });
+      },
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+    );
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034") {
+      throw new Error("Esse horario acabou de ser reservado. Escolha outro.");
+    }
+
+    throw error;
   }
-
-  return prisma.appointment.update({
-    where: { id: appointmentId },
-    data: {
-      startsAt,
-      endsAt,
-      status: AppointmentStatus.SCHEDULED,
-    },
-    include: {
-      barber: true,
-      service: true,
-    },
-  });
 }
