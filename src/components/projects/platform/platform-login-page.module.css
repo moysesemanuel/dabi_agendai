@@ -1,0 +1,80 @@
+:root {
+  color-scheme: dark;
+}
+
+.page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: #0d1117;
+  color: #e6edf3;
+  padding: 24px;
+}
+
+.card {
+  width: min(400px, 100%);
+  display: grid;
+  gap: 20px;
+  padding: 32px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #161b22;
+}
+
+.eyebrow {
+  color: #8b949e;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.card h1 {
+  font-size: 1.6rem;
+  margin: 4px 0 0;
+}
+
+.form {
+  display: grid;
+  gap: 14px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  font-size: 0.9rem;
+}
+
+.field input {
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #0d1117;
+  color: #e6edf3;
+  font: inherit;
+}
+
+.submitButton {
+  min-height: 44px;
+  border-radius: 10px;
+  border: none;
+  background: #2f81f7;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error {
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(248, 81, 73, 0.15);
+  border: 1px solid rgba(248, 81, 73, 0.4);
+  color: #ffb3ad;
+  font-size: 0.86rem;
+}
