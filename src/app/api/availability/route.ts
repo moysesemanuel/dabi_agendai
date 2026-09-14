@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import {
-  ensureBookingSeedData,
   getBarberByName,
   getNextAvailableSlot,
   getServiceByName,
@@ -9,6 +8,7 @@ import {
   listAvailableSlots,
 } from "@/lib/booking";
 import { resolveErrorResponse } from "@/lib/errors";
+import { getCurrentTenant } from "@/lib/tenant";
 
 const availabilityQuerySchema = z.object({
   service: z.string().trim().min(1),
@@ -19,7 +19,11 @@ const availabilityQuerySchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    await ensureBookingSeedData();
+    const tenant = await getCurrentTenant(request);
+
+    if (!tenant) {
+      return NextResponse.json({ error: "Site nao encontrado." }, { status: 404 });
+    }
 
     const parsedQuery = availabilityQuerySchema.safeParse({
       service: request.nextUrl.searchParams.get("service") ?? undefined,
@@ -38,8 +42,8 @@ export async function GET(request: NextRequest) {
     const { service: serviceName, barber: barberName, date, excludeAppointmentId } = parsedQuery.data;
 
     const [service, barber] = await Promise.all([
-      getServiceByName(serviceName),
-      getBarberByName(barberName),
+      getServiceByName(tenant.id, serviceName),
+      getBarberByName(tenant.id, barberName),
     ]);
 
     if (!service || !barber) {
@@ -53,8 +57,8 @@ export async function GET(request: NextRequest) {
     }
 
     const [availability, nextAvailable] = await Promise.all([
-      listAvailableSlots({ date, barber, service, excludeAppointmentId }),
-      getNextAvailableSlot(service),
+      listAvailableSlots({ tenantId: tenant.id, date, barber, service, excludeAppointmentId }),
+      getNextAvailableSlot(tenant.id, service),
     ]);
 
     return NextResponse.json({

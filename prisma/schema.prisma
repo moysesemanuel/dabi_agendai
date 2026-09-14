@@ -20,19 +20,44 @@ enum UserRole {
   ADMIN
 }
 
+model Tenant {
+  id        String   @id @default(cuid())
+  name      String
+  domain    String   @unique
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  barbers            Barber[]
+  barberTimeOff      BarberTimeOff[]
+  customers          Customer[]
+  loyaltyRedemptions LoyaltyRedemption[]
+  services           Service[]
+  siteSettings       SiteSettings?
+  closedDates        ClosedDate[]
+  appointments       Appointment[]
+}
+
 model Barber {
   id           String          @id @default(cuid())
-  name         String          @unique
+  tenantId     String
+  tenant       Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name         String
   role         String
   active       Boolean         @default(true)
   appointments Appointment[]
   timeOff      BarberTimeOff[]
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
 }
 
 model BarberTimeOff {
   id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   barberId  String
   barber    Barber   @relation(fields: [barberId], references: [id], onDelete: Cascade)
   date      String
@@ -41,23 +66,32 @@ model BarberTimeOff {
 
   @@unique([barberId, date])
   @@index([barberId])
+  @@index([tenantId])
 }
 
 model Customer {
   id                 String              @id @default(cuid())
+  tenantId           String
+  tenant             Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   name               String
-  phone              String              @unique
-  email              String?             @unique
+  phone              String
+  email              String?
   passwordHash       String?
   role               UserRole            @default(CUSTOMER)
   appointments       Appointment[]
   loyaltyRedemptions LoyaltyRedemption[]
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
+
+  @@unique([tenantId, phone])
+  @@unique([tenantId, email])
+  @@index([tenantId])
 }
 
 model LoyaltyRedemption {
   id          String   @id @default(cuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   customerId  String
   customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
   points      Int
@@ -65,11 +99,14 @@ model LoyaltyRedemption {
   createdAt   DateTime @default(now())
 
   @@index([customerId])
+  @@index([tenantId])
 }
 
 model Service {
   id              String        @id @default(cuid())
-  name            String        @unique
+  tenantId        String
+  tenant          Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name            String
   description     String
   priceInCents    Int
   durationMinutes Int
@@ -77,23 +114,35 @@ model Service {
   appointments    Appointment[]
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
 }
 
 model SiteSettings {
-  id        String   @id @default("singleton")
+  id        String   @id @default(cuid())
+  tenantId  String   @unique
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   data      Json
   updatedAt DateTime @updatedAt
 }
 
 model ClosedDate {
   id        String   @id @default(cuid())
-  date      String   @unique
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  date      String
   reason    String
   createdAt DateTime @default(now())
+
+  @@unique([tenantId, date])
+  @@index([tenantId])
 }
 
 model Appointment {
   id            String            @id @default(cuid())
+  tenantId      String
+  tenant        Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   customerId    String?
   customerName  String
   customerPhone String
@@ -111,6 +160,6 @@ model Appointment {
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
 
-  @@index([barberId, startsAt, endsAt])
-  @@index([startsAt])
+  @@index([tenantId, barberId, startsAt, endsAt])
+  @@index([tenantId, startsAt])
 }

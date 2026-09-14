@@ -13,7 +13,8 @@
     "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test",
     "prisma:generate": "prisma generate",
-    "db:push": "prisma db push"
+    "db:push": "prisma db push",
+    "create-tenant": "tsx scripts/create-tenant.ts"
   },
   "dependencies": {
     "@prisma/client": "6.16.2",
@@ -30,6 +31,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.1",
     "prisma": "6.16.2",
+    "tsx": "^4.23.13",
     "typescript": "^5"
   }
 }
