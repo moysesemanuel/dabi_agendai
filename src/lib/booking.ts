@@ -1,6 +1,5 @@
 import { AppointmentStatus, Prisma, type Barber, type Service } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { hashPassword } from "@/lib/password";
 import { UserFacingError } from "@/lib/errors";
 
 type PrismaTransactionClient = Prisma.TransactionClient;
@@ -8,55 +7,6 @@ type DbClient = typeof prisma | PrismaTransactionClient;
 
 const SLOT_INTERVAL_MINUTES = 30;
 const SEARCH_WINDOW_DAYS = 21;
-
-const DEFAULT_SERVICE_SEED = [
-  {
-    name: "Cabelo",
-    description: "Corte personalizado com acabamento preciso.",
-    price: "R$ 60",
-    duration: "40 min",
-  },
-  {
-    name: "Barba",
-    description: "Barba com alinhamento, toalha quente e acabamento na navalha.",
-    price: "R$ 45",
-    duration: "30 min",
-  },
-  {
-    name: "Combo Executivo",
-    description:
-      "Cabelo e barba em uma única sessão para sair pronto para qualquer ocasião.",
-    price: "R$ 90",
-    duration: "70 min",
-  },
-  {
-    name: "Hidratação",
-    description:
-      "Tratamento rápido para recuperar brilho, textura e aparência saudável.",
-    price: "R$ 35",
-    duration: "20 min",
-  },
-] as const;
-
-const DEFAULT_BARBER_SEED = [
-  {
-    name: "Rafael Costa",
-    role: "Especialista em degradê e corte social",
-  },
-  {
-    name: "Mateus Lima",
-    role: "Barba e acabamento clássico",
-  },
-  {
-    name: "João Vitor",
-    role: "Estilos contemporâneos e atendimento premium",
-  },
-] as const;
-
-const DEFAULT_CLOSED_DATE_SEED = [
-  { date: "2026-03-30", reason: "Treinamento interno" },
-  { date: "2026-04-21", reason: "Feriado" },
-] as const;
 
 type BusinessHours = {
   startMinutes: number;
@@ -122,8 +72,8 @@ type BusinessHoursConfigItem = {
   end: string;
 };
 
-async function getConfiguredBusinessHoursMap(): Promise<BusinessHoursMap> {
-  const settings = await prisma.siteSettings.findUnique({ where: { id: "singleton" } });
+async function getConfiguredBusinessHoursMap(tenantId: string): Promise<BusinessHoursMap> {
+  const settings = await prisma.siteSettings.findUnique({ where: { tenantId } });
   const configured = (settings?.data as { businessHours?: BusinessHoursConfigItem[] } | null)
     ?.businessHours;
 
@@ -142,9 +92,9 @@ async function getConfiguredBusinessHoursMap(): Promise<BusinessHoursMap> {
   return map;
 }
 
-async function getBusinessHours(dateKey: string) {
+async function getBusinessHours(tenantId: string, dateKey: string) {
   const date = new Date(`${dateKey}T12:00:00${SAO_PAULO_OFFSET}`);
-  const hoursMap = await getConfiguredBusinessHoursMap();
+  const hoursMap = await getConfiguredBusinessHoursMap(tenantId);
   return hoursMap[date.getDay()] ?? null;
 }
 
@@ -161,102 +111,9 @@ function overlaps(
   return rangeStart < appointmentEnd && rangeEnd > appointmentStart;
 }
 
-function parseMoneyToCents(price: string) {
-  const numeric = price.replace(/[^\d,]/g, "").replace(",", ".");
-  return Math.round(Number(numeric || "0") * 100);
-}
-
-function parseDurationToMinutes(duration: string) {
-  const minutes = Number(duration.replace(/[^\d]/g, ""));
-  return Number.isFinite(minutes) ? minutes : 30;
-}
-
-async function seedInitialData() {
-  const existingServices = await prisma.service.count();
-  const existingBarbers = await prisma.barber.count();
-  const existingClosedDates = await prisma.closedDate.count();
-
-  if (existingServices === 0) {
-    await prisma.service.createMany({
-      data: DEFAULT_SERVICE_SEED.map((service) => ({
-        name: service.name,
-        description: service.description,
-        priceInCents: parseMoneyToCents(service.price),
-        durationMinutes: parseDurationToMinutes(service.duration),
-      })),
-    });
-  }
-
-  if (existingBarbers === 0) {
-    await prisma.barber.createMany({
-      data: DEFAULT_BARBER_SEED.map((barber) => ({
-        name: barber.name,
-        role: barber.role,
-      })),
-    });
-  }
-
-  if (existingClosedDates === 0) {
-    await prisma.closedDate.createMany({
-      data: DEFAULT_CLOSED_DATE_SEED.map((item) => ({
-        date: item.date,
-        reason: item.reason,
-      })),
-    });
-  }
-
-  await ensureAdminAccount();
-}
-
-async function ensureAdminAccount() {
-  const adminEmail = process.env.ADMIN_EMAIL?.trim();
-  const adminPassword = process.env.ADMIN_PASSWORD?.trim();
-
-  if (!adminEmail || !adminPassword) {
-    return;
-  }
-
-  if (adminPassword.length < 8) {
-    throw new Error("ADMIN_PASSWORD deve ter pelo menos 8 caracteres.");
-  }
-
-  const adminPhone = process.env.ADMIN_PHONE?.replace(/\D/g, "") || "11999990000";
-  const adminName = process.env.ADMIN_NAME?.trim() || "Administrador";
-
-  await prisma.customer.upsert({
-    where: { phone: adminPhone },
-    update: {
-      name: adminName,
-      email: adminEmail,
-      passwordHash: hashPassword(adminPassword),
-      role: "ADMIN",
-    },
-    create: {
-      name: adminName,
-      phone: adminPhone,
-      email: adminEmail,
-      passwordHash: hashPassword(adminPassword),
-      role: "ADMIN",
-    },
-  });
-}
-
-let bootstrapPromise: Promise<void> | null = null;
-
-export async function ensureBookingSeedData() {
-  if (!bootstrapPromise) {
-    bootstrapPromise = seedInitialData().catch((error) => {
-      bootstrapPromise = null;
-      throw error;
-    });
-  }
-
-  await bootstrapPromise;
-}
-
-async function getClosedDateReason(dateKey: string) {
+async function getClosedDateReason(tenantId: string, dateKey: string) {
   const closedDate = await prisma.closedDate.findUnique({
-    where: { date: dateKey },
+    where: { tenantId_date: { tenantId, date: dateKey } },
   });
 
   return closedDate?.reason ?? null;
@@ -270,32 +127,34 @@ async function getBarberTimeOffReason(barberId: string, dateKey: string) {
   return timeOff?.reason ?? null;
 }
 
-export async function getServiceByName(name: string) {
+export async function getServiceByName(tenantId: string, name: string) {
   return prisma.service.findUnique({
-    where: { name },
+    where: { tenantId_name: { tenantId, name } },
   });
 }
 
-export async function getBarberByName(name: string) {
+export async function getBarberByName(tenantId: string, name: string) {
   return prisma.barber.findUnique({
-    where: { name },
+    where: { tenantId_name: { tenantId, name } },
   });
 }
 
 export async function upsertCustomerProfile(params: {
+  tenantId: string;
   name: string;
   phone: string;
   email?: string;
 }) {
-  const { name, phone, email } = params;
+  const { tenantId, name, phone, email } = params;
 
   return prisma.customer.upsert({
-    where: { phone },
+    where: { tenantId_phone: { tenantId, phone } },
     update: {
       name,
       email: email?.trim() ? email.trim() : null,
     },
     create: {
+      tenantId,
       name,
       phone,
       email: email?.trim() ? email.trim() : null,
@@ -304,6 +163,7 @@ export async function upsertCustomerProfile(params: {
 }
 
 async function listBookableAppointmentsWithOptions(
+  tenantId: string,
   barberId: string,
   dateKey: string,
   excludeAppointmentId?: string,
@@ -315,6 +175,7 @@ async function listBookableAppointmentsWithOptions(
   return client.appointment.findMany({
     where: {
       id: excludeAppointmentId ? { not: excludeAppointmentId } : undefined,
+      tenantId,
       barberId,
       status: {
         in: [AppointmentStatus.SCHEDULED, AppointmentStatus.CONFIRMED],
@@ -329,19 +190,20 @@ async function listBookableAppointmentsWithOptions(
 }
 
 export async function listAvailableSlots(params: {
+  tenantId: string;
   date: string;
   barber: Barber;
   service: Service;
   excludeAppointmentId?: string;
 }) {
-  const { date, barber, service, excludeAppointmentId } = params;
-  const businessHours = await getBusinessHours(date);
+  const { tenantId, date, barber, service, excludeAppointmentId } = params;
+  const businessHours = await getBusinessHours(tenantId, date);
 
   if (!businessHours) {
     return { slots: [] as string[], closedReason: "Fechado neste dia." };
   }
 
-  const closedReason = await getClosedDateReason(date);
+  const closedReason = await getClosedDateReason(tenantId, date);
 
   if (closedReason) {
     return { slots: [] as string[], closedReason };
@@ -354,6 +216,7 @@ export async function listAvailableSlots(params: {
   }
 
   const appointments = await listBookableAppointmentsWithOptions(
+    tenantId,
     barber.id,
     date,
     excludeAppointmentId,
@@ -387,9 +250,9 @@ export async function listAvailableSlots(params: {
   return { slots, closedReason: null };
 }
 
-export async function getNextAvailableSlot(service: Service) {
+export async function getNextAvailableSlot(tenantId: string, service: Service) {
   const activeBarbers = await prisma.barber.findMany({
-    where: { active: true },
+    where: { tenantId, active: true },
     orderBy: { createdAt: "asc" },
   });
 
@@ -404,6 +267,7 @@ export async function getNextAvailableSlot(service: Service) {
 
     for (const barber of activeBarbers) {
       const { slots } = await listAvailableSlots({
+        tenantId,
         date: dateKey,
         barber,
         service,
@@ -431,6 +295,7 @@ export async function getNextAvailableSlot(service: Service) {
 }
 
 export async function createAppointment(params: {
+  tenantId: string;
   barber: Barber;
   service: Service;
   date: string;
@@ -443,6 +308,7 @@ export async function createAppointment(params: {
   notes?: string;
 }) {
   const {
+    tenantId,
     barber,
     service,
     date,
@@ -454,7 +320,7 @@ export async function createAppointment(params: {
     preferSilent,
     notes,
   } = params;
-  const businessHours = await getBusinessHours(date);
+  const businessHours = await getBusinessHours(tenantId, date);
 
   if (!businessHours) {
     throw new UserFacingError("A barbearia nao atende nesta data.");
@@ -469,7 +335,7 @@ export async function createAppointment(params: {
     throw new UserFacingError("Horario fora do expediente.");
   }
 
-  const closedReason = await getClosedDateReason(date);
+  const closedReason = await getClosedDateReason(tenantId, date);
 
   if (closedReason) {
     throw new UserFacingError(`Agenda bloqueada: ${closedReason}.`);
@@ -491,7 +357,13 @@ export async function createAppointment(params: {
   try {
     return await prisma.$transaction(
       async (tx) => {
-        const appointments = await listBookableAppointmentsWithOptions(barber.id, date, undefined, tx);
+        const appointments = await listBookableAppointmentsWithOptions(
+          tenantId,
+          barber.id,
+          date,
+          undefined,
+          tx,
+        );
         const hasOverlap = appointments.some((appointment) =>
           overlaps(startsAt, endsAt, appointment.startsAt, appointment.endsAt),
         );
@@ -502,6 +374,7 @@ export async function createAppointment(params: {
 
         return tx.appointment.create({
           data: {
+            tenantId,
             customerId,
             barberId: barber.id,
             serviceId: service.id,
@@ -527,14 +400,15 @@ export async function createAppointment(params: {
 }
 
 export async function rescheduleAppointment(params: {
+  tenantId: string;
   appointmentId: string;
   date: string;
   time: string;
 }) {
-  const { appointmentId, date, time } = params;
+  const { tenantId, appointmentId, date, time } = params;
 
   const appointment = await prisma.appointment.findUnique({
-    where: { id: appointmentId },
+    where: { id: appointmentId, tenantId },
     include: {
       barber: true,
       service: true,
@@ -545,7 +419,7 @@ export async function rescheduleAppointment(params: {
     throw new UserFacingError("Agendamento nao encontrado.");
   }
 
-  const businessHours = await getBusinessHours(date);
+  const businessHours = await getBusinessHours(tenantId, date);
 
   if (!businessHours) {
     throw new UserFacingError("A barbearia nao atende nesta data.");
@@ -560,7 +434,7 @@ export async function rescheduleAppointment(params: {
     throw new UserFacingError("Horario fora do expediente.");
   }
 
-  const closedReason = await getClosedDateReason(date);
+  const closedReason = await getClosedDateReason(tenantId, date);
 
   if (closedReason) {
     throw new UserFacingError(`Agenda bloqueada: ${closedReason}.`);
@@ -585,6 +459,7 @@ export async function rescheduleAppointment(params: {
     return await prisma.$transaction(
       async (tx) => {
         const appointments = await listBookableAppointmentsWithOptions(
+          tenantId,
           appointment.barberId,
           date,
           appointmentId,
@@ -599,7 +474,7 @@ export async function rescheduleAppointment(params: {
         }
 
         return tx.appointment.update({
-          where: { id: appointmentId },
+          where: { id: appointmentId, tenantId },
           data: {
             startsAt,
             endsAt,

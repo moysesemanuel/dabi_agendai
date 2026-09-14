@@ -3,13 +3,17 @@ import { prisma } from "@/lib/prisma";
 
 type DbClient = typeof prisma | Prisma.TransactionClient;
 
-export async function getLoyaltyBalance(customerId: string, client: DbClient = prisma) {
+export async function getLoyaltyBalance(
+  tenantId: string,
+  customerId: string,
+  client: DbClient = prisma,
+) {
   const [completedAppointments, redeemedAggregate] = await Promise.all([
     client.appointment.count({
-      where: { customerId, status: AppointmentStatus.COMPLETED },
+      where: { tenantId, customerId, status: AppointmentStatus.COMPLETED },
     }),
     client.loyaltyRedemption.aggregate({
-      where: { customerId },
+      where: { tenantId, customerId },
       _sum: { points: true },
     }),
   ]);

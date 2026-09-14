@@ -1,9 +1,10 @@
+import { notFound } from "next/navigation";
 import Link from "next/link";
 import { AppointmentStatus } from "@prisma/client";
 import styles from "@/app/admin/admin.module.css";
 import { DaBiTechSignature } from "@/components/shared/dabi-tech-signature";
-import { ensureBookingSeedData } from "@/lib/booking";
 import { prisma } from "@/lib/prisma";
+import { getCurrentTenant } from "@/lib/tenant";
 
 export const dynamic = "force-dynamic";
 
@@ -39,7 +40,11 @@ function formatDateTime(date: Date) {
 }
 
 export default async function Page() {
-  await ensureBookingSeedData();
+  const tenant = await getCurrentTenant();
+
+  if (!tenant) {
+    notFound();
+  }
 
   const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
@@ -49,6 +54,7 @@ export default async function Page() {
 
   const [customers, activeBarbers, nonCancelledAppointments] = await Promise.all([
     prisma.customer.findMany({
+      where: { tenantId: tenant.id },
       include: {
         appointments: {
           where: {
@@ -70,11 +76,13 @@ export default async function Page() {
     }),
     prisma.barber.count({
       where: {
+        tenantId: tenant.id,
         active: true,
       },
     }),
     prisma.appointment.findMany({
       where: {
+        tenantId: tenant.id,
         status: {
           not: AppointmentStatus.CANCELLED,
         },

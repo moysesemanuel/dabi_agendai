@@ -54,6 +54,15 @@ jobs:
           cache: yarn
       - run: yarn install --frozen-lockfile
       - run: npx prisma db push
+      - name: Criar tenant de teste para o e2e
+        run: |
+          yarn create-tenant \
+            --name "Barbearia CI" \
+            --domain "localhost:3002" \
+            --admin-name "$ADMIN_NAME" \
+            --admin-email "$ADMIN_EMAIL" \
+            --admin-phone "$ADMIN_PHONE" \
+            --admin-password "$ADMIN_PASSWORD"
       - run: yarn build
       - run: npx playwright install --with-deps chromium
       - run: yarn test:e2e
