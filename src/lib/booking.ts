@@ -1,9 +1,10 @@
 import { AppointmentStatus, Prisma, type Barber, type Service } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { hashPassword } from "@/lib/password";
+import { UserFacingError } from "@/lib/errors";
 
 type PrismaTransactionClient = Prisma.TransactionClient;
 type DbClient = typeof prisma | PrismaTransactionClient;
-import { hashPassword } from "@/lib/password";
 
 const SLOT_INTERVAL_MINUTES = 30;
 const SEARCH_WINDOW_DAYS = 21;
@@ -413,7 +414,7 @@ export async function createAppointment(params: {
   const businessHours = getBusinessHours(date);
 
   if (!businessHours) {
-    throw new Error("A barbearia nao atende nesta data.");
+    throw new UserFacingError("A barbearia nao atende nesta data.");
   }
 
   const startMinutes = getMinutesFromTime(time);
@@ -422,20 +423,20 @@ export async function createAppointment(params: {
     startMinutes < businessHours.startMinutes ||
     startMinutes + service.durationMinutes > businessHours.endMinutes
   ) {
-    throw new Error("Horario fora do expediente.");
+    throw new UserFacingError("Horario fora do expediente.");
   }
 
   const closedReason = await getClosedDateReason(date);
 
   if (closedReason) {
-    throw new Error(`Agenda bloqueada: ${closedReason}.`);
+    throw new UserFacingError(`Agenda bloqueada: ${closedReason}.`);
   }
 
   const startsAt = combineDateAndTime(date, time);
   const endsAt = new Date(startsAt.getTime() + service.durationMinutes * 60_000);
 
   if (startsAt <= new Date()) {
-    throw new Error("Escolha um horario futuro.");
+    throw new UserFacingError("Escolha um horario futuro.");
   }
 
   try {
@@ -447,7 +448,7 @@ export async function createAppointment(params: {
         );
 
         if (hasOverlap) {
-          throw new Error("Esse horario acabou de ser reservado. Escolha outro.");
+          throw new UserFacingError("Esse horario acabou de ser reservado. Escolha outro.");
         }
 
         return tx.appointment.create({
@@ -469,7 +470,7 @@ export async function createAppointment(params: {
     );
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034") {
-      throw new Error("Esse horario acabou de ser reservado. Escolha outro.");
+      throw new UserFacingError("Esse horario acabou de ser reservado. Escolha outro.");
     }
 
     throw error;
@@ -492,13 +493,13 @@ export async function rescheduleAppointment(params: {
   });
 
   if (!appointment) {
-    throw new Error("Agendamento nao encontrado.");
+    throw new UserFacingError("Agendamento nao encontrado.");
   }
 
   const businessHours = getBusinessHours(date);
 
   if (!businessHours) {
-    throw new Error("A barbearia nao atende nesta data.");
+    throw new UserFacingError("A barbearia nao atende nesta data.");
   }
 
   const startMinutes = getMinutesFromTime(time);
@@ -507,13 +508,13 @@ export async function rescheduleAppointment(params: {
     startMinutes < businessHours.startMinutes ||
     startMinutes + appointment.service.durationMinutes > businessHours.endMinutes
   ) {
-    throw new Error("Horario fora do expediente.");
+    throw new UserFacingError("Horario fora do expediente.");
   }
 
   const closedReason = await getClosedDateReason(date);
 
   if (closedReason) {
-    throw new Error(`Agenda bloqueada: ${closedReason}.`);
+    throw new UserFacingError(`Agenda bloqueada: ${closedReason}.`);
   }
 
   const startsAt = combineDateAndTime(date, time);
@@ -522,7 +523,7 @@ export async function rescheduleAppointment(params: {
   );
 
   if (startsAt <= new Date()) {
-    throw new Error("Escolha um horario futuro.");
+    throw new UserFacingError("Escolha um horario futuro.");
   }
 
   try {
@@ -539,7 +540,7 @@ export async function rescheduleAppointment(params: {
         );
 
         if (hasOverlap) {
-          throw new Error("Esse horario acabou de ser reservado. Escolha outro.");
+          throw new UserFacingError("Esse horario acabou de ser reservado. Escolha outro.");
         }
 
         return tx.appointment.update({
@@ -559,7 +560,7 @@ export async function rescheduleAppointment(params: {
     );
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034") {
-      throw new Error("Esse horario acabou de ser reservado. Escolha outro.");
+      throw new UserFacingError("Esse horario acabou de ser reservado. Escolha outro.");
     }
 
     throw error;
