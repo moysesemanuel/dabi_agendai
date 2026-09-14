@@ -72,12 +72,3 @@
   color: #e8c98d;
   text-decoration: underline;
 }
-
-.placeholderNote {
-  padding: 14px 18px;
-  border-radius: 16px;
-  border: 1px dashed rgba(195, 154, 92, 0.4);
-  background: rgba(195, 154, 92, 0.08);
-  font-size: 0.85rem;
-  color: rgba(245, 239, 230, 0.7);
-}
