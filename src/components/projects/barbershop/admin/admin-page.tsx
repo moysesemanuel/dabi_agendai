@@ -1188,7 +1188,7 @@ export function AdminPage({ section = "overview" }: { section?: AdminSectionView
   }
 
   function openPublicSite() {
-    window.open("/portfolio/barbearia", "_blank", "noopener,noreferrer");
+    window.open("/", "_blank", "noopener,noreferrer");
   }
 
   function openShowcaseImagePicker(index: number) {
