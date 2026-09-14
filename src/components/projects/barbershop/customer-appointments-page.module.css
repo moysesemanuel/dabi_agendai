@@ -36,7 +36,7 @@
 }
 
 .eyebrow {
-  color: #cda45e;
+  color: var(--tenant-accent-light);
   display: inline-flex;
   font-size: 0.78rem;
   font-weight: 700;
@@ -195,7 +195,7 @@
 }
 
 .primaryButton {
-  background: #cda45e;
+  background: var(--tenant-accent-light);
   color: #140f0b;
 }
 

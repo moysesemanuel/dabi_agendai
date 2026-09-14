@@ -5,6 +5,13 @@
     "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
   --font-body:
     "Avenir Next", Avenir, "Segoe UI", Helvetica, Arial, sans-serif;
+
+  /* Cor de marca do tenant (configuravel em /platform). O valor base vem de
+     --tenant-accent; as variantes clara/escura sao derivadas automaticamente
+     via color-mix, entao trocar so a base ja ajusta tudo. */
+  --tenant-accent: #c39a5c;
+  --tenant-accent-light: color-mix(in srgb, var(--tenant-accent) 65%, white 35%);
+  --tenant-accent-dark: color-mix(in srgb, var(--tenant-accent) 80%, black 20%);
 }
 
 html {

@@ -164,6 +164,7 @@ export default async function Page() {
             <Link className={styles.sidebarNavLinkActive} href="/admin/dados">
               Dados
             </Link>
+            <Link href="/admin/suporte">Suporte</Link>
           </nav>
 
           <div className={styles.sidebarStats}>
