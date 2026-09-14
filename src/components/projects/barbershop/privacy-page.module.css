@@ -52,7 +52,7 @@
 
 .policySection h2 {
   font-size: 1.2rem;
-  color: #e8c98d;
+  color: var(--tenant-accent-light);
 }
 
 .policySection p,
@@ -69,6 +69,6 @@
 }
 
 .policySection a {
-  color: #e8c98d;
+  color: var(--tenant-accent-light);
   text-decoration: underline;
 }

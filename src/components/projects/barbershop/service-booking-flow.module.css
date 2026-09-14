@@ -299,7 +299,7 @@
 
 .dateCardActive,
 .barberCardActive {
-  border-color: #c39a5c;
+  border-color: var(--tenant-accent);
   background: rgba(195, 154, 92, 0.12);
 }
 
@@ -322,7 +322,7 @@
   width: 100%;
   height: 140px;
   border-radius: 18px;
-  background: linear-gradient(180deg, #c39a5c, #8b6332);
+  background: linear-gradient(180deg, var(--tenant-accent), #8b6332);
   color: #1c140f;
   font-family: var(--font-display);
   font-size: 2rem;
@@ -430,7 +430,7 @@
 }
 
 .toggleActive {
-  background: #c39a5c;
+  background: var(--tenant-accent);
 }
 
 .toggleActive::after {
@@ -470,9 +470,9 @@
 .modalPrimaryButton,
 .modeButtonActive,
 .surfacePrimaryButton {
-  background: #c39a5c;
+  background: var(--tenant-accent);
   color: #1c140f;
-  border: 1px solid #c39a5c;
+  border: 1px solid var(--tenant-accent);
 }
 
 .modalSecondaryButton,

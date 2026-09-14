@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { resolveErrorResponse } from "@/lib/errors";
-import { setTenantActive } from "@/lib/platform";
+import { setTenantActive, setTenantBrandColor } from "@/lib/platform";
 import { getPlatformSessionFromRequest } from "@/lib/platform-session";
 
 const updateTenantSchema = z.object({
-  active: z.boolean(),
+  active: z.boolean().optional(),
+  brandColor: z
+    .string()
+    .trim()
+    .regex(/^#[0-9a-fA-F]{6}$/, "Cor invalida. Use o formato #RRGGBB.")
+    .optional(),
 });
 
 export async function PATCH(
@@ -22,11 +27,19 @@ export async function PATCH(
     const { id } = await params;
     const parsedBody = updateTenantSchema.safeParse(await request.json());
 
-    if (!parsedBody.success) {
+    if (!parsedBody.success || (!("active" in parsedBody.data) && !("brandColor" in parsedBody.data))) {
       return NextResponse.json({ error: "Dados invalidos." }, { status: 400 });
     }
 
-    const tenant = await setTenantActive(id, parsedBody.data.active);
+    let tenant;
+
+    if (parsedBody.data.active !== undefined) {
+      tenant = await setTenantActive(id, parsedBody.data.active);
+    }
+
+    if (parsedBody.data.brandColor !== undefined) {
+      tenant = await setTenantBrandColor(id, parsedBody.data.brandColor);
+    }
 
     return NextResponse.json({ tenant });
   } catch (error) {

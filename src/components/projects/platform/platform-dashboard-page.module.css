@@ -1,50 +1,5 @@
 .page {
-  min-height: 100vh;
-  background: #0d1117;
-  color: #e6edf3;
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 20px 32px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.headerTitle {
-  display: grid;
-  gap: 2px;
-}
-
-.eyebrow {
-  color: #8b949e;
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.header h1 {
-  font-size: 1.3rem;
-  margin: 0;
-}
-
-.logoutButton {
-  min-height: 38px;
-  padding: 0 16px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: transparent;
-  color: #e6edf3;
-  cursor: pointer;
-}
-
-.main {
-  width: min(1120px, calc(100% - 48px));
-  margin: 0 auto;
-  padding: 32px 0 64px;
+  padding: 32px;
   display: grid;
   gap: 28px;
 }
@@ -177,6 +132,22 @@
 .toggleButton:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.brandColorCell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brandColorCell input[type="color"] {
+  width: 36px;
+  height: 30px;
+  padding: 0;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: transparent;
+  cursor: pointer;
 }
 
 @media (max-width: 720px) {

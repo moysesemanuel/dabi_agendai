@@ -8,14 +8,14 @@ export async function GET(request: NextRequest) {
     const tenant = await getCurrentTenant(request);
 
     if (!tenant) {
-      return NextResponse.json({ config: defaultSiteConfig });
+      return NextResponse.json({ config: defaultSiteConfig, brandColor: null });
     }
 
     const row = await prisma.siteSettings.findUnique({ where: { tenantId: tenant.id } });
     const config = mergeSiteConfig((row?.data as Partial<SiteConfig>) ?? null);
 
-    return NextResponse.json({ config });
+    return NextResponse.json({ config, brandColor: tenant.brandColor });
   } catch {
-    return NextResponse.json({ config: defaultSiteConfig });
+    return NextResponse.json({ config: defaultSiteConfig, brandColor: null });
   }
 }
