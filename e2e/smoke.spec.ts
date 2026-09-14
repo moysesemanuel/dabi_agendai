@@ -30,6 +30,7 @@ test.describe("smoke", () => {
     await page.getByLabel("E-mail").fill(`smoke${unique}@example.com`);
     await page.getByLabel(/^Senha/).fill("senha123456");
     await page.getByLabel("WhatsApp").fill(phone);
+    await page.getByRole("checkbox").check();
     await page.getByRole("button", { name: "Criar conta" }).last().click();
 
     await expect(page.getByText("Conta criada com sucesso.")).toBeVisible({ timeout: 10_000 });
