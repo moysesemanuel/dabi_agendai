@@ -116,8 +116,8 @@
 }
 
 .statusScheduled {
-  background: rgba(205, 164, 94, 0.18);
-  color: #f2c46a;
+  background: color-mix(in srgb, var(--tenant-accent-light) 18%, transparent);
+  color: var(--tenant-accent-light);
 }
 
 .statusConfirmed {
@@ -272,8 +272,8 @@
 
 .dateCardActive,
 .timeCardActive {
-  background: rgba(205, 164, 94, 0.16);
-  border-color: rgba(205, 164, 94, 0.62);
+  background: color-mix(in srgb, var(--tenant-accent-light) 16%, transparent);
+  border-color: color-mix(in srgb, var(--tenant-accent-light) 62%, transparent);
 }
 
 .modalSummary {

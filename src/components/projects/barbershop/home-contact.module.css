@@ -140,7 +140,7 @@
   .contactSecondaryButton:hover {
     transform: translateY(-2px);
     background: #f6efe5;
-    border-color: rgba(195, 154, 92, 0.34);
+    border-color: color-mix(in srgb, var(--tenant-accent) 34%, transparent);
   }
 }
 
