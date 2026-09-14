@@ -1,10 +1,17 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { defaultSiteConfig, mergeSiteConfig, type SiteConfig } from "@/components/shared/site-config";
+import { getCurrentTenant } from "@/lib/tenant";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const row = await prisma.siteSettings.findUnique({ where: { id: "singleton" } });
+    const tenant = await getCurrentTenant(request);
+
+    if (!tenant) {
+      return NextResponse.json({ config: defaultSiteConfig });
+    }
+
+    const row = await prisma.siteSettings.findUnique({ where: { tenantId: tenant.id } });
     const config = mergeSiteConfig((row?.data as Partial<SiteConfig>) ?? null);
 
     return NextResponse.json({ config });

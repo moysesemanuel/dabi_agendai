@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { resolveErrorResponse } from "@/lib/errors";
 import { getLoyaltyBalance } from "@/lib/loyalty";
-import { getSessionFromRequest } from "@/lib/session";
+import { getSessionForTenant } from "@/lib/session";
+import { getCurrentTenant } from "@/lib/tenant";
 
 export async function GET(request: NextRequest) {
   try {
+    const tenant = await getCurrentTenant(request);
+
+    if (!tenant) {
+      return NextResponse.json({ error: "Site nao encontrado." }, { status: 404 });
+    }
+
     const customerId = request.nextUrl.searchParams.get("customerId")?.trim();
 
     if (!customerId) {
@@ -14,7 +21,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const session = await getSessionFromRequest(request);
+    const session = await getSessionForTenant(request, tenant.id);
 
     if (!session || (session.role !== "ADMIN" && session.id !== customerId)) {
       return NextResponse.json(
@@ -23,7 +30,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const balance = await getLoyaltyBalance(customerId);
+    const balance = await getLoyaltyBalance(tenant.id, customerId);
 
     return NextResponse.json({
       points: balance.earnedPoints,

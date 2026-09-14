@@ -4,7 +4,8 @@ import { z } from "zod";
 import { resolveErrorResponse, UserFacingError } from "@/lib/errors";
 import { getLoyaltyBalance } from "@/lib/loyalty";
 import { prisma } from "@/lib/prisma";
-import { getSessionFromRequest } from "@/lib/session";
+import { getSessionForTenant } from "@/lib/session";
+import { getCurrentTenant } from "@/lib/tenant";
 
 const redeemSchema = z.object({
   customerId: z.string().trim().min(1),
@@ -14,6 +15,12 @@ const redeemSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    const tenant = await getCurrentTenant(request);
+
+    if (!tenant) {
+      return NextResponse.json({ error: "Site nao encontrado." }, { status: 404 });
+    }
+
     const parsedBody = redeemSchema.safeParse(await request.json());
 
     if (!parsedBody.success) {
@@ -24,7 +31,7 @@ export async function POST(request: NextRequest) {
     }
 
     const { customerId, points, rewardTitle } = parsedBody.data;
-    const session = await getSessionFromRequest(request);
+    const session = await getSessionForTenant(request, tenant.id);
 
     if (!session || (session.role !== "ADMIN" && session.id !== customerId)) {
       return NextResponse.json(
@@ -35,17 +42,17 @@ export async function POST(request: NextRequest) {
 
     const balance = await prisma.$transaction(
       async (tx) => {
-        const current = await getLoyaltyBalance(customerId, tx);
+        const current = await getLoyaltyBalance(tenant.id, customerId, tx);
 
         if (current.availablePoints < points) {
           throw new UserFacingError("Voce nao tem pontos suficientes para este resgate.");
         }
 
         await tx.loyaltyRedemption.create({
-          data: { customerId, points, rewardTitle },
+          data: { tenantId: tenant.id, customerId, points, rewardTitle },
         });
 
-        return getLoyaltyBalance(customerId, tx);
+        return getLoyaltyBalance(tenant.id, customerId, tx);
       },
       { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
     );

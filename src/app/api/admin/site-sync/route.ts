@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { syncOperationalData } from "@/lib/admin-sync";
-import { ensureBookingSeedData } from "@/lib/booking";
 import { resolveErrorResponse } from "@/lib/errors";
+import { getCurrentTenant } from "@/lib/tenant";
 
 const planSchema = z.object({
   name: z.string().trim().min(1),
@@ -91,7 +91,11 @@ const siteConfigSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    await ensureBookingSeedData();
+    const tenant = await getCurrentTenant(request);
+
+    if (!tenant) {
+      return NextResponse.json({ error: "Site nao encontrado." }, { status: 404 });
+    }
 
     const parsedBody = z.object({ config: siteConfigSchema }).safeParse(await request.json());
 
@@ -102,7 +106,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    await syncOperationalData(parsedBody.data.config);
+    await syncOperationalData(tenant.id, parsedBody.data.config);
 
     return NextResponse.json({
       message: "Dados operacionais sincronizados com a agenda.",

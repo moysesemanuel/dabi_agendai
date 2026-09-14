@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { ensureBookingSeedData, upsertCustomerProfile } from "@/lib/booking";
+import { upsertCustomerProfile } from "@/lib/booking";
 import { resolveErrorResponse } from "@/lib/errors";
 import { verifyPassword, hashPassword } from "@/lib/password";
 import { prisma } from "@/lib/prisma";
 import {
   clearSessionCookie,
   createSessionToken,
-  getSessionFromRequest,
+  getSessionForTenant,
   setSessionCookie,
 } from "@/lib/session";
+import { getCurrentTenant } from "@/lib/tenant";
 
 const customerSessionSchema = z.object({
   action: z.enum(["login", "register"]).optional(),
@@ -19,21 +20,13 @@ const customerSessionSchema = z.object({
   password: z.string().trim().min(1),
 });
 
-function getCustomerDelegate() {
-  const customerDelegate = prisma.customer;
-
-  if (!customerDelegate || typeof customerDelegate.findUnique !== "function") {
-    throw new Error(
-      'O servidor precisa ser reiniciado para atualizar o login de clientes. Pare o "yarn dev" e rode novamente.',
-    );
-  }
-
-  return customerDelegate;
-}
-
 export async function POST(request: NextRequest) {
   try {
-    await ensureBookingSeedData();
+    const tenant = await getCurrentTenant(request);
+
+    if (!tenant) {
+      return NextResponse.json({ error: "Site nao encontrado." }, { status: 404 });
+    }
 
     const parsedBody = customerSessionSchema.safeParse(await request.json());
 
@@ -58,7 +51,6 @@ export async function POST(request: NextRequest) {
     }
 
     let customer;
-    const customerDelegate = getCustomerDelegate();
 
     if (action === "register") {
       if (!name) {
@@ -75,8 +67,8 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      const existingCustomer = await customerDelegate.findFirst({
-        where: { email },
+      const existingCustomer = await prisma.customer.findFirst({
+        where: { tenantId: tenant.id, email },
       });
 
       if (existingCustomer?.passwordHash) {
@@ -87,12 +79,13 @@ export async function POST(request: NextRequest) {
       }
 
       const profile = await upsertCustomerProfile({
+        tenantId: tenant.id,
         name,
         phone,
         email,
       });
 
-      customer = await customerDelegate.update({
+      customer = await prisma.customer.update({
         where: { id: profile.id },
         data: {
           name,
@@ -101,8 +94,8 @@ export async function POST(request: NextRequest) {
         },
       });
     } else {
-      customer = await customerDelegate.findFirst({
-        where: { email },
+      customer = await prisma.customer.findFirst({
+        where: { tenantId: tenant.id, email },
       });
 
       if (!customer?.passwordHash) {
@@ -122,7 +115,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const token = await createSessionToken({ id: customer.id, role: customer.role });
+    const token = await createSessionToken({
+      id: customer.id,
+      role: customer.role,
+      tenantId: tenant.id,
+    });
     const response = NextResponse.json({
       customer: {
         id: customer.id,
@@ -145,13 +142,21 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET(request: NextRequest) {
-  const session = await getSessionFromRequest(request);
+  const tenant = await getCurrentTenant(request);
+
+  if (!tenant) {
+    return NextResponse.json({ customer: null });
+  }
+
+  const session = await getSessionForTenant(request, tenant.id);
 
   if (!session) {
     return NextResponse.json({ customer: null });
   }
 
-  const customer = await prisma.customer.findUnique({ where: { id: session.id } });
+  const customer = await prisma.customer.findUnique({
+    where: { id: session.id, tenantId: tenant.id },
+  });
 
   if (!customer) {
     const response = NextResponse.json({ customer: null });
