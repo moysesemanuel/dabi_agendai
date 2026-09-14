@@ -39,6 +39,13 @@ export type BarberItem = {
   role: string;
 };
 
+export type BusinessHoursItem = {
+  weekday: number;
+  closed: boolean;
+  start: string;
+  end: string;
+};
+
 export type ClosedDateItem = {
   date: string;
   reason: string;
@@ -83,10 +90,21 @@ export type SiteConfig = {
   loyaltyTiers: LoyaltyTierItem[];
   loyaltyRewards: LoyaltyRewardItem[];
   availableTimes: string[];
+  businessHours: BusinessHoursItem[];
   closedDates: ClosedDateItem[];
   barberTimeOff: BarberTimeOffItem[];
   ignoredHolidayDates: string[];
 };
+
+export const weekdayLabels = [
+  "Domingo",
+  "Segunda",
+  "Terça",
+  "Quarta",
+  "Quinta",
+  "Sexta",
+  "Sábado",
+];
 
 export const defaultSiteConfig: SiteConfig = {
   businessName: "Prime Cut Studio",
@@ -143,6 +161,15 @@ export const defaultSiteConfig: SiteConfig = {
     },
   ],
   availableTimes: [...availableTimes],
+  businessHours: [
+    { weekday: 0, closed: true, start: "09:00", end: "18:00" },
+    { weekday: 1, closed: false, start: "09:00", end: "20:00" },
+    { weekday: 2, closed: false, start: "09:00", end: "20:00" },
+    { weekday: 3, closed: false, start: "09:00", end: "20:00" },
+    { weekday: 4, closed: false, start: "09:00", end: "20:00" },
+    { weekday: 5, closed: false, start: "09:00", end: "20:00" },
+    { weekday: 6, closed: false, start: "08:00", end: "18:00" },
+  ],
   closedDates: [
     { date: "2026-03-30", reason: "Treinamento interno" },
     { date: "2026-04-21", reason: "Feriado" },
@@ -195,6 +222,7 @@ export function mergeSiteConfig(parsed: Partial<SiteConfig> | null | undefined):
     loyaltyTiers: parsed.loyaltyTiers ?? defaultSiteConfig.loyaltyTiers,
     loyaltyRewards: parsed.loyaltyRewards ?? defaultSiteConfig.loyaltyRewards,
     availableTimes: parsed.availableTimes ?? defaultSiteConfig.availableTimes,
+    businessHours: parsed.businessHours ?? defaultSiteConfig.businessHours,
     closedDates: parsed.closedDates ?? defaultSiteConfig.closedDates,
     barberTimeOff: parsed.barberTimeOff ?? defaultSiteConfig.barberTimeOff,
     ignoredHolidayDates: parsed.ignoredHolidayDates ?? defaultSiteConfig.ignoredHolidayDates,

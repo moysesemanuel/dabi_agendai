@@ -114,9 +114,38 @@ function getTimeFromMinutes(totalMinutes: number) {
 // Brasil nao observa horario de verao desde 2019: America/Sao_Paulo e sempre UTC-3.
 export const SAO_PAULO_OFFSET = "-03:00";
 
-function getBusinessHours(dateKey: string) {
+type BusinessHoursMap = Record<number, BusinessHours | null>;
+type BusinessHoursConfigItem = {
+  weekday: number;
+  closed: boolean;
+  start: string;
+  end: string;
+};
+
+async function getConfiguredBusinessHoursMap(): Promise<BusinessHoursMap> {
+  const settings = await prisma.siteSettings.findUnique({ where: { id: "singleton" } });
+  const configured = (settings?.data as { businessHours?: BusinessHoursConfigItem[] } | null)
+    ?.businessHours;
+
+  if (!configured || configured.length === 0) {
+    return BUSINESS_HOURS_BY_WEEKDAY;
+  }
+
+  const map: BusinessHoursMap = {};
+
+  for (const item of configured) {
+    map[item.weekday] = item.closed
+      ? null
+      : { startMinutes: getMinutesFromTime(item.start), endMinutes: getMinutesFromTime(item.end) };
+  }
+
+  return map;
+}
+
+async function getBusinessHours(dateKey: string) {
   const date = new Date(`${dateKey}T12:00:00${SAO_PAULO_OFFSET}`);
-  return BUSINESS_HOURS_BY_WEEKDAY[date.getDay()] ?? null;
+  const hoursMap = await getConfiguredBusinessHoursMap();
+  return hoursMap[date.getDay()] ?? null;
 }
 
 function combineDateAndTime(dateKey: string, time: string) {
@@ -306,7 +335,7 @@ export async function listAvailableSlots(params: {
   excludeAppointmentId?: string;
 }) {
   const { date, barber, service, excludeAppointmentId } = params;
-  const businessHours = getBusinessHours(date);
+  const businessHours = await getBusinessHours(date);
 
   if (!businessHours) {
     return { slots: [] as string[], closedReason: "Fechado neste dia." };
@@ -425,7 +454,7 @@ export async function createAppointment(params: {
     preferSilent,
     notes,
   } = params;
-  const businessHours = getBusinessHours(date);
+  const businessHours = await getBusinessHours(date);
 
   if (!businessHours) {
     throw new UserFacingError("A barbearia nao atende nesta data.");
@@ -516,7 +545,7 @@ export async function rescheduleAppointment(params: {
     throw new UserFacingError("Agendamento nao encontrado.");
   }
 
-  const businessHours = getBusinessHours(date);
+  const businessHours = await getBusinessHours(date);
 
   if (!businessHours) {
     throw new UserFacingError("A barbearia nao atende nesta data.");
