@@ -37,6 +37,12 @@ const closedDateSchema = z.object({
   reason: z.string(),
 });
 
+const barberTimeOffSchema = z.object({
+  barberName: z.string().trim().min(1),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data invalida."),
+  reason: z.string(),
+});
+
 const loyaltyTierSchema = z.object({
   name: z.string().trim().min(1),
   minPoints: z.number(),
@@ -71,6 +77,7 @@ const siteConfigSchema = z.object({
   loyaltyRewards: z.array(loyaltyRewardSchema),
   availableTimes: z.array(z.string()),
   closedDates: z.array(closedDateSchema),
+  barberTimeOff: z.array(barberTimeOffSchema),
   ignoredHolidayDates: z.array(z.string()),
 });
 

@@ -233,6 +233,14 @@ async function getClosedDateReason(dateKey: string) {
   return closedDate?.reason ?? null;
 }
 
+async function getBarberTimeOffReason(barberId: string, dateKey: string) {
+  const timeOff = await prisma.barberTimeOff.findUnique({
+    where: { barberId_date: { barberId, date: dateKey } },
+  });
+
+  return timeOff?.reason ?? null;
+}
+
 export async function getServiceByName(name: string) {
   return prisma.service.findUnique({
     where: { name },
@@ -308,6 +316,12 @@ export async function listAvailableSlots(params: {
 
   if (closedReason) {
     return { slots: [] as string[], closedReason };
+  }
+
+  const barberTimeOffReason = await getBarberTimeOffReason(barber.id, date);
+
+  if (barberTimeOffReason) {
+    return { slots: [] as string[], closedReason: barberTimeOffReason };
   }
 
   const appointments = await listBookableAppointmentsWithOptions(
@@ -432,6 +446,12 @@ export async function createAppointment(params: {
     throw new UserFacingError(`Agenda bloqueada: ${closedReason}.`);
   }
 
+  const barberTimeOffReason = await getBarberTimeOffReason(barber.id, date);
+
+  if (barberTimeOffReason) {
+    throw new UserFacingError(`Profissional de folga: ${barberTimeOffReason}.`);
+  }
+
   const startsAt = combineDateAndTime(date, time);
   const endsAt = new Date(startsAt.getTime() + service.durationMinutes * 60_000);
 
@@ -515,6 +535,12 @@ export async function rescheduleAppointment(params: {
 
   if (closedReason) {
     throw new UserFacingError(`Agenda bloqueada: ${closedReason}.`);
+  }
+
+  const barberTimeOffReason = await getBarberTimeOffReason(appointment.barberId, date);
+
+  if (barberTimeOffReason) {
+    throw new UserFacingError(`Profissional de folga: ${barberTimeOffReason}.`);
   }
 
   const startsAt = combineDateAndTime(date, time);

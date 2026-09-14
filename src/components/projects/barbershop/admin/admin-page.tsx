@@ -187,7 +187,8 @@ type ServiceDraft = {
 type RemovalTarget =
   | { type: "service"; index: number; label: string }
   | { type: "barber"; name: string; label: string }
-  | { type: "closedDate"; date: string; label: string };
+  | { type: "closedDate"; date: string; label: string }
+  | { type: "barberTimeOff"; barberName: string; date: string; label: string };
 
 type AdminSectionView = "overview" | "site" | "catalog" | "schedule";
 
@@ -203,6 +204,13 @@ function getRemovalModalCopy(target: RemovalTarget) {
     return {
       title: "Remover este serviço?",
       description: `Essa ação remove o serviço ${target.label} do painel.`,
+    };
+  }
+
+  if (target.type === "barberTimeOff") {
+    return {
+      title: "Remover esta folga?",
+      description: `Essa ação remove a folga ${target.label} do painel.`,
     };
   }
 
@@ -426,6 +434,9 @@ export function AdminPage({ section = "overview" }: { section?: AdminSectionView
   const [config, setConfig] = useState(siteConfigSnapshot);
   const [closingDate, setClosingDate] = useState("2026-03-30");
   const [closingReason, setClosingReason] = useState("Treinamento interno");
+  const [timeOffBarberName, setTimeOffBarberName] = useState("");
+  const [timeOffDate, setTimeOffDate] = useState("2026-03-30");
+  const [timeOffReason, setTimeOffReason] = useState("Folga");
   const [addressLookupMessage, setAddressLookupMessage] = useState("");
   const [addressLookupLoading, setAddressLookupLoading] = useState(false);
   const [holidayLookupMessage, setHolidayLookupMessage] = useState("");
@@ -486,6 +497,12 @@ export function AdminPage({ section = "overview" }: { section?: AdminSectionView
   useEffect(() => {
     setConfig(siteConfigSnapshot);
   }, [siteConfigSnapshot]);
+
+  useEffect(() => {
+    if (!timeOffBarberName && config.barbers.length > 0) {
+      setTimeOffBarberName(config.barbers[0].name);
+    }
+  }, [config.barbers, timeOffBarberName]);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -1058,6 +1075,41 @@ export function AdminPage({ section = "overview" }: { section?: AdminSectionView
     showToast({ variant: "warning", title: "Aviso", message: "Data bloqueada removida. Salve para aplicar no site." });
   }
 
+  function addBarberTimeOff() {
+    if (!timeOffBarberName || !timeOffDate || !timeOffReason.trim()) {
+      return;
+    }
+
+    setConfig((current) => ({
+      ...current,
+      barberTimeOff: current.barberTimeOff.some(
+        (item) => item.barberName === timeOffBarberName && item.date === timeOffDate,
+      )
+        ? current.barberTimeOff.map((item) =>
+            item.barberName === timeOffBarberName && item.date === timeOffDate
+              ? { ...item, reason: timeOffReason.trim() }
+              : item,
+          )
+        : [
+            ...current.barberTimeOff,
+            { barberName: timeOffBarberName, date: timeOffDate, reason: timeOffReason.trim() },
+          ],
+    }));
+    setStatusMessage("Folga adicionada. Salve para aplicar no site.");
+    showToast({ variant: "success", message: "Folga adicionada. Salve para aplicar no site." });
+  }
+
+  function removeBarberTimeOff(barberName: string, date: string) {
+    setConfig((current) => ({
+      ...current,
+      barberTimeOff: current.barberTimeOff.filter(
+        (item) => !(item.barberName === barberName && item.date === date),
+      ),
+    }));
+    setStatusMessage("Folga removida. Salve para aplicar no site.");
+    showToast({ variant: "warning", title: "Aviso", message: "Folga removida. Salve para aplicar no site." });
+  }
+
   function confirmRemoval() {
     if (!removalTarget) {
       return;
@@ -1073,6 +1125,10 @@ export function AdminPage({ section = "overview" }: { section?: AdminSectionView
 
     if (removalTarget.type === "closedDate") {
       removeClosedDate(removalTarget.date);
+    }
+
+    if (removalTarget.type === "barberTimeOff") {
+      removeBarberTimeOff(removalTarget.barberName, removalTarget.date);
     }
 
     setRemovalTarget(null);
@@ -2704,6 +2760,96 @@ export function AdminPage({ section = "overview" }: { section?: AdminSectionView
                       </AdminButton>
                     </div>
                   ))}
+                </div>
+              </aside>
+            </section>
+
+            <section className={styles.sectionSplitLayout} id="folgas">
+              <article className={styles.contentCard}>
+                <div className={styles.contentCardHeader}>
+                  <p className={styles.sectionEyebrow}>Agenda</p>
+                  <h2>Folgas por profissional</h2>
+                  <p>Bloqueie datas específicas para um barbeiro sem fechar a barbearia inteira.</p>
+                </div>
+
+                <div className={styles.inlineFormRow}>
+                  <div className={styles.formField}>
+                    <label htmlFor="time-off-barber">Profissional</label>
+                    <select
+                      id="time-off-barber"
+                      value={timeOffBarberName}
+                      onChange={(event) => setTimeOffBarberName(event.target.value)}
+                    >
+                      {config.barbers.map((barber) => (
+                        <option key={barber.name} value={barber.name}>
+                          {barber.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className={styles.formField}>
+                    <label htmlFor="time-off-date">Data</label>
+                    <DatePickerField value={timeOffDate} onChange={setTimeOffDate} />
+                  </div>
+                  <div className={styles.formField}>
+                    <label htmlFor="time-off-reason">Motivo</label>
+                    <input
+                      id="time-off-reason"
+                      value={timeOffReason}
+                      onChange={(event) => setTimeOffReason(event.target.value)}
+                    />
+                  </div>
+                  <AdminButton
+                    className={styles.inlineRowAction}
+                    variant="primary"
+                    type="button"
+                    onClick={addBarberTimeOff}
+                    disabled={config.barbers.length === 0}
+                  >
+                    Adicionar folga
+                  </AdminButton>
+                </div>
+              </article>
+
+              <aside className={styles.sideListCard}>
+                <div className={styles.contentCardHeader}>
+                  <p className={styles.sectionEyebrow}>Folgas cadastradas</p>
+                  <h2 className={styles.listCardTitle}>
+                    {config.barberTimeOff.length} folgas cadastradas
+                  </h2>
+                </div>
+                <div className={styles.stackedList}>
+                  {config.barberTimeOff
+                    .slice()
+                    .sort((left, right) => left.date.localeCompare(right.date))
+                    .map((item) => (
+                      <div className={styles.blockedDateItem} key={`${item.barberName}-${item.date}`}>
+                        <div className={styles.blockedDateBadge}>
+                          <strong>{getDateParts(item.date).day}</strong>
+                          <span>{getDateParts(item.date).month}</span>
+                        </div>
+                        <div className={styles.stackedListText}>
+                          <strong>{item.barberName}</strong>
+                          <span>
+                            {getDateParts(item.date).full} • {item.reason}
+                          </span>
+                        </div>
+                        <AdminButton
+                          variant="danger"
+                          type="button"
+                          onClick={() =>
+                            setRemovalTarget({
+                              type: "barberTimeOff",
+                              barberName: item.barberName,
+                              date: item.date,
+                              label: `${item.barberName} em ${getDateParts(item.date).full}`,
+                            })
+                          }
+                        >
+                          Remover
+                        </AdminButton>
+                      </div>
+                    ))}
                 </div>
               </aside>
             </section>
