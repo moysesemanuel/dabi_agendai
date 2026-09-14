@@ -1,0 +1,83 @@
+.page {
+  min-height: 100vh;
+  background: #120e0b;
+  color: #f5efe6;
+}
+
+.heroShell {
+  padding-top: 128px;
+  background:
+    radial-gradient(circle at top, rgba(195, 154, 92, 0.2), transparent 32%),
+    linear-gradient(180deg, #201712 0%, #120e0b 100%);
+}
+
+.main {
+  width: min(880px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 34px 0 72px;
+}
+
+.intro {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.intro h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 4.5vw, 3.6rem);
+  line-height: 1;
+}
+
+.intro p {
+  max-width: 60ch;
+  color: rgba(245, 239, 230, 0.76);
+  line-height: 1.75;
+}
+
+.contentCard {
+  display: grid;
+  gap: 28px;
+  padding: 32px;
+  border-radius: 28px;
+  border: 1px solid rgba(195, 154, 92, 0.18);
+  background: rgba(30, 22, 18, 0.7);
+  backdrop-filter: blur(16px);
+}
+
+.policySection {
+  display: grid;
+  gap: 10px;
+}
+
+.policySection h2 {
+  font-size: 1.2rem;
+  color: #e8c98d;
+}
+
+.policySection p,
+.policySection li {
+  color: rgba(245, 239, 230, 0.82);
+  line-height: 1.75;
+}
+
+.policySection ul {
+  display: grid;
+  gap: 6px;
+  padding-left: 20px;
+  list-style: disc;
+}
+
+.policySection a {
+  color: #e8c98d;
+  text-decoration: underline;
+}
+
+.placeholderNote {
+  padding: 14px 18px;
+  border-radius: 16px;
+  border: 1px dashed rgba(195, 154, 92, 0.4);
+  background: rgba(195, 154, 92, 0.08);
+  font-size: 0.85rem;
+  color: rgba(245, 239, 230, 0.7);
+}

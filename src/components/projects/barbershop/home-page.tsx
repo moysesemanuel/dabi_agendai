@@ -158,6 +158,7 @@ export function Header({
   const [authPhone, setAuthPhone] = useState("");
   const [authEmail, setAuthEmail] = useState("");
   const [authPassword, setAuthPassword] = useState("");
+  const [privacyConsent, setPrivacyConsent] = useState(false);
   const [authError, setAuthError] = useState("");
   const [isSubmittingAuth, setIsSubmittingAuth] = useState(false);
   const [cartCount, setCartCount] = useState(0);
@@ -233,6 +234,13 @@ export function Header({
       return;
     }
 
+    if (authMode === "register" && !privacyConsent) {
+      const message = "Confirme que leu a Política de Privacidade para criar a conta.";
+      setAuthError(message);
+      showToast({ variant: "warning", message });
+      return;
+    }
+
     setIsSubmittingAuth(true);
 
     try {
@@ -261,6 +269,7 @@ export function Header({
       writeCustomerSession(payload.customer);
       setIsAuthModalOpen(false);
       setAuthPassword("");
+      setPrivacyConsent(false);
       setIsProfileMenuOpen(false);
       showToast({
         variant: "success",
@@ -527,6 +536,23 @@ export function Header({
                 </label>
               ) : null}
               </div>
+
+              {authMode === "register" ? (
+                <label className={flowStyles.consentField}>
+                  <input
+                    type="checkbox"
+                    checked={privacyConsent}
+                    onChange={(event) => setPrivacyConsent(event.target.checked)}
+                  />
+                  <span>
+                    Li e concordo com a{" "}
+                    <a href="/privacidade" target="_blank" rel="noreferrer">
+                      Política de Privacidade
+                    </a>
+                    .
+                  </span>
+                </label>
+              ) : null}
 
               {authError ? (
                 <div className={`${flowStyles.feedback} ${flowStyles.feedbackError}`}>{authError}</div>
@@ -1182,6 +1208,9 @@ function ContactSection({ config }: { config: SiteConfig }) {
 export function FooterSection() {
   return (
     <footer className={styles.footer}>
+      <div className={styles.footerLegalLinks}>
+        <Link href="/privacidade">Política de Privacidade</Link>
+      </div>
       <DaBiTechSignature
         containerClassName={styles.footerInner}
         labelClassName={styles.footerLabel}

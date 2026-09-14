@@ -357,6 +357,46 @@ export function CustomerAppointmentsPage() {
     }
   }
 
+  async function handleDeleteAccount() {
+    if (isSubmittingChange) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      "Tem certeza que deseja excluir sua conta? Seus dados pessoais (nome, telefone e e-mail) serão removidos permanentemente. Essa ação não pode ser desfeita.",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setIsSubmittingChange(true);
+
+    try {
+      const response = await fetch("/api/customers/me", { method: "DELETE" });
+      const payload = (await response.json()) as { error?: string; message?: string };
+
+      if (!response.ok) {
+        throw new Error(payload.error ?? "Nao foi possivel excluir sua conta.");
+      }
+
+      writeCustomerSession(null);
+      setCustomerSession(null);
+      showToast({
+        variant: "success",
+        message: payload.message ?? "Sua conta foi excluída com sucesso.",
+      });
+    } catch (nextError) {
+      showToast({
+        variant: "error",
+        message:
+          nextError instanceof Error ? nextError.message : "Nao foi possivel excluir sua conta.",
+      });
+    } finally {
+      setIsSubmittingChange(false);
+    }
+  }
+
   async function handleRescheduleAppointment() {
     if (!editingAppointment || !selectedDate || !selectedTime || isSubmittingChange) {
       return;
@@ -558,6 +598,26 @@ export function CustomerAppointmentsPage() {
                 "Histórico",
                 "Consulte seus horários anteriores e o status de cada atendimento.",
               )}
+
+              <section className={styles.sectionCard}>
+                <div className={styles.sectionHeading}>
+                  <span className={styles.eyebrow}>Privacidade</span>
+                  <h2>Seus dados e sua conta</h2>
+                  <p>
+                    Veja como tratamos seus dados na nossa{" "}
+                    <Link href="/privacidade">Política de Privacidade</Link>. Você pode excluir sua
+                    conta e seus dados pessoais a qualquer momento.
+                  </p>
+                </div>
+                <button
+                  className={styles.dangerButton}
+                  disabled={isSubmittingChange}
+                  onClick={() => void handleDeleteAccount()}
+                  type="button"
+                >
+                  Excluir minha conta
+                </button>
+              </section>
             </>
           )}
 

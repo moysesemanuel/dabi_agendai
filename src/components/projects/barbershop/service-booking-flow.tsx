@@ -121,6 +121,7 @@ export function ServiceBookingFlow({ config }: { config: SiteConfig }) {
   const [authPhone, setAuthPhone] = useState("");
   const [authEmail, setAuthEmail] = useState("");
   const [authPassword, setAuthPassword] = useState("");
+  const [privacyConsent, setPrivacyConsent] = useState(false);
   const [preferSilent, setPreferSilent] = useState(false);
   const [notes, setNotes] = useState("");
   const bookableDates = useMemo(() => getBookableDates(), []);
@@ -261,6 +262,13 @@ export function ServiceBookingFlow({ config }: { config: SiteConfig }) {
       return;
     }
 
+    if (authMode === "register" && !privacyConsent) {
+      const message = "Confirme que leu a Política de Privacidade para criar a conta.";
+      setAuthError(message);
+      showToast({ variant: "warning", message });
+      return;
+    }
+
     setIsSubmittingAuth(true);
 
     try {
@@ -290,6 +298,7 @@ export function ServiceBookingFlow({ config }: { config: SiteConfig }) {
       setCustomerSession(payload.customer);
       setIsAuthModalOpen(false);
       setAuthPassword("");
+      setPrivacyConsent(false);
       showToast({
         variant: "success",
         message: authMode === "login" ? "Login realizado com sucesso." : "Conta criada com sucesso.",
@@ -549,6 +558,23 @@ export function ServiceBookingFlow({ config }: { config: SiteConfig }) {
                 </label>
               ) : null}
               </div>
+
+              {authMode === "register" ? (
+                <label className={styles.consentField}>
+                  <input
+                    type="checkbox"
+                    checked={privacyConsent}
+                    onChange={(event) => setPrivacyConsent(event.target.checked)}
+                  />
+                  <span>
+                    Li e concordo com a{" "}
+                    <a href="/privacidade" target="_blank" rel="noreferrer">
+                      Política de Privacidade
+                    </a>
+                    .
+                  </span>
+                </label>
+              ) : null}
 
               {authError ? (
                 <div className={`${styles.feedback} ${styles.feedbackError}`}>{authError}</div>
