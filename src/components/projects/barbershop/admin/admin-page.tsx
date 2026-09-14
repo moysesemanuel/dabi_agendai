@@ -1990,7 +1990,6 @@ export function AdminPage({ section = "overview" }: { section?: AdminSectionView
               <p className={styles.sectionEyebrow}>{currentPage.eyebrow}</p>
               <h1>{currentPage.title}</h1>
               <p>{currentPage.description}</p>
-              <p className={styles.saveStatusMessage}>{statusMessage}</p>
             </div>
             <div className={styles.adminHeaderActions}>
               <AdminButton variant="secondary" type="button" onClick={openPublicSite}>
@@ -2006,11 +2005,6 @@ export function AdminPage({ section = "overview" }: { section?: AdminSectionView
               >
                 {notificationsEnabled ? "Alertas ativos" : "Ativar alertas"}
               </AdminButton>
-              {showSaveAction ? (
-                <AdminButton variant="primary" type="button" onClick={() => void saveChanges()}>
-                  {savingSync ? "Salvando..." : "Salvar alterações"}
-                </AdminButton>
-              ) : null}
             </div>
           </section>
 
@@ -3217,6 +3211,15 @@ export function AdminPage({ section = "overview" }: { section?: AdminSectionView
               </>
             ) : null}
           </div>
+
+          {showSaveAction ? (
+            <div className={styles.adminSaveBar}>
+              <p className={styles.saveStatusMessage}>{statusMessage}</p>
+              <AdminButton variant="primary" type="button" onClick={() => void saveChanges()}>
+                {savingSync ? "Salvando..." : "Salvar alterações"}
+              </AdminButton>
+            </div>
+          ) : null}
 
           <footer className={styles.adminFooter}>
             <DaBiTechSignature
