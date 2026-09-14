@@ -39,13 +39,15 @@ jobs:
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/dabi_agendai_ci
       DIRECT_URL: postgresql://postgres:postgres@localhost:5432/dabi_agendai_ci
-      SESSION_SECRET: ci-only-session-secret-never-use-in-production
       ADMIN_NAME: Administrador
       ADMIN_EMAIL: admin@ci.local
       ADMIN_PHONE: "11999990000"
-      ADMIN_PASSWORD: senha-de-teste-do-ci-12345
     steps:
       - uses: actions/checkout@v4
+      - name: Gerar credenciais efemeras deste job (nao sao segredos reais)
+        run: |
+          echo "SESSION_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+          echo "ADMIN_PASSWORD=$(openssl rand -hex 16)" >> "$GITHUB_ENV"
       - uses: actions/setup-node@v4
         with:
           node-version: 20
