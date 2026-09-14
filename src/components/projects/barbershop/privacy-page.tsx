@@ -23,18 +23,14 @@ export function PrivacyPage() {
           </div>
 
           <div className={styles.contentCard}>
-            <p className={styles.placeholderNote}>
-              Documento em elaboração final: razão social e CNPJ do responsável pelo tratamento de
-              dados serão publicados aqui assim que o cadastro jurídico da empresa for concluído.
-              As práticas de tratamento de dados descritas abaixo já estão em vigor.
-            </p>
-
             <div className={styles.policySection}>
               <h2>1. Quem trata os seus dados</h2>
               <p>
-                A {config.businessName} é a responsável pelo tratamento dos dados pessoais
-                coletados através deste site, nos termos da Lei Geral de Proteção de Dados (Lei nº
-                13.709/2018 — LGPD).
+                A {config.businessName} é a controladora dos dados pessoais coletados através
+                deste site — é ela quem decide agendar, guardar e usar essas informações, nos
+                termos da Lei Geral de Proteção de Dados (Lei nº 13.709/2018 — LGPD). O
+                processamento técnico desses dados (armazenamento, infraestrutura do site) é
+                realizado pela DaBi Tech, operadora dos dados, descrita na seção 7.
               </p>
             </div>
 
@@ -91,8 +87,20 @@ export function PrivacyPage() {
             <div className={styles.policySection}>
               <h2>6. Contato</h2>
               <p>
-                Duvidas sobre esta política ou sobre o tratamento dos seus dados podem ser
-                enviadas pelo WhatsApp {config.whatsapp}.
+                Duvidas sobre esta política, sobre o seu agendamento ou sobre o tratamento dos seus
+                dados podem ser enviadas pelo WhatsApp {config.whatsapp}. Questões técnicas sobre o
+                processamento dos dados também podem ser encaminhadas à DaBi Tech (contato na seção
+                7).
+              </p>
+            </div>
+
+            <div className={styles.policySection}>
+              <h2>7. Operadora dos dados</h2>
+              <p>
+                A DaBi Tech (57.936.721 MOYSES EMANUEL COSTA SILVA, CNPJ 57.936.721/0001-25,
+                Empresário Individual) é a responsável técnica pelo processamento e armazenamento
+                dos dados coletados por este site, em nome do estabelecimento. Sede em Curitiba/PR.
+                Contato: (41) 98887-5659.
               </p>
             </div>
           </div>
