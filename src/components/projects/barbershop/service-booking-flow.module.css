@@ -241,6 +241,23 @@
   resize: vertical;
 }
 
+.consentField {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 14px;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.consentField input {
+  margin-top: 3px;
+}
+
+.consentField a {
+  text-decoration: underline;
+}
+
 .cardScroller {
   display: grid;
   gap: 12px;

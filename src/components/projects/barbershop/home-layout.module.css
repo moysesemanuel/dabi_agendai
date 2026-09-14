@@ -435,6 +435,18 @@
   padding-top: 28px;
 }
 
+.footerLegalLinks {
+  display: flex;
+  gap: 16px;
+  padding-top: 16px;
+  font-size: 0.84rem;
+}
+
+.footerLegalLinks a {
+  color: rgba(31, 23, 18, 0.6);
+  text-decoration: underline;
+}
+
 .footerInner {
   display: flex;
   align-items: center;
