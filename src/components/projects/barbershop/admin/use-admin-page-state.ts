@@ -1694,3 +1694,5 @@ export function useAdminPageState(section: AdminSectionView) {
     showSaveAction,
   };
 }
+
+export type AdminPageState = ReturnType<typeof useAdminPageState>;
