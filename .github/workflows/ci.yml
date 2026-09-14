@@ -10,8 +10,8 @@ jobs:
   checks:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: yarn
@@ -43,12 +43,12 @@ jobs:
       ADMIN_EMAIL: admin@ci.local
       ADMIN_PHONE: "11999990000"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Gerar credenciais efemeras deste job (nao sao segredos reais)
         run: |
           echo "SESSION_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
           echo "ADMIN_PASSWORD=$(openssl rand -hex 16)" >> "$GITHUB_ENV"
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: yarn
@@ -57,7 +57,7 @@ jobs:
       - run: yarn build
       - run: npx playwright install --with-deps chromium
       - run: yarn test:e2e
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: playwright-report
