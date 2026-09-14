@@ -44,6 +44,12 @@ export type ClosedDateItem = {
   reason: string;
 };
 
+export type BarberTimeOffItem = {
+  barberName: string;
+  date: string;
+  reason: string;
+};
+
 export type LoyaltyRewardItem = {
   points: number;
   title: string;
@@ -78,6 +84,7 @@ export type SiteConfig = {
   loyaltyRewards: LoyaltyRewardItem[];
   availableTimes: string[];
   closedDates: ClosedDateItem[];
+  barberTimeOff: BarberTimeOffItem[];
   ignoredHolidayDates: string[];
 };
 
@@ -140,6 +147,7 @@ export const defaultSiteConfig: SiteConfig = {
     { date: "2026-03-30", reason: "Treinamento interno" },
     { date: "2026-04-21", reason: "Feriado" },
   ],
+  barberTimeOff: [],
   ignoredHolidayDates: [],
 };
 
@@ -188,6 +196,7 @@ export function mergeSiteConfig(parsed: Partial<SiteConfig> | null | undefined):
     loyaltyRewards: parsed.loyaltyRewards ?? defaultSiteConfig.loyaltyRewards,
     availableTimes: parsed.availableTimes ?? defaultSiteConfig.availableTimes,
     closedDates: parsed.closedDates ?? defaultSiteConfig.closedDates,
+    barberTimeOff: parsed.barberTimeOff ?? defaultSiteConfig.barberTimeOff,
     ignoredHolidayDates: parsed.ignoredHolidayDates ?? defaultSiteConfig.ignoredHolidayDates,
   };
 
