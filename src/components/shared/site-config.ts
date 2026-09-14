@@ -8,8 +8,7 @@ import {
   testimonials,
 } from "@/components/projects/barbershop/data";
 
-export const SITE_CONFIG_STORAGE_KEY = "prime-cut-site-config";
-export const SITE_CONFIG_UPDATED_EVENT = "prime-cut-site-config-updated";
+export const SITE_CONFIG_UPDATED_EVENT = "dabi-agendai-site-config-updated";
 export const LEGACY_BUSINESS_TAG_PREFIX = "Barbearia premium em ";
 
 export type PlanItem = {
@@ -40,7 +39,20 @@ export type BarberItem = {
   role: string;
 };
 
+export type BusinessHoursItem = {
+  weekday: number;
+  closed: boolean;
+  start: string;
+  end: string;
+};
+
 export type ClosedDateItem = {
+  date: string;
+  reason: string;
+};
+
+export type BarberTimeOffItem = {
+  barberName: string;
   date: string;
   reason: string;
 };
@@ -78,9 +90,21 @@ export type SiteConfig = {
   loyaltyTiers: LoyaltyTierItem[];
   loyaltyRewards: LoyaltyRewardItem[];
   availableTimes: string[];
+  businessHours: BusinessHoursItem[];
   closedDates: ClosedDateItem[];
+  barberTimeOff: BarberTimeOffItem[];
   ignoredHolidayDates: string[];
 };
+
+export const weekdayLabels = [
+  "Domingo",
+  "Segunda",
+  "Terça",
+  "Quarta",
+  "Quinta",
+  "Sexta",
+  "Sábado",
+];
 
 export const defaultSiteConfig: SiteConfig = {
   businessName: "Prime Cut Studio",
@@ -137,10 +161,20 @@ export const defaultSiteConfig: SiteConfig = {
     },
   ],
   availableTimes: [...availableTimes],
+  businessHours: [
+    { weekday: 0, closed: true, start: "09:00", end: "18:00" },
+    { weekday: 1, closed: false, start: "09:00", end: "20:00" },
+    { weekday: 2, closed: false, start: "09:00", end: "20:00" },
+    { weekday: 3, closed: false, start: "09:00", end: "20:00" },
+    { weekday: 4, closed: false, start: "09:00", end: "20:00" },
+    { weekday: 5, closed: false, start: "09:00", end: "20:00" },
+    { weekday: 6, closed: false, start: "08:00", end: "18:00" },
+  ],
   closedDates: [
     { date: "2026-03-30", reason: "Treinamento interno" },
     { date: "2026-04-21", reason: "Feriado" },
   ],
+  barberTimeOff: [],
   ignoredHolidayDates: [],
 };
 
@@ -171,55 +205,47 @@ function normalizeServiceImages(items: ServiceItem[]) {
   }));
 }
 
-export function readSiteConfig(): SiteConfig {
-  if (typeof window === "undefined") {
+export function mergeSiteConfig(parsed: Partial<SiteConfig> | null | undefined): SiteConfig {
+  if (!parsed) {
     return defaultSiteConfig;
   }
 
+  const mergedConfig = {
+    ...defaultSiteConfig,
+    ...parsed,
+    plans: parsed.plans ?? defaultSiteConfig.plans,
+    services: normalizeServiceImages(parsed.services ?? defaultSiteConfig.services),
+    showcaseImages: normalizeShowcaseImages(parsed.showcaseImages ?? defaultSiteConfig.showcaseImages),
+    barbers: parsed.barbers ?? defaultSiteConfig.barbers,
+    stats: parsed.stats ?? defaultSiteConfig.stats,
+    testimonials: parsed.testimonials ?? defaultSiteConfig.testimonials,
+    loyaltyTiers: parsed.loyaltyTiers ?? defaultSiteConfig.loyaltyTiers,
+    loyaltyRewards: parsed.loyaltyRewards ?? defaultSiteConfig.loyaltyRewards,
+    availableTimes: parsed.availableTimes ?? defaultSiteConfig.availableTimes,
+    businessHours: parsed.businessHours ?? defaultSiteConfig.businessHours,
+    closedDates: parsed.closedDates ?? defaultSiteConfig.closedDates,
+    barberTimeOff: parsed.barberTimeOff ?? defaultSiteConfig.barberTimeOff,
+    ignoredHolidayDates: parsed.ignoredHolidayDates ?? defaultSiteConfig.ignoredHolidayDates,
+  };
+
+  if (
+    mergedConfig.businessTag.startsWith(LEGACY_BUSINESS_TAG_PREFIX) &&
+    mergedConfig.city
+  ) {
+    mergedConfig.businessTag = `${LEGACY_BUSINESS_TAG_PREFIX}${mergedConfig.city}`;
+  }
+
+  return mergedConfig;
+}
+
+export async function fetchSiteConfig(): Promise<SiteConfig> {
   try {
-    const raw = window.localStorage.getItem(SITE_CONFIG_STORAGE_KEY);
-    if (!raw) {
-      return defaultSiteConfig;
-    }
-
-    const parsed = JSON.parse(raw) as Partial<SiteConfig>;
-
-    const mergedConfig = {
-      ...defaultSiteConfig,
-      ...parsed,
-      plans: parsed.plans ?? defaultSiteConfig.plans,
-      services: normalizeServiceImages(parsed.services ?? defaultSiteConfig.services),
-      showcaseImages: normalizeShowcaseImages(parsed.showcaseImages ?? defaultSiteConfig.showcaseImages),
-      barbers: parsed.barbers ?? defaultSiteConfig.barbers,
-      stats: parsed.stats ?? defaultSiteConfig.stats,
-      testimonials: parsed.testimonials ?? defaultSiteConfig.testimonials,
-      loyaltyTiers: parsed.loyaltyTiers ?? defaultSiteConfig.loyaltyTiers,
-      loyaltyRewards: parsed.loyaltyRewards ?? defaultSiteConfig.loyaltyRewards,
-      availableTimes: parsed.availableTimes ?? defaultSiteConfig.availableTimes,
-      closedDates: parsed.closedDates ?? defaultSiteConfig.closedDates,
-      ignoredHolidayDates: parsed.ignoredHolidayDates ?? defaultSiteConfig.ignoredHolidayDates,
-    };
-
-    if (
-      mergedConfig.businessTag.startsWith(LEGACY_BUSINESS_TAG_PREFIX) &&
-      mergedConfig.city
-    ) {
-      mergedConfig.businessTag = `${LEGACY_BUSINESS_TAG_PREFIX}${mergedConfig.city}`;
-    }
-
-    return mergedConfig;
+    const response = await fetch("/api/site-config", { cache: "no-store" });
+    const payload = (await response.json()) as { config?: Partial<SiteConfig> };
+    return mergeSiteConfig(payload.config);
   } catch {
     return defaultSiteConfig;
   }
-}
-
-export function writeSiteConfig(config: SiteConfig) {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  window.localStorage.setItem(SITE_CONFIG_STORAGE_KEY, JSON.stringify(config));
-  window.dispatchEvent(new CustomEvent(SITE_CONFIG_UPDATED_EVENT));
 }
 
 export function getDisplayStats(config: SiteConfig, averageRatingValue?: string) {
@@ -243,25 +269,3 @@ export function getBusinessLocationLabel(config: SiteConfig) {
   return locationParts.length > 0 ? locationParts.join(" - ") : "Localização da barbearia";
 }
 
-let cachedClientRawConfig: string | null = null;
-let cachedClientParsedConfig: SiteConfig = defaultSiteConfig;
-
-export function getClientSiteConfigSnapshot() {
-  if (typeof window === "undefined") {
-    return defaultSiteConfig;
-  }
-
-  const raw = window.localStorage.getItem(SITE_CONFIG_STORAGE_KEY);
-
-  if (raw === cachedClientRawConfig) {
-    return cachedClientParsedConfig;
-  }
-
-  cachedClientRawConfig = raw;
-  cachedClientParsedConfig = readSiteConfig();
-  return cachedClientParsedConfig;
-}
-
-export function getServerSiteConfigSnapshot() {
-  return defaultSiteConfig;
-}

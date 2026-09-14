@@ -128,6 +128,17 @@ export function ServiceBookingFlow({ config }: { config: SiteConfig }) {
   const selectedBarberName = selection?.barberName ?? "";
   const selectedDate = selection?.date ?? "";
 
+  const availableBarbersForDate = useMemo(
+    () =>
+      config.barbers.filter(
+        (barber) =>
+          !config.barberTimeOff.some(
+            (timeOff) => timeOff.barberName === barber.name && timeOff.date === selectedDate,
+          ),
+      ),
+    [config.barbers, config.barberTimeOff, selectedDate],
+  );
+
   useEffect(() => {
     setCustomerSession(readCustomerSession());
   }, []);
@@ -591,9 +602,27 @@ export function ServiceBookingFlow({ config }: { config: SiteConfig }) {
                       className={`${styles.dateCard} ${selection.date === date.value ? styles.dateCardActive : ""}`}
                       key={date.value}
                       onClick={() =>
-                        setSelection((current) =>
-                          current ? { ...current, date: date.value, time: "" } : current,
-                        )
+                        setSelection((current) => {
+                          if (!current) {
+                            return current;
+                          }
+
+                          const stillAvailable = config.barbers.some(
+                            (barber) =>
+                              barber.name === current.barberName &&
+                              !config.barberTimeOff.some(
+                                (timeOff) =>
+                                  timeOff.barberName === barber.name && timeOff.date === date.value,
+                              ),
+                          );
+
+                          return {
+                            ...current,
+                            date: date.value,
+                            time: "",
+                            barberName: stillAvailable ? current.barberName : "",
+                          };
+                        })
                       }
                       type="button"
                     >
@@ -606,8 +635,13 @@ export function ServiceBookingFlow({ config }: { config: SiteConfig }) {
 
               <div className={styles.selectionSection}>
                 <h4>Profissionais</h4>
+                {availableBarbersForDate.length === 0 ? (
+                  <div className={styles.helperCard}>
+                    Nenhum profissional disponível nesta data. Escolha outra data.
+                  </div>
+                ) : (
                 <div className={styles.barberGrid}>
-                  {config.barbers.map((barber) => (
+                  {availableBarbersForDate.map((barber) => (
                     <button
                       className={`${styles.barberCard} ${selection.barberName === barber.name ? styles.barberCardActive : ""}`}
                       key={barber.name}
@@ -625,6 +659,7 @@ export function ServiceBookingFlow({ config }: { config: SiteConfig }) {
                     </button>
                   ))}
                 </div>
+                )}
               </div>
 
               <div className={styles.selectionSection}>

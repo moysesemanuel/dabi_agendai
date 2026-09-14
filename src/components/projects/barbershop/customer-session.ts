@@ -1,7 +1,7 @@
 "use client";
 
-export const CUSTOMER_SESSION_STORAGE_KEY = "prime-cut-customer-session";
-export const CUSTOMER_SESSION_EVENT = "prime-cut-customer-session-updated";
+export const CUSTOMER_SESSION_STORAGE_KEY = "dabi-agendai-customer-session";
+export const CUSTOMER_SESSION_EVENT = "dabi-agendai-customer-session-updated";
 
 export type CustomerSession = {
   id: string;

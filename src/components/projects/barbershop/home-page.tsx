@@ -4,11 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import bookingStyles from "./home-booking.module.css";
-import {
-  BOOKING_CART_EVENT,
-  PRODUCT_CART_EVENT,
-  getTotalCartCount,
-} from "./cart-storage";
+import { BOOKING_CART_EVENT, getTotalCartCount } from "./cart-storage";
 import {
   CUSTOMER_SESSION_EVENT,
   type CustomerSession,
@@ -187,12 +183,10 @@ export function Header({
 
     syncCartCount();
     window.addEventListener(BOOKING_CART_EVENT, syncCartCount);
-    window.addEventListener(PRODUCT_CART_EVENT, syncCartCount);
     window.addEventListener("storage", syncCartCount);
 
     return () => {
       window.removeEventListener(BOOKING_CART_EVENT, syncCartCount);
-      window.removeEventListener(PRODUCT_CART_EVENT, syncCartCount);
       window.removeEventListener("storage", syncCartCount);
     };
   }, []);
@@ -404,6 +398,7 @@ export function Header({
                         className={styles.profileLogoutButton}
                         onClick={() => {
                           setIsProfileMenuOpen(false);
+                          void fetch("/api/customers/session", { method: "DELETE" });
                           onProfileLogout();
                         }}
                         type="button"
@@ -750,12 +745,23 @@ export function BookingSection({
     );
   }, [config.services]);
 
+  const availableBarbers = useMemo(
+    () =>
+      config.barbers.filter(
+        (barber) =>
+          !config.barberTimeOff.some(
+            (timeOff) => timeOff.barberName === barber.name && timeOff.date === selectedDate,
+          ),
+      ),
+    [config.barbers, config.barberTimeOff, selectedDate],
+  );
+
   useEffect(() => {
-    const fallbackBarber = config.barbers[0]?.name ?? "";
+    const fallbackBarber = availableBarbers[0]?.name ?? "";
     setSelectedBarber((current) =>
-      config.barbers.some((barber) => barber.name === current) ? current : fallbackBarber,
+      availableBarbers.some((barber) => barber.name === current) ? current : fallbackBarber,
     );
-  }, [config.barbers]);
+  }, [availableBarbers]);
 
   const selectedServiceData = useMemo(
     () =>
@@ -771,6 +777,14 @@ export function BookingSection({
     let active = true;
 
     async function loadAvailability() {
+      if (!selectedBarber) {
+        setAvailableTimes([]);
+        setSelectedTime("");
+        setAvailabilityMessage("Nenhum profissional disponível nesta data.");
+        setLoadingAvailability(false);
+        return;
+      }
+
       setLoadingAvailability(true);
       setAvailabilityMessage("");
 
@@ -921,11 +935,15 @@ export function BookingSection({
           <label className={styles.field}>
             <span>Profissional</span>
             <select value={selectedBarber} onChange={(event) => setSelectedBarber(event.target.value)}>
-              {config.barbers.map((barber) => (
-                <option key={barber.name} value={barber.name}>
-                  {barber.name}
-                </option>
-              ))}
+              {availableBarbers.length > 0 ? (
+                availableBarbers.map((barber) => (
+                  <option key={barber.name} value={barber.name}>
+                    {barber.name}
+                  </option>
+                ))
+              ) : (
+                <option value="">Nenhum profissional disponível nesta data</option>
+              )}
             </select>
           </label>
 

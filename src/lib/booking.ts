@@ -1,6 +1,10 @@
-import { AppointmentStatus, type Barber, type Service } from "@prisma/client";
+import { AppointmentStatus, Prisma, type Barber, type Service } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { hashPassword } from "@/lib/password";
+import { UserFacingError } from "@/lib/errors";
+
+type PrismaTransactionClient = Prisma.TransactionClient;
+type DbClient = typeof prisma | PrismaTransactionClient;
 
 const SLOT_INTERVAL_MINUTES = 30;
 const SEARCH_WINDOW_DAYS = 21;
@@ -82,10 +86,14 @@ function addDays(date: Date, days: number) {
 }
 
 export function getDateKey(date: Date) {
-  const year = date.getFullYear();
-  const month = `${date.getMonth() + 1}`.padStart(2, "0");
-  const day = `${date.getDate()}`.padStart(2, "0");
-  return `${year}-${month}-${day}`;
+  // Formata sempre no fuso de America/Sao_Paulo, independente do fuso do servidor
+  // (em producao normalmente roda em UTC, o que deslocaria o "dia" perto da meia-noite).
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
 }
 
 export function getTodayDateKey() {
@@ -103,13 +111,45 @@ function getTimeFromMinutes(totalMinutes: number) {
   return `${hours}:${minutes}`;
 }
 
-function getBusinessHours(dateKey: string) {
-  const date = new Date(`${dateKey}T12:00:00`);
-  return BUSINESS_HOURS_BY_WEEKDAY[date.getDay()] ?? null;
+// Brasil nao observa horario de verao desde 2019: America/Sao_Paulo e sempre UTC-3.
+export const SAO_PAULO_OFFSET = "-03:00";
+
+type BusinessHoursMap = Record<number, BusinessHours | null>;
+type BusinessHoursConfigItem = {
+  weekday: number;
+  closed: boolean;
+  start: string;
+  end: string;
+};
+
+async function getConfiguredBusinessHoursMap(): Promise<BusinessHoursMap> {
+  const settings = await prisma.siteSettings.findUnique({ where: { id: "singleton" } });
+  const configured = (settings?.data as { businessHours?: BusinessHoursConfigItem[] } | null)
+    ?.businessHours;
+
+  if (!configured || configured.length === 0) {
+    return BUSINESS_HOURS_BY_WEEKDAY;
+  }
+
+  const map: BusinessHoursMap = {};
+
+  for (const item of configured) {
+    map[item.weekday] = item.closed
+      ? null
+      : { startMinutes: getMinutesFromTime(item.start), endMinutes: getMinutesFromTime(item.end) };
+  }
+
+  return map;
+}
+
+async function getBusinessHours(dateKey: string) {
+  const date = new Date(`${dateKey}T12:00:00${SAO_PAULO_OFFSET}`);
+  const hoursMap = await getConfiguredBusinessHoursMap();
+  return hoursMap[date.getDay()] ?? null;
 }
 
 function combineDateAndTime(dateKey: string, time: string) {
-  return new Date(`${dateKey}T${time}:00`);
+  return new Date(`${dateKey}T${time}:00${SAO_PAULO_OFFSET}`);
 }
 
 function overlaps(
@@ -165,91 +205,37 @@ async function seedInitialData() {
     });
   }
 
-  const existingAppointments = await prisma.appointment.count();
+  await ensureAdminAccount();
+}
 
-  if (existingAppointments === 0) {
-    const seededBarbers = await prisma.barber.findMany({
-      where: { active: true },
-      orderBy: { createdAt: "asc" },
-    });
-    const seededServices = await prisma.service.findMany({
-      where: { active: true },
-      orderBy: { createdAt: "asc" },
-    });
+async function ensureAdminAccount() {
+  const adminEmail = process.env.ADMIN_EMAIL?.trim();
+  const adminPassword = process.env.ADMIN_PASSWORD?.trim();
 
-    const primaryService = seededServices[0];
-
-    if (seededBarbers.length > 0 && primaryService) {
-      const today = getTodayDateKey();
-      const tomorrow = getDateKey(addDays(new Date(), 1));
-      const customers = await Promise.all([
-        upsertCustomerProfile({
-          name: "Cliente Demo 1",
-          phone: "11990000001",
-          email: "cliente1@demo.com",
-        }),
-        upsertCustomerProfile({
-          name: "Cliente Demo 2",
-          phone: "11990000002",
-          email: "cliente2@demo.com",
-        }),
-        upsertCustomerProfile({
-          name: "Cliente Demo 3",
-          phone: "11990000003",
-          email: "cliente3@demo.com",
-        }),
-      ]);
-
-      const appointments = [
-        {
-          customerId: customers[0].id,
-          customerName: "Cliente Demo 1",
-          customerPhone: "11990000001",
-          customerEmail: "cliente1@demo.com",
-          barberId: seededBarbers[0].id,
-          serviceId: primaryService.id,
-          startsAt: combineDateAndTime(today, "09:00"),
-          endsAt: combineDateAndTime(today, "09:40"),
-        },
-        {
-          customerId: customers[1].id,
-          customerName: "Cliente Demo 2",
-          customerPhone: "11990000002",
-          customerEmail: "cliente2@demo.com",
-          barberId: seededBarbers[0].id,
-          serviceId: primaryService.id,
-          startsAt: combineDateAndTime(today, "10:30"),
-          endsAt: combineDateAndTime(today, "11:10"),
-        },
-        {
-          customerId: customers[2].id,
-          customerName: "Cliente Demo 3",
-          customerPhone: "11990000003",
-          customerEmail: "cliente3@demo.com",
-          barberId: seededBarbers[1]?.id ?? seededBarbers[0].id,
-          serviceId: primaryService.id,
-          startsAt: combineDateAndTime(tomorrow, "13:00"),
-          endsAt: combineDateAndTime(tomorrow, "13:40"),
-        },
-      ];
-
-      await prisma.appointment.createMany({ data: appointments });
-    }
+  if (!adminEmail || !adminPassword) {
+    return;
   }
 
+  if (adminPassword.length < 8) {
+    throw new Error("ADMIN_PASSWORD deve ter pelo menos 8 caracteres.");
+  }
+
+  const adminPhone = process.env.ADMIN_PHONE?.replace(/\D/g, "") || "11999990000";
+  const adminName = process.env.ADMIN_NAME?.trim() || "Administrador";
+
   await prisma.customer.upsert({
-    where: { phone: "11999990000" },
+    where: { phone: adminPhone },
     update: {
-      name: "Administrador Prime Cut",
-      email: "admin@primecutstudio.com",
-      passwordHash: hashPassword("admin123"),
+      name: adminName,
+      email: adminEmail,
+      passwordHash: hashPassword(adminPassword),
       role: "ADMIN",
     },
     create: {
-      name: "Administrador Prime Cut",
-      phone: "11999990000",
-      email: "admin@primecutstudio.com",
-      passwordHash: hashPassword("admin123"),
+      name: adminName,
+      phone: adminPhone,
+      email: adminEmail,
+      passwordHash: hashPassword(adminPassword),
       role: "ADMIN",
     },
   });
@@ -274,6 +260,14 @@ async function getClosedDateReason(dateKey: string) {
   });
 
   return closedDate?.reason ?? null;
+}
+
+async function getBarberTimeOffReason(barberId: string, dateKey: string) {
+  const timeOff = await prisma.barberTimeOff.findUnique({
+    where: { barberId_date: { barberId, date: dateKey } },
+  });
+
+  return timeOff?.reason ?? null;
 }
 
 export async function getServiceByName(name: string) {
@@ -309,19 +303,16 @@ export async function upsertCustomerProfile(params: {
   });
 }
 
-async function listBookableAppointments(barberId: string, dateKey: string) {
-  return listBookableAppointmentsWithOptions(barberId, dateKey);
-}
-
 async function listBookableAppointmentsWithOptions(
   barberId: string,
   dateKey: string,
   excludeAppointmentId?: string,
+  client: DbClient = prisma,
 ) {
-  const startOfDay = new Date(`${dateKey}T00:00:00`);
-  const endOfDay = new Date(`${dateKey}T23:59:59`);
+  const startOfDay = new Date(`${dateKey}T00:00:00${SAO_PAULO_OFFSET}`);
+  const endOfDay = new Date(`${dateKey}T23:59:59${SAO_PAULO_OFFSET}`);
 
-  return prisma.appointment.findMany({
+  return client.appointment.findMany({
     where: {
       id: excludeAppointmentId ? { not: excludeAppointmentId } : undefined,
       barberId,
@@ -344,7 +335,7 @@ export async function listAvailableSlots(params: {
   excludeAppointmentId?: string;
 }) {
   const { date, barber, service, excludeAppointmentId } = params;
-  const businessHours = getBusinessHours(date);
+  const businessHours = await getBusinessHours(date);
 
   if (!businessHours) {
     return { slots: [] as string[], closedReason: "Fechado neste dia." };
@@ -354,6 +345,12 @@ export async function listAvailableSlots(params: {
 
   if (closedReason) {
     return { slots: [] as string[], closedReason };
+  }
+
+  const barberTimeOffReason = await getBarberTimeOffReason(barber.id, date);
+
+  if (barberTimeOffReason) {
+    return { slots: [] as string[], closedReason: barberTimeOffReason };
   }
 
   const appointments = await listBookableAppointmentsWithOptions(
@@ -457,10 +454,10 @@ export async function createAppointment(params: {
     preferSilent,
     notes,
   } = params;
-  const businessHours = getBusinessHours(date);
+  const businessHours = await getBusinessHours(date);
 
   if (!businessHours) {
-    throw new Error("A barbearia nao atende nesta data.");
+    throw new UserFacingError("A barbearia nao atende nesta data.");
   }
 
   const startMinutes = getMinutesFromTime(time);
@@ -469,45 +466,64 @@ export async function createAppointment(params: {
     startMinutes < businessHours.startMinutes ||
     startMinutes + service.durationMinutes > businessHours.endMinutes
   ) {
-    throw new Error("Horario fora do expediente.");
+    throw new UserFacingError("Horario fora do expediente.");
   }
 
   const closedReason = await getClosedDateReason(date);
 
   if (closedReason) {
-    throw new Error(`Agenda bloqueada: ${closedReason}.`);
+    throw new UserFacingError(`Agenda bloqueada: ${closedReason}.`);
+  }
+
+  const barberTimeOffReason = await getBarberTimeOffReason(barber.id, date);
+
+  if (barberTimeOffReason) {
+    throw new UserFacingError(`Profissional de folga: ${barberTimeOffReason}.`);
   }
 
   const startsAt = combineDateAndTime(date, time);
   const endsAt = new Date(startsAt.getTime() + service.durationMinutes * 60_000);
 
   if (startsAt <= new Date()) {
-    throw new Error("Escolha um horario futuro.");
+    throw new UserFacingError("Escolha um horario futuro.");
   }
 
-  const appointments = await listBookableAppointments(barber.id, date);
-  const hasOverlap = appointments.some((appointment) =>
-    overlaps(startsAt, endsAt, appointment.startsAt, appointment.endsAt),
-  );
+  try {
+    return await prisma.$transaction(
+      async (tx) => {
+        const appointments = await listBookableAppointmentsWithOptions(barber.id, date, undefined, tx);
+        const hasOverlap = appointments.some((appointment) =>
+          overlaps(startsAt, endsAt, appointment.startsAt, appointment.endsAt),
+        );
 
-  if (hasOverlap) {
-    throw new Error("Esse horario acabou de ser reservado. Escolha outro.");
+        if (hasOverlap) {
+          throw new UserFacingError("Esse horario acabou de ser reservado. Escolha outro.");
+        }
+
+        return tx.appointment.create({
+          data: {
+            customerId,
+            barberId: barber.id,
+            serviceId: service.id,
+            customerName,
+            customerPhone,
+            customerEmail: customerEmail?.trim() ? customerEmail.trim() : null,
+            preferSilent: Boolean(preferSilent),
+            notes: notes?.trim() ? notes.trim() : null,
+            startsAt,
+            endsAt,
+          },
+        });
+      },
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+    );
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034") {
+      throw new UserFacingError("Esse horario acabou de ser reservado. Escolha outro.");
+    }
+
+    throw error;
   }
-
-  return prisma.appointment.create({
-    data: {
-      customerId,
-      barberId: barber.id,
-      serviceId: service.id,
-      customerName,
-      customerPhone,
-      customerEmail: customerEmail?.trim() ? customerEmail.trim() : null,
-      preferSilent: Boolean(preferSilent),
-      notes: notes?.trim() ? notes.trim() : null,
-      startsAt,
-      endsAt,
-    },
-  });
 }
 
 export async function rescheduleAppointment(params: {
@@ -526,13 +542,13 @@ export async function rescheduleAppointment(params: {
   });
 
   if (!appointment) {
-    throw new Error("Agendamento nao encontrado.");
+    throw new UserFacingError("Agendamento nao encontrado.");
   }
 
-  const businessHours = getBusinessHours(date);
+  const businessHours = await getBusinessHours(date);
 
   if (!businessHours) {
-    throw new Error("A barbearia nao atende nesta data.");
+    throw new UserFacingError("A barbearia nao atende nesta data.");
   }
 
   const startMinutes = getMinutesFromTime(time);
@@ -541,13 +557,19 @@ export async function rescheduleAppointment(params: {
     startMinutes < businessHours.startMinutes ||
     startMinutes + appointment.service.durationMinutes > businessHours.endMinutes
   ) {
-    throw new Error("Horario fora do expediente.");
+    throw new UserFacingError("Horario fora do expediente.");
   }
 
   const closedReason = await getClosedDateReason(date);
 
   if (closedReason) {
-    throw new Error(`Agenda bloqueada: ${closedReason}.`);
+    throw new UserFacingError(`Agenda bloqueada: ${closedReason}.`);
+  }
+
+  const barberTimeOffReason = await getBarberTimeOffReason(appointment.barberId, date);
+
+  if (barberTimeOffReason) {
+    throw new UserFacingError(`Profissional de folga: ${barberTimeOffReason}.`);
   }
 
   const startsAt = combineDateAndTime(date, time);
@@ -556,32 +578,46 @@ export async function rescheduleAppointment(params: {
   );
 
   if (startsAt <= new Date()) {
-    throw new Error("Escolha um horario futuro.");
+    throw new UserFacingError("Escolha um horario futuro.");
   }
 
-  const appointments = await listBookableAppointmentsWithOptions(
-    appointment.barberId,
-    date,
-    appointmentId,
-  );
-  const hasOverlap = appointments.some((item) =>
-    overlaps(startsAt, endsAt, item.startsAt, item.endsAt),
-  );
+  try {
+    return await prisma.$transaction(
+      async (tx) => {
+        const appointments = await listBookableAppointmentsWithOptions(
+          appointment.barberId,
+          date,
+          appointmentId,
+          tx,
+        );
+        const hasOverlap = appointments.some((item) =>
+          overlaps(startsAt, endsAt, item.startsAt, item.endsAt),
+        );
 
-  if (hasOverlap) {
-    throw new Error("Esse horario acabou de ser reservado. Escolha outro.");
+        if (hasOverlap) {
+          throw new UserFacingError("Esse horario acabou de ser reservado. Escolha outro.");
+        }
+
+        return tx.appointment.update({
+          where: { id: appointmentId },
+          data: {
+            startsAt,
+            endsAt,
+            status: AppointmentStatus.SCHEDULED,
+          },
+          include: {
+            barber: true,
+            service: true,
+          },
+        });
+      },
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+    );
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034") {
+      throw new UserFacingError("Esse horario acabou de ser reservado. Escolha outro.");
+    }
+
+    throw error;
   }
-
-  return prisma.appointment.update({
-    where: { id: appointmentId },
-    data: {
-      startsAt,
-      endsAt,
-      status: AppointmentStatus.SCHEDULED,
-    },
-    include: {
-      barber: true,
-      service: true,
-    },
-  });
 }

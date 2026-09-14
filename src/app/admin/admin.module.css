@@ -143,6 +143,21 @@
   gap: 10px;
 }
 
+.adminSaveBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(245, 239, 230, 0.14);
+}
+
+.adminSaveBar .saveStatusMessage {
+  margin-top: 0;
+}
+
 .buttonPrimary,
 .buttonSecondary,
 .buttonWarning,
@@ -799,7 +814,8 @@
 .barberAppointmentCustomer {
   color: #f5efe6;
   min-width: 0;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 .barberAppointmentMeta {
@@ -814,7 +830,8 @@
   color: rgba(245, 239, 230, 0.74);
   line-height: 1.35;
   min-width: 0;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 .barberAppointmentMeta span {

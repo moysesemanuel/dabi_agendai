@@ -1,149 +1,63 @@
-# 💈 Prime Cut Barbershop
+# DaBi Agendaí
 
-<p align="center">
-  Sistema completo para barbearias modernas, unindo presença digital, agendamento online e gestão administrativa em um único produto.
-</p>
+Sistema de agendamento para prestadores de serviço com atendimento por horário — barbearias, salões, estúdios e clínicas. Reúne site institucional, agendamento online, área do cliente, carrinho e backoffice operacional em um único produto.
 
-<p align="center">
-  Full stack • Next.js • Node.js • Prisma • PostgreSQL • Deploy na Vercel
-</p>
+**Stack:** Next.js 16 (App Router) · React 19 · TypeScript · Prisma · PostgreSQL · Vercel
 
-<p align="center">
-  <a href="..." target="_blank"><strong>🔗 Ver aplicação</strong></a> •
-  <a href="..." target="_blank"><strong>📅 Testar agendamento</strong></a> •
-  <a href="..." target="_blank"><strong>⚙️ Acessar painel admin</strong></a>
-</p>
-
-<p align="center">
-  <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js" />
-  <img alt="React" src="https://img.shields.io/badge/React-19-20232A?style=for-the-badge&logo=react" />
-  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
-  <img alt="Prisma" src="https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma" />
-  <img alt="PostgreSQL" src="https://img.shields.io/badge/PostgreSQL-Database-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" />
-</p>
+> Este repositório era `barbershop-app` e nasceu dentro do portfólio da DaBi Tech. Hoje é um produto independente. A barbearia **Prime Cut Studio** permanece no código como estabelecimento de demonstração — é dado de seed, não o nome do produto.
 
 ---
 
-## 🚀 O que é o produto
+## O problema
 
-O **Prime Cut Barbershop** é uma aplicação full stack desenvolvida como um MVP real para barbearias que desejam profissionalizar sua operação.
+Quem atende por horário marcado normalmente opera no WhatsApp e no caderno. O custo disso aparece como conflito de agenda, tempo perdido confirmando horário por mensagem, cliente que não aparece e nenhuma visão do próprio negócio.
 
-A plataforma centraliza:
-
-- presença digital  
-- agendamento online  
-- relacionamento com clientes  
-- gestão administrativa  
-
-Tudo em um único sistema.
+O DaBi Agendaí estrutura essa operação: o cliente agenda sozinho, o estabelecimento vê a agenda em tempo real e o histórico fica registrado.
 
 ---
 
-## 💡 O que esse sistema resolve
+## Módulos
 
-Barbearias que utilizam WhatsApp ou processos manuais enfrentam:
-
-- conflitos de agenda  
-- perda de tempo com confirmações  
-- experiência inconsistente para o cliente  
-- retrabalho operacional  
-- baixa visibilidade sobre o negócio  
-
-O sistema resolve esse cenário ao estruturar toda a jornada do cliente e a operação interna em uma única plataforma.
-
----
-
-## 🚀 O que você ganha com esse sistema
-
-- Agenda organizada e automatizada  
-- Redução de retrabalho manual  
-- Melhor experiência para o cliente  
-- Aumento de fidelização  
-- Base pronta para crescimento do negócio  
+| Módulo | O que faz |
+|---|---|
+| **Site institucional** | Home com serviços, equipe, prova social e contato |
+| **Agendamento** | Serviço → profissional → data → horário, com bloqueio de horário ocupado |
+| **Área do cliente** | Cadastro, login, histórico, cancelamento e remarcação |
+| **Carrinho** | Múltiplos serviços em uma mesma reserva |
+| **Fidelidade** | Pontuação por atendimento, faixas e recompensas |
+| **Backoffice** | Agenda do dia, reserva manual, catálogo de serviços, equipe, datas bloqueadas e cadastro de clientes |
+| **Notificações** | Alerta de novo agendamento no painel (Notification API + som), por polling |
 
 ---
 
-## 📌 Status do projeto
+## Estado atual
 
-- ✅ MVP funcional  
-- ✅ Publicado na Vercel  
-- ✅ Estrutura full stack integrada  
-- 🔄 Em evolução contínua  
+Este é um **MVP funcional**, ainda não liberado para uso comercial:
 
----
+| Área | Estado |
+|---|---|
+| Fluxo de agendamento ponta a ponta | ✅ funcionando |
+| Backoffice operacional | ✅ funcionando |
+| Autenticação e autorização | ⛔ **ausente** — bloqueador |
+| Persistência das configurações do site | ⚠️ em `localStorage`, não no banco |
+| Fuso horário | ⚠️ depende do fuso do servidor |
+| Notificação para o **cliente** (WhatsApp/e-mail) | ⛔ não implementada |
+| Pagamento / checkout | ⛔ não implementado |
+| Testes automatizados | ⛔ inexistentes |
 
-## 🌐 Ambiente publicado
-
-A aplicação está disponível online e pode ser explorada nas principais áreas:
-
-- Home  
-- Agendamento  
-- Fidelidade  
-- Painel administrativo  
-
-🔗 https://portfolio-dabitech-beryl.vercel.app
+**Não publique este sistema com acesso público enquanto o `/admin` não tiver autenticação.**
 
 ---
 
-## 🧩 Módulos do sistema
+## Rodando localmente
 
-### 📅 Agendamento inteligente
-- Escolha de serviço, profissional e horário  
-- Bloqueio automático de horários ocupados  
-
-### 👤 Área do cliente
-- Cadastro e login  
-- Histórico e fidelidade  
-
-### 🎁 Fidelidade
-- Planos e recompensas  
-- Acompanhamento de progresso  
-
-### 🛒 Produtos e serviços
-- Carrinho integrado  
-- Complementos ao atendimento  
-
-### ⚙️ Painel administrativo
-- Gestão de agenda  
-- Controle de serviços  
-- Configuração do sistema  
-
----
-
-## 🛠️ Stack e responsabilidades
-
-- Frontend: Next.js (App Router), React, TypeScript  
-- Backend: API integrada com regras de negócio  
-- Banco de dados: PostgreSQL com Prisma ORM  
-- Deploy: Vercel  
-
----
-
-## 🖼️ Imagens
-
-### Home
-
-![Preview da home](./public/img/home.png)
-
-### Painel administrativo
-
-![Preview do painel administrativo](./public/img/admin-dashboard.png)
-
----
-
-## ⚙️ Como rodar o projeto
-
-### Pré-requisitos
-
-- Node.js 20+  
-- Yarn 1.x  
-- PostgreSQL  
-
-### Instalação
+Pré-requisitos: Node.js 20+, Yarn 1.x, PostgreSQL.
 
 ```bash
 yarn install
-cp .env.example .env
+cp .env.example .env   # preencha DATABASE_URL e DIRECT_URL
+yarn db:push
+yarn dev               # http://localhost:3001
 ```
 
 ### Variáveis de ambiente
@@ -151,94 +65,51 @@ cp .env.example .env
 ```bash
 DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DATABASE?sslmode=require"
 DIRECT_URL="postgresql://USER:PASSWORD@HOST:5432/DATABASE?sslmode=require"
-GOOGLE_PLACES_API_KEY=""
-GOOGLE_PLACE_ID=""
+GOOGLE_PLACES_API_KEY=""   # opcional — avaliações do Google
+GOOGLE_PLACE_ID=""         # opcional
 ```
 
-### Banco de dados
-```bash
-yarn db:push
-```
-
-### Ambiente de desenvolvimento
-
-```bash
-yarn dev
-```
-
-📁 Estrutura do projeto
-```bash
-.
-|-- prisma/
-|   `-- schema.prisma
-|-- public/
-|   `-- img/
-`-- src/
-    |-- app/
-    |   |-- admin/
-    |   |-- agendamento/
-    |   |-- fidelidade/
-    |   `-- api/
-    |-- components/
-    |   |-- projects/barbershop/
-    |   `-- shared/
-    `-- lib/
-```
-
-### 🧠 Organização
-`src/app:` rotas da aplicação e endpoints  
-`src/components/projects/barbershop:` componentes principais  
-`src/components/shared:` componentes reutilizáveis  
-`src/lib:` regras de negócio e integrações  
-`prisma/schema.prisma:` modelagem do banco  
-
-### 🧠 Visão técnica
-
-* arquitetura full stack integrada
-* separação clara entre interface, regras de negócio e persistência
-* modelagem de dados orientada ao domínio
-* uso de Prisma com PostgreSQL
-* frontend estruturado com App Router
-
-### 🧠 Desafios técnicos resolvidos
-
-- Implementação de lógica de agendamento com bloqueio de horários concorrentes  
-- Organização de regras de negócio no backend utilizando separação por camadas  
-- Integração entre frontend e backend em ambiente full stack  
-- Modelagem relacional utilizando Prisma ORM  
-- Estruturação de rotas com App Router (Next.js)  
-
-### 🚀 Por que esse projeto se destaca
-
-* não é apenas uma interface visual, mas uma solução com fluxo de negócio completo
-* conecta frontend, backend e banco de dados dentro de um mesmo contexto
-* projeto publicado em ambiente real (Vercel), demonstrando entrega ponta a ponta
-* demonstra preocupação com experiência do usuário e operação
-* serve como base realista para MVP ou produto comercial
-
-### 📈 Próximos passos
-* autenticação administrativa mais robusta
-* deploy com domínio customizado
-* integração real com serviços de mensagens
-* dashboard com métricas operacionais
-* evolução da fidelidade dentro do fluxo do cliente
-
-### 💬 Interesse no projeto
-
-Esse sistema pode evoluir para um produto real ou ser adaptado para outros tipos de negócio.
-
-## 💼 Aplicação prática
-
-Esse projeto pode ser utilizado como base para:
-
-- Sistemas de agendamento para pequenos negócios  
-- Plataformas de serviços locais  
-- MVPs de produtos digitais  
+Na primeira execução o banco é populado com serviços, profissionais e agendamentos de demonstração.
 
 ---
 
+## Estrutura
 
-### 📬 Contato
-* GitHub: https://github.com/moysesemanuel  
-* LinkedIn: https://www.linkedin.com/in/moysesemanuel  
-* Portfólio: https://portfolio-dabitech-beryl.vercel.app/portfolio/barbearia
+```
+prisma/schema.prisma                     modelagem (Barber, Customer, Service, Appointment, ClosedDate)
+src/app/                                 rotas e endpoints
+  ├── api/                               agendamentos, disponibilidade, sessão, sincronização
+  ├── admin/                             backoffice
+  ├── agendamento/  agendamentos/        fluxo do cliente
+  └── fidelidade/
+src/components/projects/barbershop/      componentes do produto
+src/components/shared/                   componentes reutilizáveis
+src/lib/booking.ts                       regras de agenda: slots, sobreposição, remarcação
+```
+
+O núcleo de negócio está em `src/lib/booking.ts`: geração de slots, checagem de sobreposição, horário de funcionamento, datas bloqueadas e busca do próximo horário livre.
+
+---
+
+## Roadmap
+
+**Antes de qualquer cliente real**
+- Autenticação com sessão no servidor e proteção de `/admin` e das rotas de API
+- Configuração do estabelecimento no banco, não no navegador
+- Fuso horário explícito em `America/Sao_Paulo`
+- Constraint e transação no horário, para eliminar reserva concorrente
+
+**Para o produto ficar completo**
+- Confirmação e lembrete automáticos por WhatsApp e e-mail
+- Horário de funcionamento e folga configuráveis por profissional
+- Checkout e pagamento no carrinho
+- Multi-tenant, para atender mais de um estabelecimento na mesma instalação
+
+---
+
+## Licença e contato
+
+Projeto proprietário da DaBi Tech — Digital Solutions.
+
+- GitHub: https://github.com/moysesemanuel
+- LinkedIn: https://www.linkedin.com/in/moysesemanuel

@@ -21,25 +21,50 @@ enum UserRole {
 }
 
 model Barber {
-  id           String        @id @default(cuid())
-  name         String        @unique
+  id           String          @id @default(cuid())
+  name         String          @unique
   role         String
-  active       Boolean       @default(true)
+  active       Boolean         @default(true)
   appointments Appointment[]
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  timeOff      BarberTimeOff[]
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+}
+
+model BarberTimeOff {
+  id        String   @id @default(cuid())
+  barberId  String
+  barber    Barber   @relation(fields: [barberId], references: [id], onDelete: Cascade)
+  date      String
+  reason    String
+  createdAt DateTime @default(now())
+
+  @@unique([barberId, date])
+  @@index([barberId])
 }
 
 model Customer {
-  id           String        @id @default(cuid())
-  name         String
-  phone        String        @unique
-  email        String?       @unique
-  passwordHash String?
-  role         UserRole      @default(CUSTOMER)
-  appointments Appointment[]
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  id                 String              @id @default(cuid())
+  name               String
+  phone              String              @unique
+  email              String?             @unique
+  passwordHash       String?
+  role               UserRole            @default(CUSTOMER)
+  appointments       Appointment[]
+  loyaltyRedemptions LoyaltyRedemption[]
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+}
+
+model LoyaltyRedemption {
+  id          String   @id @default(cuid())
+  customerId  String
+  customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  points      Int
+  rewardTitle String
+  createdAt   DateTime @default(now())
+
+  @@index([customerId])
 }
 
 model Service {
@@ -52,6 +77,12 @@ model Service {
   appointments    Appointment[]
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
+}
+
+model SiteSettings {
+  id        String   @id @default("singleton")
+  data      Json
+  updatedAt DateTime @updatedAt
 }
 
 model ClosedDate {
