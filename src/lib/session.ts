@@ -8,6 +8,7 @@ export type SessionRole = "CUSTOMER" | "ADMIN";
 export type SessionPayload = {
   id: string;
   role: SessionRole;
+  tenantId: string;
   exp: number;
 };
 
@@ -99,6 +100,21 @@ export async function verifySessionToken(token: string | undefined | null): Prom
 
 export async function getSessionFromRequest(request: NextRequest) {
   return verifySessionToken(request.cookies.get(SESSION_COOKIE_NAME)?.value);
+}
+
+// Middleware roda no runtime Edge e nao consegue resolver o tenant via Prisma
+// (por isso getSessionFromRequest acima nao checa tenant). Toda rota/pagina que
+// roda em runtime Node.js e ja resolveu o tenant com getCurrentTenant() deve usar
+// esta variante em vez da acima - fecha, na camada de sessao, qualquer rota que
+// esqueça de filtrar uma query por tenantId (ver plano de migracao multi-tenant).
+export async function getSessionForTenant(request: NextRequest, tenantId: string) {
+  const session = await getSessionFromRequest(request);
+
+  if (!session || session.tenantId !== tenantId) {
+    return null;
+  }
+
+  return session;
 }
 
 export function setSessionCookie(response: NextResponse, token: string) {

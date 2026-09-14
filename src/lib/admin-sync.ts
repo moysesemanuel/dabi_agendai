@@ -17,7 +17,7 @@ function parseDurationToMinutes(duration: string) {
   return Number.isFinite(minutes) ? minutes : 30;
 }
 
-async function syncServices(services: ServiceItem[]) {
+async function syncServices(tenantId: string, services: ServiceItem[]) {
   const currentNames = services.map((service) => service.name.trim()).filter(Boolean);
 
   for (const service of services) {
@@ -28,7 +28,7 @@ async function syncServices(services: ServiceItem[]) {
     }
 
     await prisma.service.upsert({
-      where: { name },
+      where: { tenantId_name: { tenantId, name } },
       update: {
         description: service.description,
         priceInCents: parseMoneyToCents(service.price),
@@ -36,6 +36,7 @@ async function syncServices(services: ServiceItem[]) {
         active: true,
       },
       create: {
+        tenantId,
         name,
         description: service.description,
         priceInCents: parseMoneyToCents(service.price),
@@ -47,6 +48,7 @@ async function syncServices(services: ServiceItem[]) {
 
   await prisma.service.updateMany({
     where: {
+      tenantId,
       name: {
         notIn: currentNames.length > 0 ? currentNames : ["__none__"],
       },
@@ -57,7 +59,7 @@ async function syncServices(services: ServiceItem[]) {
   });
 }
 
-async function syncBarbers(barbers: BarberItem[]) {
+async function syncBarbers(tenantId: string, barbers: BarberItem[]) {
   const currentNames = barbers.map((barber) => barber.name.trim()).filter(Boolean);
 
   for (const barber of barbers) {
@@ -68,12 +70,13 @@ async function syncBarbers(barbers: BarberItem[]) {
     }
 
     await prisma.barber.upsert({
-      where: { name },
+      where: { tenantId_name: { tenantId, name } },
       update: {
         role: barber.role,
         active: true,
       },
       create: {
+        tenantId,
         name,
         role: barber.role,
         active: true,
@@ -83,6 +86,7 @@ async function syncBarbers(barbers: BarberItem[]) {
 
   await prisma.barber.updateMany({
     where: {
+      tenantId,
       name: {
         notIn: currentNames.length > 0 ? currentNames : ["__none__"],
       },
@@ -93,16 +97,17 @@ async function syncBarbers(barbers: BarberItem[]) {
   });
 }
 
-async function syncClosedDates(closedDates: ClosedDateItem[]) {
+async function syncClosedDates(tenantId: string, closedDates: ClosedDateItem[]) {
   const currentDates = closedDates.map((item) => item.date);
 
   for (const item of closedDates) {
     await prisma.closedDate.upsert({
-      where: { date: item.date },
+      where: { tenantId_date: { tenantId, date: item.date } },
       update: {
         reason: item.reason,
       },
       create: {
+        tenantId,
         date: item.date,
         reason: item.reason,
       },
@@ -111,6 +116,7 @@ async function syncClosedDates(closedDates: ClosedDateItem[]) {
 
   await prisma.closedDate.deleteMany({
     where: {
+      tenantId,
       date: {
         notIn: currentDates.length > 0 ? currentDates : ["__none__"],
       },
@@ -118,8 +124,11 @@ async function syncClosedDates(closedDates: ClosedDateItem[]) {
   });
 }
 
-async function syncBarberTimeOff(barberTimeOff: BarberTimeOffItem[]) {
-  const barbers = await prisma.barber.findMany({ select: { id: true, name: true } });
+async function syncBarberTimeOff(tenantId: string, barberTimeOff: BarberTimeOffItem[]) {
+  const barbers = await prisma.barber.findMany({
+    where: { tenantId },
+    select: { id: true, name: true },
+  });
   const barberIdByName = new Map(barbers.map((barber) => [barber.name, barber.id]));
 
   const validEntries = barberTimeOff
@@ -136,12 +145,13 @@ async function syncBarberTimeOff(barberTimeOff: BarberTimeOffItem[]) {
     await prisma.barberTimeOff.upsert({
       where: { barberId_date: { barberId: entry.barberId, date: entry.date } },
       update: { reason: entry.reason },
-      create: entry,
+      create: { ...entry, tenantId },
     });
   }
 
   const keepKeys = new Set(validEntries.map((entry) => `${entry.barberId}__${entry.date}`));
   const existingRows = await prisma.barberTimeOff.findMany({
+    where: { tenantId },
     select: { id: true, barberId: true, date: true },
   });
   const idsToDelete = existingRows
@@ -149,22 +159,22 @@ async function syncBarberTimeOff(barberTimeOff: BarberTimeOffItem[]) {
     .map((row) => row.id);
 
   if (idsToDelete.length > 0) {
-    await prisma.barberTimeOff.deleteMany({ where: { id: { in: idsToDelete } } });
+    await prisma.barberTimeOff.deleteMany({ where: { id: { in: idsToDelete }, tenantId } });
   }
 }
 
-async function saveSiteConfig(config: SiteConfig) {
+async function saveSiteConfig(tenantId: string, config: SiteConfig) {
   await prisma.siteSettings.upsert({
-    where: { id: "singleton" },
+    where: { tenantId },
     update: { data: config },
-    create: { id: "singleton", data: config },
+    create: { tenantId, data: config },
   });
 }
 
-export async function syncOperationalData(config: SiteConfig) {
-  await syncServices(config.services);
-  await syncBarbers(config.barbers);
-  await syncClosedDates(config.closedDates);
-  await syncBarberTimeOff(config.barberTimeOff);
-  await saveSiteConfig(config);
+export async function syncOperationalData(tenantId: string, config: SiteConfig) {
+  await syncServices(tenantId, config.services);
+  await syncBarbers(tenantId, config.barbers);
+  await syncClosedDates(tenantId, config.closedDates);
+  await syncBarberTimeOff(tenantId, config.barberTimeOff);
+  await saveSiteConfig(tenantId, config);
 }

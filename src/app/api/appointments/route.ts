@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import {
   createAppointment,
-  ensureBookingSeedData,
   getBarberByName,
   getServiceByName,
   SAO_PAULO_OFFSET,
@@ -10,7 +9,8 @@ import {
 } from "@/lib/booking";
 import { resolveErrorResponse } from "@/lib/errors";
 import { prisma } from "@/lib/prisma";
-import { getSessionFromRequest } from "@/lib/session";
+import { getSessionForTenant } from "@/lib/session";
+import { getCurrentTenant } from "@/lib/tenant";
 
 const listQuerySchema = z.object({
   date: z
@@ -39,7 +39,11 @@ const createAppointmentSchema = z
 
 export async function GET(request: NextRequest) {
   try {
-    await ensureBookingSeedData();
+    const tenant = await getCurrentTenant(request);
+
+    if (!tenant) {
+      return NextResponse.json({ error: "Site nao encontrado." }, { status: 404 });
+    }
 
     const parsedQuery = listQuerySchema.safeParse({
       date: request.nextUrl.searchParams.get("date") ?? undefined,
@@ -54,7 +58,7 @@ export async function GET(request: NextRequest) {
     }
 
     const { date, customerId: requestedCustomerId } = parsedQuery.data;
-    const session = await getSessionFromRequest(request);
+    const session = await getSessionForTenant(request, tenant.id);
 
     if (!session) {
       return NextResponse.json(
@@ -81,6 +85,7 @@ export async function GET(request: NextRequest) {
 
     const customerId = isAdmin ? requestedCustomerId : session.id;
     const where = {
+      tenantId: tenant.id,
       ...(date
         ? {
             startsAt: {
@@ -131,7 +136,11 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    await ensureBookingSeedData();
+    const tenant = await getCurrentTenant(request);
+
+    if (!tenant) {
+      return NextResponse.json({ error: "Site nao encontrado." }, { status: 404 });
+    }
 
     const parsedBody = createAppointmentSchema.safeParse(await request.json());
 
@@ -145,7 +154,7 @@ export async function POST(request: NextRequest) {
     const body = parsedBody.data;
 
     if (body.customerId) {
-      const session = await getSessionFromRequest(request);
+      const session = await getSessionForTenant(request, tenant.id);
 
       if (!session || session.id !== body.customerId) {
         return NextResponse.json(
@@ -156,8 +165,8 @@ export async function POST(request: NextRequest) {
     }
 
     const [service, barber] = await Promise.all([
-      getServiceByName(body.serviceName),
-      getBarberByName(body.barberName),
+      getServiceByName(tenant.id, body.serviceName),
+      getBarberByName(tenant.id, body.barberName),
     ]);
 
     if (!service || !barber) {
@@ -168,8 +177,11 @@ export async function POST(request: NextRequest) {
     }
 
     const customer = body.customerId
-      ? await prisma.customer.findUnique({ where: { id: body.customerId } })
+      ? await prisma.customer.findUnique({
+          where: { id: body.customerId, tenantId: tenant.id },
+        })
       : await upsertCustomerProfile({
+          tenantId: tenant.id,
           name: body.customerName!,
           phone: body.customerPhone!,
           email: body.customerEmail,
@@ -183,6 +195,7 @@ export async function POST(request: NextRequest) {
     }
 
     const appointment = await createAppointment({
+      tenantId: tenant.id,
       service,
       barber,
       date: body.date,

@@ -2,9 +2,10 @@ import { AppointmentStatus } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { ensureBookingSeedData, rescheduleAppointment } from "@/lib/booking";
+import { rescheduleAppointment } from "@/lib/booking";
 import { resolveErrorResponse } from "@/lib/errors";
-import { getSessionFromRequest } from "@/lib/session";
+import { getSessionForTenant } from "@/lib/session";
+import { getCurrentTenant } from "@/lib/tenant";
 
 const allowedStatus = new Set<AppointmentStatus>([
   AppointmentStatus.CONFIRMED,
@@ -23,10 +24,15 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    await ensureBookingSeedData();
+    const tenant = await getCurrentTenant(request);
+
+    if (!tenant) {
+      return NextResponse.json({ error: "Site nao encontrado." }, { status: 404 });
+    }
+
     const { id } = await params;
 
-    const session = await getSessionFromRequest(request);
+    const session = await getSessionForTenant(request, tenant.id);
 
     if (!session) {
       return NextResponse.json(
@@ -35,7 +41,9 @@ export async function PATCH(
       );
     }
 
-    const existingAppointment = await prisma.appointment.findUnique({ where: { id } });
+    const existingAppointment = await prisma.appointment.findUnique({
+      where: { id, tenantId: tenant.id },
+    });
 
     if (!existingAppointment) {
       return NextResponse.json(
@@ -74,6 +82,7 @@ export async function PATCH(
 
     if (body.date && body.time) {
       const appointment = await rescheduleAppointment({
+        tenantId: tenant.id,
         appointmentId: id,
         date: body.date,
         time: body.time,
@@ -96,7 +105,7 @@ export async function PATCH(
     }
 
     const appointment = await prisma.appointment.update({
-      where: { id },
+      where: { id, tenantId: tenant.id },
       data: {
         status: body.status,
       },
