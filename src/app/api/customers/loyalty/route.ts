@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { AppointmentStatus } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
+import { resolveErrorResponse } from "@/lib/errors";
+import { getLoyaltyBalance } from "@/lib/loyalty";
 import { getSessionFromRequest } from "@/lib/session";
 
 export async function GET(request: NextRequest) {
@@ -23,30 +23,20 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const completedAppointments = await prisma.appointment.count({
-      where: {
-        customerId,
-        status: AppointmentStatus.COMPLETED,
-      },
-    });
-
-    const points = completedAppointments * 10;
-    const nextRewardThreshold = Math.ceil(Math.max(points, 1) / 100) * 100;
+    const balance = await getLoyaltyBalance(customerId);
 
     return NextResponse.json({
-      points,
-      completedAppointments,
-      nextRewardIn: nextRewardThreshold - points || 100,
+      points: balance.earnedPoints,
+      completedAppointments: balance.completedAppointments,
+      availablePoints: balance.availablePoints,
+      redeemedPoints: balance.redeemedPoints,
+      nextRewardIn: balance.nextRewardIn,
     });
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : "Nao foi possivel consultar a fidelidade.",
-      },
-      { status: 500 },
+    const { message, status } = resolveErrorResponse(
+      error,
+      "Nao foi possivel consultar a fidelidade.",
     );
+    return NextResponse.json({ error: message }, { status });
   }
 }

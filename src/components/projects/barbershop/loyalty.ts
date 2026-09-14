@@ -5,6 +5,8 @@ import { type LoyaltyTierItem } from "@/components/shared/site-config";
 export type LoyaltyResponse = {
   points: number;
   completedAppointments: number;
+  availablePoints: number;
+  redeemedPoints: number;
   nextRewardIn: number;
   error?: string;
 };
@@ -80,6 +82,25 @@ export async function fetchLoyalty(customerId: string) {
 
   if (!response.ok) {
     throw new Error(payload.error ?? "Nao foi possivel consultar sua fidelidade.");
+  }
+
+  return payload;
+}
+
+export async function redeemLoyaltyReward(params: {
+  customerId: string;
+  points: number;
+  rewardTitle: string;
+}) {
+  const response = await fetch("/api/customers/loyalty/redeem", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(params),
+  });
+  const payload = (await response.json()) as LoyaltyResponse & { message?: string };
+
+  if (!response.ok) {
+    throw new Error(payload.error ?? "Nao foi possivel confirmar o resgate.");
   }
 
   return payload;
