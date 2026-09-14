@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { PLATFORM_NOTIFICATIONS_UPDATED_EVENT } from "./platform-shell";
 import styles from "./platform-dashboard-page.module.css";
 
 type Tenant = {
@@ -84,6 +85,7 @@ export function PlatformDashboardPage() {
       setForm(emptyForm);
       setFormSuccess("Tenant criado com sucesso.");
       await loadTenants();
+      window.dispatchEvent(new Event(PLATFORM_NOTIFICATIONS_UPDATED_EVENT));
     } catch (error) {
       setFormError(error instanceof Error ? error.message : "Nao foi possivel criar o tenant.");
     } finally {
@@ -101,6 +103,7 @@ export function PlatformDashboardPage() {
         body: JSON.stringify({ active: !tenant.active }),
       });
       await loadTenants();
+      window.dispatchEvent(new Event(PLATFORM_NOTIFICATIONS_UPDATED_EVENT));
     } finally {
       setTogglingTenantId(null);
     }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { PLATFORM_NOTIFICATIONS_UPDATED_EVENT } from "./platform-shell";
 import styles from "./platform-notifications-page.module.css";
 
 type Notification = {
@@ -54,6 +55,7 @@ export function PlatformNotificationsPage() {
         body: JSON.stringify({ read: !notification.read }),
       });
       await loadNotifications();
+      window.dispatchEvent(new Event(PLATFORM_NOTIFICATIONS_UPDATED_EVENT));
     } finally {
       setUpdatingId(null);
     }
