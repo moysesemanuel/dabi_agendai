@@ -241,7 +241,15 @@ export function mergeSiteConfig(parsed: Partial<SiteConfig> | null | undefined):
 export async function fetchSiteConfig(): Promise<SiteConfig> {
   try {
     const response = await fetch("/api/site-config", { cache: "no-store" });
-    const payload = (await response.json()) as { config?: Partial<SiteConfig> };
+    const payload = (await response.json()) as {
+      config?: Partial<SiteConfig>;
+      brandColor?: string | null;
+    };
+
+    if (payload.brandColor && typeof document !== "undefined") {
+      document.documentElement.style.setProperty("--tenant-accent", payload.brandColor);
+    }
+
     return mergeSiteConfig(payload.config);
   } catch {
     return defaultSiteConfig;

@@ -59,6 +59,7 @@ export function AdminPage({ section = "overview" }: { section?: AdminSectionView
             <Link className={pathname === "/admin/dados" ? styles.sidebarNavLinkActive : ""} href="/admin/dados">
               Dados
             </Link>
+            <Link href="/admin/suporte">Suporte</Link>
           </nav>
 
           <div className={styles.sidebarStats}>

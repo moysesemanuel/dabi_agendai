@@ -4,7 +4,7 @@
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #c39a5c;
+  color: var(--tenant-accent);
 }
 
 .aboutSection,

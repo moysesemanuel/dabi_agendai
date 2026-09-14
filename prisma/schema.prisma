@@ -20,13 +20,19 @@ enum UserRole {
   ADMIN
 }
 
+enum NotificationType {
+  SUPPORT
+  SYSTEM
+}
+
 model Tenant {
-  id        String   @id @default(cuid())
-  name      String
-  domain    String   @unique
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(cuid())
+  name       String
+  domain     String   @unique
+  active     Boolean  @default(true)
+  brandColor String   @default("#c39a5c")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   barbers            Barber[]
   barberTimeOff      BarberTimeOff[]
@@ -36,6 +42,21 @@ model Tenant {
   siteSettings       SiteSettings?
   closedDates        ClosedDate[]
   appointments       Appointment[]
+  notifications      Notification[]
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  tenantId  String?
+  tenant    Tenant?          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  message   String
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  @@index([tenantId])
+  @@index([read])
 }
 
 model Barber {

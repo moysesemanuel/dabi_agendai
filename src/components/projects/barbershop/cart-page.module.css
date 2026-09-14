@@ -117,9 +117,9 @@
 }
 
 .primaryButton {
-  background: #c39a5c;
+  background: var(--tenant-accent);
   color: #1c140f;
-  border: 1px solid #c39a5c;
+  border: 1px solid var(--tenant-accent);
 }
 
 .secondaryButton {

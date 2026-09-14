@@ -15,6 +15,7 @@ export async function listTenantsWithStats() {
     name: tenant.name,
     domain: tenant.domain,
     active: tenant.active,
+    brandColor: tenant.brandColor,
     createdAt: tenant.createdAt,
     barbersCount: tenant._count.barbers,
     customersCount: tenant._count.customers,
@@ -53,12 +54,76 @@ export async function createTenantWithAdmin(input: {
     },
   });
 
+  await createNotification({
+    type: "SYSTEM",
+    title: "Novo tenant criado",
+    message: `${tenant.name} (${tenant.domain})`,
+    tenantId: tenant.id,
+  });
+
   return { tenant, admin };
 }
 
 export async function setTenantActive(tenantId: string, active: boolean) {
-  return prisma.tenant.update({
+  const tenant = await prisma.tenant.update({
     where: { id: tenantId },
     data: { active },
+  });
+
+  await createNotification({
+    type: "SYSTEM",
+    title: active ? "Tenant reativado" : "Tenant desativado",
+    message: `${tenant.name} (${tenant.domain})`,
+    tenantId: tenant.id,
+  });
+
+  return tenant;
+}
+
+export async function setTenantBrandColor(tenantId: string, brandColor: string) {
+  return prisma.tenant.update({
+    where: { id: tenantId },
+    data: { brandColor },
+  });
+}
+
+export async function createNotification(input: {
+  type: "SUPPORT" | "SYSTEM";
+  title: string;
+  message: string;
+  tenantId?: string;
+}) {
+  return prisma.notification.create({
+    data: {
+      type: input.type,
+      title: input.title,
+      message: input.message,
+      tenantId: input.tenantId,
+    },
+  });
+}
+
+export async function listNotifications() {
+  const notifications = await prisma.notification.findMany({
+    orderBy: { createdAt: "desc" },
+    take: 100,
+    include: { tenant: { select: { name: true } } },
+  });
+
+  return notifications.map((notification) => ({
+    id: notification.id,
+    type: notification.type,
+    title: notification.title,
+    message: notification.message,
+    read: notification.read,
+    createdAt: notification.createdAt,
+    tenantName: notification.tenant?.name ?? null,
+  }));
+}
+
+export async function markNotificationRead(id: string, read: boolean) {
+  return prisma.notification.update({
+    where: { id },
+    data: { read },
   });
 }

@@ -89,7 +89,7 @@
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #c39a5c;
+  color: var(--tenant-accent);
 }
 
 .infoBlock p,
@@ -137,9 +137,9 @@
 }
 
 .tabButtonActive {
-  background: #c39a5c;
+  background: var(--tenant-accent);
   color: #1c140f;
-  border-color: #c39a5c;
+  border-color: var(--tenant-accent);
 }
 
 .tabPanel {
@@ -289,8 +289,8 @@
 }
 
 .primaryActionButton {
-  border: 1px solid #c39a5c;
-  background: #c39a5c;
+  border: 1px solid var(--tenant-accent);
+  background: var(--tenant-accent);
   color: #1c140f;
 }
 

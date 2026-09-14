@@ -1,0 +1,105 @@
+.page {
+  padding: 32px;
+  display: grid;
+  gap: 20px;
+}
+
+.header h1 {
+  margin: 0 0 4px;
+  font-size: 1.3rem;
+}
+
+.header p {
+  margin: 0;
+  color: #8b949e;
+  font-size: 0.9rem;
+}
+
+.list {
+  display: grid;
+  gap: 12px;
+}
+
+.item {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #161b22;
+  padding: 16px 20px;
+  display: grid;
+  gap: 8px;
+}
+
+.itemUnread {
+  border-color: rgba(47, 129, 247, 0.4);
+}
+
+.itemTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.itemMeta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.typeBadge {
+  display: inline-flex;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.typeSupport {
+  background: rgba(47, 129, 247, 0.16);
+  color: #79b8ff;
+}
+
+.typeSystem {
+  background: rgba(139, 148, 158, 0.16);
+  color: #c9d1d9;
+}
+
+.tenantTag {
+  color: #8b949e;
+  font-size: 0.82rem;
+}
+
+.title {
+  font-weight: 700;
+  font-size: 0.96rem;
+}
+
+.message {
+  color: rgba(230, 237, 243, 0.82);
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+}
+
+.date {
+  color: #6e7681;
+  font-size: 0.78rem;
+}
+
+.readButton {
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: transparent;
+  color: #e6edf3;
+  cursor: pointer;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.empty {
+  color: #8b949e;
+}
