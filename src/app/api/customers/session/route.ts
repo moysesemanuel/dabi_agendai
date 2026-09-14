@@ -13,7 +13,7 @@ import {
 
 const customerSessionSchema = z.object({
   action: z.enum(["login", "register"]).optional(),
-  name: z.string().trim().min(1).max(120).optional(),
+  name: z.string().trim().max(120).optional(),
   phone: z.string().trim().optional(),
   email: z.string().trim().email("E-mail invalido."),
   password: z.string().trim().min(1),
