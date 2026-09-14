@@ -54,4 +54,29 @@ test.describe("smoke", () => {
     await page.goto("/admin");
     await expect(page.getByText("Backoffice da barbearia")).toBeVisible();
   });
+
+  test("/platform redireciona para login quando nao autenticado", async ({ page }) => {
+    await page.goto("/platform");
+    await page.waitForURL(/\/platform\/login$/);
+    expect(new URL(page.url()).pathname).toBe("/platform/login");
+  });
+
+  test("admin da plataforma consegue logar e ver os tenants", async ({ page }) => {
+    test.skip(
+      !process.env.PLATFORM_ADMIN_EMAIL || !process.env.PLATFORM_ADMIN_PASSWORD,
+      "PLATFORM_ADMIN_EMAIL/PLATFORM_ADMIN_PASSWORD nao configurados neste ambiente.",
+    );
+
+    const response = await page.request.post("/api/platform/session", {
+      data: {
+        email: process.env.PLATFORM_ADMIN_EMAIL,
+        password: process.env.PLATFORM_ADMIN_PASSWORD,
+      },
+    });
+    expect(response.ok()).toBeTruthy();
+
+    await page.goto("/platform");
+    await expect(page.getByText("Admin da plataforma")).toBeVisible();
+    await expect(page.getByText(/^Tenants \(/)).toBeVisible();
+  });
 });

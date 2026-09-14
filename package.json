@@ -14,7 +14,8 @@
     "test:e2e": "playwright test",
     "prisma:generate": "prisma generate",
     "db:push": "prisma db push",
-    "create-tenant": "tsx scripts/create-tenant.ts"
+    "create-tenant": "tsx scripts/create-tenant.ts",
+    "hash-password": "tsx scripts/hash-password.ts"
   },
   "dependencies": {
     "@prisma/client": "6.16.2",
