@@ -1,6 +1,6 @@
 "use client";
 
-export const REVIEW_STORAGE_KEY = "prime-cut-customer-reviews";
+export const REVIEW_STORAGE_KEY = "dabi-agendai-customer-reviews";
 
 export type StoredReview = {
   name: string;

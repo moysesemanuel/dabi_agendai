@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import type {
   BarberItem,
+  BarberTimeOffItem,
   ClosedDateItem,
   ServiceItem,
   SiteConfig,
@@ -117,8 +118,53 @@ async function syncClosedDates(closedDates: ClosedDateItem[]) {
   });
 }
 
+async function syncBarberTimeOff(barberTimeOff: BarberTimeOffItem[]) {
+  const barbers = await prisma.barber.findMany({ select: { id: true, name: true } });
+  const barberIdByName = new Map(barbers.map((barber) => [barber.name, barber.id]));
+
+  const validEntries = barberTimeOff
+    .map((item) => ({
+      barberId: barberIdByName.get(item.barberName.trim()),
+      date: item.date,
+      reason: item.reason,
+    }))
+    .filter((item): item is { barberId: string; date: string; reason: string } =>
+      Boolean(item.barberId),
+    );
+
+  for (const entry of validEntries) {
+    await prisma.barberTimeOff.upsert({
+      where: { barberId_date: { barberId: entry.barberId, date: entry.date } },
+      update: { reason: entry.reason },
+      create: entry,
+    });
+  }
+
+  const keepKeys = new Set(validEntries.map((entry) => `${entry.barberId}__${entry.date}`));
+  const existingRows = await prisma.barberTimeOff.findMany({
+    select: { id: true, barberId: true, date: true },
+  });
+  const idsToDelete = existingRows
+    .filter((row) => !keepKeys.has(`${row.barberId}__${row.date}`))
+    .map((row) => row.id);
+
+  if (idsToDelete.length > 0) {
+    await prisma.barberTimeOff.deleteMany({ where: { id: { in: idsToDelete } } });
+  }
+}
+
+async function saveSiteConfig(config: SiteConfig) {
+  await prisma.siteSettings.upsert({
+    where: { id: "singleton" },
+    update: { data: config },
+    create: { id: "singleton", data: config },
+  });
+}
+
 export async function syncOperationalData(config: SiteConfig) {
   await syncServices(config.services);
   await syncBarbers(config.barbers);
   await syncClosedDates(config.closedDates);
+  await syncBarberTimeOff(config.barberTimeOff);
+  await saveSiteConfig(config);
 }

@@ -1,15 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { ensureBookingSeedData, upsertCustomerProfile } from "@/lib/booking";
+import { resolveErrorResponse } from "@/lib/errors";
 import { verifyPassword, hashPassword } from "@/lib/password";
 import { prisma } from "@/lib/prisma";
+import {
+  clearSessionCookie,
+  createSessionToken,
+  getSessionFromRequest,
+  setSessionCookie,
+} from "@/lib/session";
 
-type CustomerSessionBody = {
-  action?: "login" | "register";
-  name?: string;
-  phone?: string;
-  email?: string;
-  password?: string;
-};
+const customerSessionSchema = z.object({
+  action: z.enum(["login", "register"]).optional(),
+  name: z.string().trim().max(120).optional(),
+  phone: z.string().trim().optional(),
+  email: z.string().trim().email("E-mail invalido."),
+  password: z.string().trim().min(1),
+});
 
 function getCustomerDelegate() {
   const customerDelegate = prisma.customer;
@@ -27,19 +35,20 @@ export async function POST(request: NextRequest) {
   try {
     await ensureBookingSeedData();
 
-    const body = (await request.json()) as CustomerSessionBody;
-    const action = body.action ?? "login";
-    const name = body.name?.trim();
-    const phone = body.phone?.replace(/\D/g, "");
-    const email = body.email?.trim();
-    const password = body.password?.trim();
+    const parsedBody = customerSessionSchema.safeParse(await request.json());
 
-    if (!email || !password) {
+    if (!parsedBody.success) {
       return NextResponse.json(
         { error: "E-mail e senha sao obrigatorios para acessar o agendamento." },
         { status: 400 },
       );
     }
+
+    const action = parsedBody.data.action ?? "login";
+    const name = parsedBody.data.name;
+    const phone = parsedBody.data.phone?.replace(/\D/g, "");
+    const email = parsedBody.data.email;
+    const password = parsedBody.data.password;
 
     if (action === "register" && password.length < 6) {
       return NextResponse.json(
@@ -113,7 +122,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({
+    const token = await createSessionToken({ id: customer.id, role: customer.role });
+    const response = NextResponse.json({
       customer: {
         id: customer.id,
         name: customer.name,
@@ -122,15 +132,46 @@ export async function POST(request: NextRequest) {
         role: customer.role,
       },
     });
+    setSessionCookie(response, token);
+
+    return response;
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : "Nao foi possivel autenticar o cliente.",
-      },
-      { status: 500 },
+    const { message, status } = resolveErrorResponse(
+      error,
+      "Nao foi possivel autenticar o cliente.",
     );
+    return NextResponse.json({ error: message }, { status });
   }
+}
+
+export async function GET(request: NextRequest) {
+  const session = await getSessionFromRequest(request);
+
+  if (!session) {
+    return NextResponse.json({ customer: null });
+  }
+
+  const customer = await prisma.customer.findUnique({ where: { id: session.id } });
+
+  if (!customer) {
+    const response = NextResponse.json({ customer: null });
+    clearSessionCookie(response);
+    return response;
+  }
+
+  return NextResponse.json({
+    customer: {
+      id: customer.id,
+      name: customer.name,
+      phone: customer.phone,
+      email: customer.email,
+      role: customer.role,
+    },
+  });
+}
+
+export async function DELETE() {
+  const response = NextResponse.json({ message: "Sessao encerrada." });
+  clearSessionCookie(response);
+  return response;
 }

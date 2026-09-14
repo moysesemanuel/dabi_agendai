@@ -13,15 +13,19 @@ import { FooterSection, Header } from "./home-page";
 import {
   fetchLoyalty,
   getLoyaltyProgress,
+  redeemLoyaltyReward,
   type LoyaltyResponse,
 } from "./loyalty";
+import { useToast } from "@/components/shared/toast-provider";
 import { useSiteConfig } from "./use-site-config";
 
 export function LoyaltyPage() {
   const config = useSiteConfig();
+  const { showToast } = useToast();
   const [customerSession, setCustomerSession] = useState<CustomerSession | null>(null);
   const [loyalty, setLoyalty] = useState<LoyaltyResponse | null>(null);
   const [loyaltyError, setLoyaltyError] = useState("");
+  const [redeemingPoints, setRedeemingPoints] = useState<number | null>(null);
 
   useEffect(() => {
     function syncCustomerSession() {
@@ -76,10 +80,35 @@ export function LoyaltyPage() {
   }, [customerSession]);
 
   const points = loyalty?.points ?? 0;
+  const availablePoints = loyalty?.availablePoints ?? 0;
   const progress = useMemo(() => getLoyaltyProgress(points, config.loyaltyTiers), [config.loyaltyTiers, points]);
   const loyaltyMessage = customerSession
     ? loyaltyError
     : "Faça login para acompanhar sua fidelidade e seus resgates.";
+
+  async function handleRedeem(rewardPoints: number, rewardTitle: string) {
+    if (!customerSession || redeemingPoints !== null) {
+      return;
+    }
+
+    setRedeemingPoints(rewardPoints);
+
+    try {
+      const payload = await redeemLoyaltyReward({
+        customerId: customerSession.id,
+        points: rewardPoints,
+        rewardTitle,
+      });
+      setLoyalty(payload);
+      setLoyaltyError("");
+      showToast({ variant: "success", message: `Resgate de "${rewardTitle}" confirmado!` });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Nao foi possivel confirmar o resgate.";
+      showToast({ variant: "error", message });
+    } finally {
+      setRedeemingPoints(null);
+    }
+  }
 
   return (
     <div className={styles.page}>
@@ -87,7 +116,6 @@ export function LoyaltyPage() {
         <Header
           config={config}
           homeLinks
-          homeBasePath="/portfolio/barbearia"
           profileHref="/fidelidade"
           profileTitle={customerSession ? `Perfil de ${customerSession.name}` : "Acesso do cliente"}
           profileName={customerSession?.name}
@@ -155,6 +183,10 @@ export function LoyaltyPage() {
               <article className={styles.overviewCard}>
                 <div className={styles.overviewStats}>
                   <div className={styles.statCard}>
+                    <span>Saldo para resgate</span>
+                    <strong>{availablePoints} pts</strong>
+                  </div>
+                  <div className={styles.statCard}>
                     <span>Próxima meta</span>
                     <strong>
                       {progress.nextTier ? `${progress.nextTier.minPoints} pts` : "Meta máxima"}
@@ -163,10 +195,6 @@ export function LoyaltyPage() {
                   <div className={styles.statCard}>
                     <span>Faltam</span>
                     <strong>{progress.pointsNeededForNextTier} pts</strong>
-                  </div>
-                  <div className={styles.statCard}>
-                    <span>Próximo resgate</span>
-                    <strong>{loyalty?.nextRewardIn ?? 0} pts</strong>
                   </div>
                   <div className={styles.statCard}>
                     <span>Nível atual</span>
@@ -192,13 +220,26 @@ export function LoyaltyPage() {
               </div>
 
               <div className={styles.rewardsGrid}>
-                {config.loyaltyRewards.map((reward) => (
-                  <article className={styles.rewardCard} key={reward.points}>
-                    <span className={styles.rewardPoints}>{reward.points} pts</span>
-                    <strong>{reward.title}</strong>
-                    <p>{reward.description}</p>
-                  </article>
-                ))}
+                {config.loyaltyRewards.map((reward) => {
+                  const canRedeem = availablePoints >= reward.points;
+                  const isRedeeming = redeemingPoints === reward.points;
+
+                  return (
+                    <article className={styles.rewardCard} key={reward.points}>
+                      <span className={styles.rewardPoints}>{reward.points} pts</span>
+                      <strong>{reward.title}</strong>
+                      <p>{reward.description}</p>
+                      <button
+                        className={styles.primaryButton}
+                        disabled={!canRedeem || redeemingPoints !== null}
+                        onClick={() => handleRedeem(reward.points, reward.title)}
+                        type="button"
+                      >
+                        {isRedeeming ? "Resgatando..." : canRedeem ? "Resgatar" : "Pontos insuficientes"}
+                      </button>
+                    </article>
+                  );
+                })}
               </div>
             </>
           ) : (

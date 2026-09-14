@@ -1,38 +1,91 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import {
   createAppointment,
   ensureBookingSeedData,
   getBarberByName,
   getServiceByName,
+  SAO_PAULO_OFFSET,
   upsertCustomerProfile,
 } from "@/lib/booking";
+import { resolveErrorResponse } from "@/lib/errors";
 import { prisma } from "@/lib/prisma";
+import { getSessionFromRequest } from "@/lib/session";
 
-type CreateAppointmentBody = {
-  serviceName?: string;
-  barberName?: string;
-  date?: string;
-  time?: string;
-  customerId?: string;
-  customerName?: string;
-  customerPhone?: string;
-  customerEmail?: string;
-  preferSilent?: boolean;
-  notes?: string;
-};
+const listQuerySchema = z.object({
+  date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Data invalida.")
+    .optional(),
+  customerId: z.string().trim().min(1).optional(),
+});
+
+const createAppointmentSchema = z
+  .object({
+    serviceName: z.string().trim().min(1),
+    barberName: z.string().trim().min(1),
+    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data invalida."),
+    time: z.string().regex(/^\d{2}:\d{2}$/, "Horario invalido."),
+    customerId: z.string().trim().min(1).optional(),
+    customerName: z.string().trim().min(1).optional(),
+    customerPhone: z.string().trim().min(8).optional(),
+    customerEmail: z.string().trim().email().optional().or(z.literal("")),
+    preferSilent: z.boolean().optional(),
+    notes: z.string().trim().max(500).optional(),
+  })
+  .refine((data) => data.customerId || (data.customerName && data.customerPhone), {
+    message: "Informe seus dados ou faca login para agendar.",
+  });
 
 export async function GET(request: NextRequest) {
   try {
     await ensureBookingSeedData();
 
-    const date = request.nextUrl.searchParams.get("date");
-    const customerId = request.nextUrl.searchParams.get("customerId");
+    const parsedQuery = listQuerySchema.safeParse({
+      date: request.nextUrl.searchParams.get("date") ?? undefined,
+      customerId: request.nextUrl.searchParams.get("customerId") ?? undefined,
+    });
+
+    if (!parsedQuery.success) {
+      return NextResponse.json(
+        { error: "Parametros de busca invalidos." },
+        { status: 400 },
+      );
+    }
+
+    const { date, customerId: requestedCustomerId } = parsedQuery.data;
+    const session = await getSessionFromRequest(request);
+
+    if (!session) {
+      return NextResponse.json(
+        { error: "Faca login para consultar agendamentos." },
+        { status: 401 },
+      );
+    }
+
+    const isAdmin = session.role === "ADMIN";
+
+    if (!isAdmin && requestedCustomerId && requestedCustomerId !== session.id) {
+      return NextResponse.json(
+        { error: "Voce nao tem permissao para ver esses agendamentos." },
+        { status: 403 },
+      );
+    }
+
+    if (!isAdmin && !requestedCustomerId) {
+      return NextResponse.json(
+        { error: "Informe o seu customerId para consultar seus agendamentos." },
+        { status: 403 },
+      );
+    }
+
+    const customerId = isAdmin ? requestedCustomerId : session.id;
     const where = {
       ...(date
         ? {
             startsAt: {
-              gte: new Date(`${date}T00:00:00`),
-              lte: new Date(`${date}T23:59:59`),
+              gte: new Date(`${date}T00:00:00${SAO_PAULO_OFFSET}`),
+              lte: new Date(`${date}T23:59:59${SAO_PAULO_OFFSET}`),
             },
           }
         : {}),
@@ -68,15 +121,11 @@ export async function GET(request: NextRequest) {
       })),
     });
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : "Nao foi possivel carregar os agendamentos.",
-      },
-      { status: 500 },
+    const { message, status } = resolveErrorResponse(
+      error,
+      "Nao foi possivel carregar os agendamentos.",
     );
+    return NextResponse.json({ error: message }, { status });
   }
 }
 
@@ -84,26 +133,31 @@ export async function POST(request: NextRequest) {
   try {
     await ensureBookingSeedData();
 
-    const body = (await request.json()) as CreateAppointmentBody;
-    const requiredFields = [
-      body.serviceName,
-      body.barberName,
-      body.date,
-      body.time,
-      body.customerId ?? body.customerName,
-      body.customerPhone,
-    ];
+    const parsedBody = createAppointmentSchema.safeParse(await request.json());
 
-    if (requiredFields.some((value) => !value?.trim())) {
+    if (!parsedBody.success) {
       return NextResponse.json(
         { error: "Preencha os campos obrigatorios para concluir o agendamento." },
         { status: 400 },
       );
     }
 
+    const body = parsedBody.data;
+
+    if (body.customerId) {
+      const session = await getSessionFromRequest(request);
+
+      if (!session || session.id !== body.customerId) {
+        return NextResponse.json(
+          { error: "Faca login novamente para agendar com sua conta." },
+          { status: 401 },
+        );
+      }
+    }
+
     const [service, barber] = await Promise.all([
-      getServiceByName(body.serviceName!.trim()),
-      getBarberByName(body.barberName!.trim()),
+      getServiceByName(body.serviceName),
+      getBarberByName(body.barberName),
     ]);
 
     if (!service || !barber) {
@@ -113,14 +167,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const customer =
-      body.customerId?.trim()
-        ? await prisma.customer.findUnique({ where: { id: body.customerId.trim() } })
-        : await upsertCustomerProfile({
-            name: body.customerName!.trim(),
-            phone: body.customerPhone!.trim(),
-            email: body.customerEmail,
-          });
+    const customer = body.customerId
+      ? await prisma.customer.findUnique({ where: { id: body.customerId } })
+      : await upsertCustomerProfile({
+          name: body.customerName!,
+          phone: body.customerPhone!,
+          email: body.customerEmail,
+        });
 
     if (!customer) {
       return NextResponse.json(
@@ -132,8 +185,8 @@ export async function POST(request: NextRequest) {
     const appointment = await createAppointment({
       service,
       barber,
-      date: body.date!.trim(),
-      time: body.time!.trim(),
+      date: body.date,
+      time: body.time,
       customerId: customer.id,
       customerName: customer.name,
       customerPhone: customer.phone,
@@ -147,14 +200,10 @@ export async function POST(request: NextRequest) {
       message: "Agendamento confirmado com sucesso.",
     });
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : "Nao foi possivel concluir o agendamento.",
-      },
-      { status: 400 },
+    const { message, status } = resolveErrorResponse(
+      error,
+      "Nao foi possivel concluir o agendamento.",
     );
+    return NextResponse.json({ error: message }, { status });
   }
 }

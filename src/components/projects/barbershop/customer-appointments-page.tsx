@@ -500,7 +500,6 @@ export function CustomerAppointmentsPage() {
         <Header
           config={config}
           homeLinks
-          homeBasePath="/portfolio/barbearia"
           profileHref="/agendamentos"
           profileTitle={customerSession ? `Perfil de ${customerSession.name}` : "Acesso do cliente"}
           profileName={customerSession?.name}

@@ -15,8 +15,6 @@ import sectionStyles from "./home-sections.module.css";
 import { FooterSection, Header } from "./home-page";
 import { fetchLoyalty, type LoyaltyResponse } from "./loyalty";
 import { ServiceBookingFlow } from "./service-booking-flow";
-import { readProductCart, writeProductCart } from "./cart-storage";
-import { products } from "./store-data";
 import { useSiteConfig } from "./use-site-config";
 import { buildWhatsappUrl } from "@/components/shared/whatsapp";
 import { formatWhatsappDisplay } from "@/components/shared/whatsapp";
@@ -29,13 +27,12 @@ const styles = {
   ...bookingPageStyles,
 };
 
-const REVIEW_STORAGE_KEY = "prime-cut-customer-reviews";
+const REVIEW_STORAGE_KEY = "dabi-agendai-customer-reviews";
 
 const tabItems = [
   "Serviços",
   "Profissionais",
   "Fidelidade",
-  "Produtos",
   "Pacotes",
   "Assinaturas",
   "Avaliações",
@@ -120,7 +117,6 @@ export function BookingPage() {
   const [activeTab, setActiveTab] = useState<TabItem>("Serviços");
   const [customerSession, setCustomerSession] = useState<CustomerSession | null>(null);
   const [loyalty, setLoyalty] = useState<LoyaltyResponse | null>(null);
-  const [productCart, setProductCart] = useState<string[]>([]);
   const [customerReviews, setCustomerReviews] = useState<ReviewItem[]>([]);
   const [googleReviews, setGoogleReviews] = useState<ReviewItem[]>([]);
   const [googleReviewsMessage, setGoogleReviewsMessage] = useState("");
@@ -135,7 +131,6 @@ export function BookingPage() {
     }
 
     syncCustomerSession();
-    setProductCart(readProductCart());
     setCustomerReviews(readCustomerReviews());
 
     async function loadGoogleReviews() {
@@ -215,17 +210,6 @@ export function BookingPage() {
     [config.plans],
   );
 
-  function toggleProductCart(productId: string) {
-    setProductCart((current) => {
-      const nextItems = current.includes(productId)
-        ? current.filter((item) => item !== productId)
-        : [...current, productId];
-
-      writeProductCart(nextItems);
-      return nextItems;
-    });
-  }
-
   function handleCreateReview() {
     if (!reviewName.trim() || !reviewText.trim()) {
       return;
@@ -294,37 +278,6 @@ export function BookingPage() {
               Abrir fidelidade
             </Link>
           </article>
-        </div>
-      );
-    }
-
-    if (activeTab === "Produtos") {
-      return (
-        <div className={styles.featureGrid}>
-          {products.map((product) => {
-            const isInCart = productCart.includes(product.id);
-            return (
-              <article className={styles.featureCard} key={product.id}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className={styles.featureImage} src={product.image} alt={product.name} />
-                <div className={styles.featureBody}>
-                  <strong>{product.name}</strong>
-                  <span>{product.description}</span>
-                  <div className={styles.metaRow}>
-                    <span>{product.price}</span>
-                    <span>{product.stock} em estoque</span>
-                  </div>
-                  <button
-                    className={isInCart ? styles.secondaryActionButton : styles.primaryActionButton}
-                    onClick={() => toggleProductCart(product.id)}
-                    type="button"
-                  >
-                    {isInCart ? "Remover do carrinho" : "Adicionar ao carrinho"}
-                  </button>
-                </div>
-              </article>
-            );
-          })}
         </div>
       );
     }
@@ -510,11 +463,6 @@ export function BookingPage() {
       description:
         "Veja o que você pode resgatar com seus pontos e abra sua página de fidelidade para acompanhar nível e progresso.",
     },
-    Produtos: {
-      title: "Produtos disponíveis para compra.",
-      description:
-        "Itens de finalização e manutenção do visual com indicação de estoque e ação rápida para o carrinho.",
-    },
     Pacotes: {
       title: "Pacotes pensados para rotina prática.",
       description:
@@ -540,7 +488,6 @@ export function BookingPage() {
         <Header
           config={config}
           homeLinks
-          homeBasePath="/portfolio/barbearia"
           profileHref="/agendamento"
           profileTitle={customerSession ? `Perfil de ${customerSession.name}` : "Acesso do cliente"}
           profileName={customerSession?.name}

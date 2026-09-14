@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import {
   ensureBookingSeedData,
   getBarberByName,
@@ -7,23 +8,34 @@ import {
   getTodayDateKey,
   listAvailableSlots,
 } from "@/lib/booking";
+import { resolveErrorResponse } from "@/lib/errors";
+
+const availabilityQuerySchema = z.object({
+  service: z.string().trim().min(1),
+  barber: z.string().trim().min(1),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data invalida."),
+  excludeAppointmentId: z.string().trim().min(1).optional(),
+});
 
 export async function GET(request: NextRequest) {
   try {
     await ensureBookingSeedData();
 
-    const serviceName = request.nextUrl.searchParams.get("service");
-    const barberName = request.nextUrl.searchParams.get("barber");
-    const date = request.nextUrl.searchParams.get("date") ?? getTodayDateKey();
-    const excludeAppointmentId =
-      request.nextUrl.searchParams.get("excludeAppointmentId") ?? undefined;
+    const parsedQuery = availabilityQuerySchema.safeParse({
+      service: request.nextUrl.searchParams.get("service") ?? undefined,
+      barber: request.nextUrl.searchParams.get("barber") ?? undefined,
+      date: request.nextUrl.searchParams.get("date") ?? getTodayDateKey(),
+      excludeAppointmentId: request.nextUrl.searchParams.get("excludeAppointmentId") ?? undefined,
+    });
 
-    if (!serviceName || !barberName) {
+    if (!parsedQuery.success) {
       return NextResponse.json(
         { error: "Servico e profissional sao obrigatorios." },
         { status: 400 },
       );
     }
+
+    const { service: serviceName, barber: barberName, date, excludeAppointmentId } = parsedQuery.data;
 
     const [service, barber] = await Promise.all([
       getServiceByName(serviceName),
@@ -51,14 +63,10 @@ export async function GET(request: NextRequest) {
       nextAvailable,
     });
   } catch (error) {
-    return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : "Nao foi possivel consultar a disponibilidade.",
-      },
-      { status: 500 },
+    const { message, status } = resolveErrorResponse(
+      error,
+      "Nao foi possivel consultar a disponibilidade.",
     );
+    return NextResponse.json({ error: message }, { status });
   }
 }
