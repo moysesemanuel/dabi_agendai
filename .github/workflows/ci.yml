@@ -42,17 +42,22 @@ jobs:
       ADMIN_NAME: Administrador
       ADMIN_EMAIL: admin@ci.local
       ADMIN_PHONE: "11999990000"
+      PLATFORM_ADMIN_EMAIL: platform-admin@ci.local
     steps:
       - uses: actions/checkout@v7
       - name: Gerar credenciais efemeras deste job (nao sao segredos reais)
         run: |
           echo "SESSION_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
           echo "ADMIN_PASSWORD=$(openssl rand -hex 16)" >> "$GITHUB_ENV"
+          echo "PLATFORM_SESSION_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+          echo "PLATFORM_ADMIN_PASSWORD=$(openssl rand -hex 16)" >> "$GITHUB_ENV"
       - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: yarn
       - run: yarn install --frozen-lockfile
+      - name: Gerar hash da senha do admin da plataforma
+        run: echo "PLATFORM_ADMIN_PASSWORD_HASH=$(yarn --silent hash-password "$PLATFORM_ADMIN_PASSWORD")" >> "$GITHUB_ENV"
       - run: npx prisma db push
       - name: Criar tenant de teste para o e2e
         run: |

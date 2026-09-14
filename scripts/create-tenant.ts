@@ -1,5 +1,6 @@
+import { UserFacingError } from "@/lib/errors";
+import { createTenantWithAdmin } from "@/lib/platform";
 import { prisma } from "@/lib/prisma";
-import { hashPassword } from "@/lib/password";
 
 function printUsageAndExit(): never {
   console.error(
@@ -30,10 +31,10 @@ function parseArgs(argv: string[]) {
   }
 
   const name = values["name"];
-  const domain = values["domain"]?.toLowerCase().trim();
+  const domain = values["domain"];
   const adminName = values["admin-name"];
-  const adminEmail = values["admin-email"]?.toLowerCase().trim();
-  const adminPhone = values["admin-phone"]?.replace(/\D/g, "");
+  const adminEmail = values["admin-email"];
+  const adminPhone = values["admin-phone"];
   const adminPassword = values["admin-password"];
 
   if (!name || !domain || !adminName || !adminEmail || !adminPhone || !adminPassword) {
@@ -53,26 +54,13 @@ async function main() {
     process.argv.slice(2),
   );
 
-  const existingTenant = await prisma.tenant.findUnique({ where: { domain } });
-
-  if (existingTenant) {
-    console.error(`Ja existe um tenant cadastrado para o dominio "${domain}".`);
-    process.exit(1);
-  }
-
-  const tenant = await prisma.tenant.create({
-    data: { name, domain },
-  });
-
-  const admin = await prisma.customer.create({
-    data: {
-      tenantId: tenant.id,
-      name: adminName,
-      email: adminEmail,
-      phone: adminPhone,
-      passwordHash: hashPassword(adminPassword),
-      role: "ADMIN",
-    },
+  const { tenant, admin } = await createTenantWithAdmin({
+    name,
+    domain,
+    adminName,
+    adminEmail,
+    adminPhone,
+    adminPassword,
   });
 
   console.log("Tenant criado com sucesso:");
@@ -90,7 +78,11 @@ async function main() {
 
 main()
   .catch((error) => {
-    console.error("Falha ao criar o tenant:", error);
+    if (error instanceof UserFacingError) {
+      console.error(error.message);
+    } else {
+      console.error("Falha ao criar o tenant:", error);
+    }
     process.exitCode = 1;
   })
   .finally(async () => {
