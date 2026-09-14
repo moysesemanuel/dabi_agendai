@@ -12,7 +12,7 @@
 }
 
 .main {
-  width: min(1120px, calc(100% - 48px));
+  width: min(1600px, calc(100% - 80px));
   margin: 0 auto;
   padding: 34px 0 64px;
 }
@@ -193,7 +193,7 @@
 }
 
 .bookingInner {
-  width: min(1120px, calc(100% - 48px));
+  width: min(1600px, calc(100% - 80px));
   margin: 0 auto;
   padding: 72px 0;
   display: grid;
@@ -476,7 +476,7 @@
 @media (max-width: 640px) {
   .main,
   .bookingInner {
-    width: min(1120px, calc(100% - 32px));
+    width: min(1600px, calc(100% - 40px));
   }
 
   .heroShell {

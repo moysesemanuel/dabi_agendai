@@ -13,7 +13,7 @@
 
 .main,
 .content {
-  width: min(1120px, calc(100% - 48px));
+  width: min(1600px, calc(100% - 80px));
   margin: 0 auto;
 }
 
@@ -270,7 +270,7 @@
 @media (max-width: 720px) {
   .main,
   .content {
-    width: min(1120px, calc(100% - 32px));
+    width: min(1600px, calc(100% - 40px));
   }
 
   .overviewStats {
