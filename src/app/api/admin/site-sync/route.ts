@@ -32,6 +32,13 @@ const barberSchema = z.object({
   role: z.string(),
 });
 
+const businessHoursSchema = z.object({
+  weekday: z.number().int().min(0).max(6),
+  closed: z.boolean(),
+  start: z.string().regex(/^\d{2}:\d{2}$/, "Horario invalido."),
+  end: z.string().regex(/^\d{2}:\d{2}$/, "Horario invalido."),
+});
+
 const closedDateSchema = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data invalida."),
   reason: z.string(),
@@ -76,6 +83,7 @@ const siteConfigSchema = z.object({
   loyaltyTiers: z.array(loyaltyTierSchema),
   loyaltyRewards: z.array(loyaltyRewardSchema),
   availableTimes: z.array(z.string()),
+  businessHours: z.array(businessHoursSchema),
   closedDates: z.array(closedDateSchema),
   barberTimeOff: z.array(barberTimeOffSchema),
   ignoredHolidayDates: z.array(z.string()),

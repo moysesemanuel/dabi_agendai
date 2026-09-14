@@ -14,7 +14,9 @@ import {
   type PlanItem,
   type LoyaltyRewardItem,
   type LoyaltyTierItem,
+  type BusinessHoursItem,
   SITE_CONFIG_UPDATED_EVENT,
+  weekdayLabels,
 } from "@/components/shared/site-config";
 import { useToast } from "@/components/shared/toast-provider";
 import { buildWhatsappUrl } from "@/components/shared/whatsapp";
@@ -1073,6 +1075,15 @@ export function AdminPage({ section = "overview" }: { section?: AdminSectionView
     }));
     setStatusMessage("Data bloqueada removida. Salve para aplicar no site.");
     showToast({ variant: "warning", title: "Aviso", message: "Data bloqueada removida. Salve para aplicar no site." });
+  }
+
+  function updateBusinessHoursDay(weekday: number, patch: Partial<BusinessHoursItem>) {
+    setConfig((current) => ({
+      ...current,
+      businessHours: current.businessHours.map((day) =>
+        day.weekday === weekday ? { ...day, ...patch } : day,
+      ),
+    }));
   }
 
   function addBarberTimeOff() {
@@ -2686,6 +2697,65 @@ export function AdminPage({ section = "overview" }: { section?: AdminSectionView
 
             {showScheduleSections ? (
               <>
+            <section className={styles.sectionSplitLayout} id="horario-funcionamento">
+              <article className={styles.contentCard}>
+                <div className={styles.contentCardHeader}>
+                  <p className={styles.sectionEyebrow}>Agenda</p>
+                  <h2>Horário de funcionamento</h2>
+                  <p>Defina o horário de atendimento para cada dia da semana.</p>
+                </div>
+                <div className={styles.stackedList}>
+                  {config.businessHours
+                    .slice()
+                    .sort((left, right) => left.weekday - right.weekday)
+                    .map((day) => (
+                      <div className={styles.inlineFormRow} key={day.weekday}>
+                        <div className={styles.formField}>
+                          <label>
+                            <input
+                              type="checkbox"
+                              checked={!day.closed}
+                              onChange={(event) =>
+                                updateBusinessHoursDay(day.weekday, { closed: !event.target.checked })
+                              }
+                            />{" "}
+                            {weekdayLabels[day.weekday]}
+                          </label>
+                        </div>
+                        {!day.closed ? (
+                          <>
+                            <div className={styles.formField}>
+                              <label htmlFor={`business-start-${day.weekday}`}>Abre</label>
+                              <input
+                                id={`business-start-${day.weekday}`}
+                                type="time"
+                                value={day.start}
+                                onChange={(event) =>
+                                  updateBusinessHoursDay(day.weekday, { start: event.target.value })
+                                }
+                              />
+                            </div>
+                            <div className={styles.formField}>
+                              <label htmlFor={`business-end-${day.weekday}`}>Fecha</label>
+                              <input
+                                id={`business-end-${day.weekday}`}
+                                type="time"
+                                value={day.end}
+                                onChange={(event) =>
+                                  updateBusinessHoursDay(day.weekday, { end: event.target.value })
+                                }
+                              />
+                            </div>
+                          </>
+                        ) : (
+                          <span className={styles.formFieldHint}>Fechado nesse dia</span>
+                        )}
+                      </div>
+                    ))}
+                </div>
+              </article>
+            </section>
+
             <section className={styles.sectionSplitLayout} id="agenda">
               <article className={styles.contentCard}>
                 <div className={styles.contentCardHeader}>
