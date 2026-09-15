@@ -118,7 +118,7 @@
 }
 
 .planCard a {
-  color: #8b6332;
+  color: var(--tenant-accent-dark);
   font-weight: 700;
 }
 
@@ -197,7 +197,7 @@
 }
 
 .testimonialCard strong {
-  color: #8b6332;
+  color: var(--tenant-accent-dark);
 }
 
 @media (max-width: 960px) {

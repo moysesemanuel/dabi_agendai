@@ -7,7 +7,7 @@
 .heroShell {
   padding-top: 132px;
   background:
-    radial-gradient(circle at top, rgba(195, 154, 92, 0.2), transparent 32%),
+    radial-gradient(circle at top, color-mix(in srgb, var(--tenant-accent) 20%, transparent), transparent 32%),
     linear-gradient(180deg, #201712 0%, #120e0b 100%);
 }
 
@@ -35,7 +35,7 @@
   position: relative;
   overflow: hidden;
   border-radius: 28px;
-  border: 1px solid rgba(195, 154, 92, 0.18);
+  border: 1px solid color-mix(in srgb, var(--tenant-accent) 18%, transparent);
   background: rgba(30, 22, 18, 0.7);
 }
 
@@ -66,7 +66,7 @@
   display: grid;
   gap: 18px;
   padding: 28px;
-  border: 1px solid rgba(195, 154, 92, 0.18);
+  border: 1px solid color-mix(in srgb, var(--tenant-accent) 18%, transparent);
   border-radius: 32px;
   background: rgba(30, 22, 18, 0.7);
   backdrop-filter: blur(16px);
@@ -127,7 +127,7 @@
   min-height: 46px;
   padding: 0 18px;
   border-radius: 999px;
-  border: 1px solid rgba(195, 154, 92, 0.18);
+  border: 1px solid color-mix(in srgb, var(--tenant-accent) 18%, transparent);
   background: rgba(245, 239, 230, 0.04);
   color: #f5efe6;
   font: inherit;
@@ -146,7 +146,7 @@
   display: grid;
   gap: 18px;
   padding: 28px;
-  border: 1px solid rgba(195, 154, 92, 0.18);
+  border: 1px solid color-mix(in srgb, var(--tenant-accent) 18%, transparent);
   border-radius: 28px;
   background: rgba(30, 22, 18, 0.7);
   backdrop-filter: blur(16px);

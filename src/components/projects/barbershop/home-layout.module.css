@@ -7,7 +7,7 @@
 .heroShell {
   padding-top: 104px;
   background:
-    radial-gradient(circle at top, rgba(195, 154, 92, 0.2), transparent 32%),
+    radial-gradient(circle at top, color-mix(in srgb, var(--tenant-accent) 20%, transparent), transparent 32%),
     linear-gradient(180deg, #201712 0%, #120e0b 100%);
 }
 
@@ -29,7 +29,7 @@
   align-items: center;
   gap: 24px;
   padding: 0px 24px;
-  border-bottom: 1px solid rgba(195, 154, 92, 0.12);
+  border-bottom: 1px solid color-mix(in srgb, var(--tenant-accent) 12%, transparent);
   background: rgba(18, 14, 11, 0.74);
   backdrop-filter: blur(16px);
   width: 100%;
@@ -101,7 +101,7 @@
   display: grid;
   gap: 14px;
   padding: 16px;
-  border: 1px solid rgba(195, 154, 92, 0.18);
+  border: 1px solid color-mix(in srgb, var(--tenant-accent) 18%, transparent);
   border-radius: 22px;
   background: rgba(24, 18, 14, 0.98);
   box-shadow: 0 24px 44px rgba(5, 4, 3, 0.34);
@@ -176,9 +176,9 @@
   justify-content: center;
   min-height: 42px;
   padding: 0 16px;
-  border: 1px solid rgba(195, 154, 92, 0.24);
+  border: 1px solid color-mix(in srgb, var(--tenant-accent) 24%, transparent);
   border-radius: 999px;
-  background: rgba(195, 154, 92, 0.12);
+  background: color-mix(in srgb, var(--tenant-accent) 12%, transparent);
   color: #f5efe6;
   font: inherit;
   font-weight: 700;
@@ -293,7 +293,7 @@
 
 .heroContent,
 .heroPanel {
-  border: 1px solid rgba(195, 154, 92, 0.18);
+  border: 1px solid color-mix(in srgb, var(--tenant-accent) 18%, transparent);
   border-radius: 32px;
   background: rgba(30, 22, 18, 0.7);
   backdrop-filter: blur(16px);
@@ -386,7 +386,7 @@
 .showcaseCard {
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(195, 154, 92, 0.18);
+  border: 1px solid color-mix(in srgb, var(--tenant-accent) 18%, transparent);
   border-radius: 28px;
   min-height: 220px;
 }
