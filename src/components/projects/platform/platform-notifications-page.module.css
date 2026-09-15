@@ -11,7 +11,7 @@
 
 .header p {
   margin: 0;
-  color: #8b949e;
+  color: rgba(238, 243, 250, 0.62);
   font-size: 0.9rem;
 }
 
@@ -21,16 +21,16 @@
 }
 
 .item {
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: #161b22;
+  border-radius: 18px;
+  border: 1px solid rgba(214, 234, 247, 0.1);
+  background: rgba(16, 29, 48, 0.72);
   padding: 16px 20px;
   display: grid;
   gap: 8px;
 }
 
 .itemUnread {
-  border-color: rgba(47, 129, 247, 0.4);
+  border-color: rgba(0, 182, 230, 0.4);
 }
 
 .itemTop {
@@ -58,17 +58,17 @@
 }
 
 .typeSupport {
-  background: rgba(47, 129, 247, 0.16);
-  color: #79b8ff;
+  background: rgba(0, 182, 230, 0.16);
+  color: #6fdcff;
 }
 
 .typeSystem {
-  background: rgba(139, 148, 158, 0.16);
-  color: #c9d1d9;
+  background: rgba(214, 234, 247, 0.14);
+  color: #d6eaf7;
 }
 
 .tenantTag {
-  color: #8b949e;
+  color: rgba(238, 243, 250, 0.6);
   font-size: 0.82rem;
 }
 
@@ -78,28 +78,37 @@
 }
 
 .message {
-  color: rgba(230, 237, 243, 0.82);
+  color: rgba(238, 243, 250, 0.82);
   font-size: 0.9rem;
   white-space: pre-wrap;
 }
 
 .date {
-  color: #6e7681;
+  color: rgba(238, 243, 250, 0.44);
   font-size: 0.78rem;
 }
 
 .readButton {
-  min-height: 30px;
-  padding: 0 12px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  min-height: 32px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(214, 234, 247, 0.16);
   background: transparent;
-  color: #e6edf3;
+  color: #eef3fa;
   cursor: pointer;
   font-size: 0.8rem;
   white-space: nowrap;
 }
 
+.readButton:hover {
+  border-color: rgba(0, 182, 230, 0.4);
+  background: rgba(0, 182, 230, 0.1);
+}
+
 .empty {
-  color: #8b949e;
+  color: rgba(238, 243, 250, 0.6);
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(214, 234, 247, 0.08);
+  background: rgba(16, 29, 48, 0.5);
 }
