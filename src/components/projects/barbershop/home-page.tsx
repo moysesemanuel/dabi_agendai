@@ -151,6 +151,7 @@ export function Header({
     homeBasePath !== "/" ? homeBasePath.replace(/\/$/, "") : homeBasePath;
   const homePrefix = homeLinks ? `${normalizedHomeBasePath}#` : "#";
   const [currentHash, setCurrentHash] = useState("");
+  const [isNavOpen, setIsNavOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<HeaderAuthMode>("login");
@@ -176,6 +177,10 @@ export function Header({
       window.removeEventListener("hashchange", syncHash);
     };
   }, []);
+
+  useEffect(() => {
+    setIsNavOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     function syncCartCount() {
@@ -317,21 +322,53 @@ export function Header({
   return (
     <>
       <header className={styles.header}>
-        <div>
+        <div className={styles.brandBlock}>
           <span className={styles.brand}>{config.businessName}</span>
           <p className={styles.brandTag}>{config.businessTag}</p>
         </div>
-        <nav className={styles.nav}>
+        <nav
+          className={`${styles.nav} ${isNavOpen ? styles.navOpen : ""}`}
+          id="site-nav"
+        >
         {navItems.map((item) => (
           <Link
             className={`${styles.navLink} ${isNavItemActive(item) ? styles.navLinkActive : ""}`}
             href={item.href}
             key={item.label}
+            onClick={() => setIsNavOpen(false)}
           >
             {item.label}
           </Link>
         ))}
       </nav>
+        <button
+          className={styles.navToggle}
+          onClick={() => setIsNavOpen((current) => !current)}
+          type="button"
+          aria-label={isNavOpen ? "Fechar menu" : "Abrir menu"}
+          aria-expanded={isNavOpen}
+          aria-controls="site-nav"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            {isNavOpen ? (
+              <path
+                d="M6 6l12 12M18 6L6 18"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+              />
+            ) : (
+              <path
+                d="M4 7h16M4 12h16M4 17h16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+              />
+            )}
+          </svg>
+        </button>
         <div className={styles.headerActions}>
           <Link
             className={styles.cartButton}
@@ -572,8 +609,8 @@ export function Header({
                       ? "Entrando..."
                       : "Criando conta..."
                     : authMode === "login"
-                      ? "Entrar"
-                      : "Criar conta"}
+                      ? "Entrar na conta"
+                      : "Criar minha conta"}
                 </button>
               </div>
             </form>

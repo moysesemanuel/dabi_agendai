@@ -23,8 +23,7 @@
 
 .introCard,
 .overviewCard,
-.rewardCard,
-.emptyCard {
+.rewardCard {
   border: 1px solid color-mix(in srgb, var(--tenant-accent) 18%, transparent);
   border-radius: 30px;
   background: rgba(30, 22, 18, 0.72);
@@ -53,9 +52,7 @@
 }
 
 .introCard p,
-.metaText,
-.rewardCard p,
-.emptyCard p {
+.metaText {
   color: rgba(245, 239, 230, 0.76);
   line-height: 1.75;
 }
@@ -195,6 +192,11 @@
   font-size: 1.2rem;
 }
 
+.rewardCard p {
+  color: rgba(31, 23, 18, 0.72);
+  line-height: 1.75;
+}
+
 .rewardPoints {
   display: inline-flex;
   align-items: center;
@@ -216,10 +218,20 @@
 
 .emptyCard {
   padding: 28px;
+  border: 1px solid rgba(31, 23, 18, 0.08);
+  border-radius: 28px;
+  background: #fcf8f2;
+  box-shadow: 0 16px 40px rgba(42, 31, 22, 0.06);
 }
 
 .emptyCard strong {
   font-size: 1.3rem;
+  color: #1f1712;
+}
+
+.emptyCard p {
+  color: rgba(31, 23, 18, 0.76);
+  line-height: 1.75;
 }
 
 .emptyActions {
