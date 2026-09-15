@@ -42,6 +42,25 @@
   gap: 12px;
 }
 
+.navToggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  border: 1px solid rgba(245, 239, 230, 0.16);
+  background: rgba(245, 239, 230, 0.06);
+  color: #f5efe6;
+  cursor: pointer;
+}
+
+.navToggle svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
 .profileMenu {
   position: relative;
 }
@@ -529,23 +548,45 @@
   }
 
   .header {
-    grid-template-columns: 1fr;
-    justify-items: stretch;
-    align-items: start;
-    gap: 14px;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    row-gap: 14px;
     height: auto;
     padding: 14px 24px;
   }
 
-  .nav {
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    gap: 16px;
+  .brandBlock {
+    grid-column: 1;
+  }
+
+  .navToggle {
+    display: inline-flex;
+    grid-column: 2;
   }
 
   .headerActions {
-    width: 100%;
+    grid-column: 3;
+    width: auto;
     justify-content: flex-end;
+  }
+
+  .nav {
+    grid-column: 1 / -1;
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(245, 239, 230, 0.1);
+  }
+
+  .navOpen {
+    display: flex;
+  }
+
+  .navLink {
+    width: 100%;
+    padding: 10px 0;
   }
 
   .footerInner {
@@ -597,6 +638,6 @@
   }
 
   .heroContent h1 {
-    font-size: 3.15rem;
+    font-size: clamp(1.9rem, 8vw, 2.6rem);
   }
 }
