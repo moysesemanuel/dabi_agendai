@@ -2,12 +2,15 @@
   min-height: 100vh;
   display: grid;
   grid-template-columns: 240px 1fr;
-  background: #0d1117;
-  color: #e6edf3;
+  background:
+    radial-gradient(circle at top, rgba(0, 182, 230, 0.1), transparent 32%),
+    linear-gradient(180deg, #101d30 0%, #0a1220 100%);
+  color: #eef3fa;
+  font-family: var(--font-body), sans-serif;
 }
 
 .sidebar {
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-right: 1px solid rgba(214, 234, 247, 0.1);
   padding: 24px 18px;
   display: grid;
   align-content: start;
@@ -23,9 +26,9 @@
 }
 
 .eyebrow {
-  color: #8b949e;
+  color: #00b6e6;
   font-size: 0.72rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -45,11 +48,12 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  color: #e6edf3;
+  padding: 10px 14px;
+  border-radius: 999px;
+  color: #eef3fa;
   text-decoration: none;
   font-size: 0.92rem;
+  border: 1px solid transparent;
 }
 
 .navBadge {
@@ -68,12 +72,13 @@
 }
 
 .navLink:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(214, 234, 247, 0.06);
 }
 
 .navLinkActive {
-  background: rgba(47, 129, 247, 0.16);
-  color: #79b8ff;
+  border-color: rgba(0, 182, 230, 0.32);
+  background: rgba(0, 182, 230, 0.14);
+  color: #6fdcff;
   font-weight: 600;
 }
 
@@ -81,11 +86,16 @@
   justify-self: start;
   min-height: 36px;
   padding: 0 14px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  border: 1px solid rgba(214, 234, 247, 0.16);
   background: transparent;
-  color: #e6edf3;
+  color: #eef3fa;
   cursor: pointer;
+}
+
+.logoutButton:hover {
+  border-color: rgba(0, 182, 230, 0.4);
+  background: rgba(0, 182, 230, 0.1);
 }
 
 .content {

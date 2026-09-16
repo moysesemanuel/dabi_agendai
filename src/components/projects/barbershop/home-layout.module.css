@@ -7,8 +7,9 @@
 .heroShell {
   padding-top: 104px;
   background:
-    radial-gradient(circle at top, color-mix(in srgb, var(--tenant-accent) 20%, transparent), transparent 32%),
-    linear-gradient(180deg, #201712 0%, #120e0b 100%);
+    radial-gradient(circle at 16% 0%, color-mix(in srgb, var(--tenant-accent) 28%, transparent), transparent 42%),
+    radial-gradient(circle at 84% 10%, color-mix(in srgb, var(--tenant-accent-light) 18%, transparent), transparent 38%),
+    linear-gradient(180deg, #201712 0%, #120e0b 62%);
 }
 
 .header,
@@ -40,6 +41,25 @@
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.navToggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  border: 1px solid rgba(245, 239, 230, 0.16);
+  background: rgba(245, 239, 230, 0.06);
+  color: #f5efe6;
+  cursor: pointer;
+}
+
+.navToggle svg {
+  width: 20px;
+  height: 20px;
+  display: block;
 }
 
 .profileMenu {
@@ -118,7 +138,7 @@
 }
 
 .profileIdentity span {
-  color: rgba(245, 239, 230, 0.68);
+  color: var(--text-faint-on-dark);
   line-height: 1.5;
 }
 
@@ -143,7 +163,7 @@
 
 .profileMeta span,
 .profileMetaLink span {
-  color: rgba(245, 239, 230, 0.68);
+  color: var(--text-faint-on-dark);
 }
 
 .profileMeta strong,
@@ -280,15 +300,15 @@
 .hero {
   display: grid;
   grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.75fr);
-  gap: 24px;
+  gap: var(--space-5);
   align-items: stretch;
 }
 
 .heroGallery {
   display: grid;
   grid-template-columns: 1.1fr 1fr 0.9fr;
-  gap: 20px;
-  margin-top: 20px;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
 }
 
 .heroContent,
@@ -297,6 +317,9 @@
   border-radius: 32px;
   background: rgba(30, 22, 18, 0.7);
   backdrop-filter: blur(16px);
+  box-shadow:
+    0 40px 80px -32px rgba(5, 3, 2, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .heroContent {
@@ -324,13 +347,14 @@
 .heroContent h1 {
   max-width: 11ch;
   font-size: clamp(3.6rem, 7vw, 6.2rem);
+  font-weight: 700;
   line-height: 0.94;
 }
 
 .description,
 .heroPanel p {
   max-width: 62ch;
-  color: rgba(245, 239, 230, 0.78);
+  color: var(--text-secondary-on-dark);
   line-height: 1.75;
 }
 
@@ -349,6 +373,7 @@
 
 .heroPanel h2 {
   font-size: 2.5rem;
+  font-weight: 500;
   line-height: 0.98;
 }
 
@@ -423,7 +448,9 @@
 }
 
 .contentSurface {
-  background: #f3ede4;
+  background:
+    radial-gradient(circle at 92% 0%, color-mix(in srgb, var(--tenant-accent) 10%, transparent), transparent 34%),
+    #f3ede4;
   color: #1f1712;
 }
 
@@ -443,7 +470,7 @@
 }
 
 .footerLegalLinks a {
-  color: rgba(31, 23, 18, 0.6);
+  color: var(--text-faint-on-light);
   text-decoration: underline;
 }
 
@@ -457,7 +484,7 @@
 }
 
 .footerLabel {
-  color: rgba(31, 23, 18, 0.68);
+  color: var(--text-faint-on-light);
   line-height: 1.7;
 }
 
@@ -500,6 +527,11 @@
     transform: translateY(-2px);
   }
 
+  .headerCta:hover,
+  .primary:hover {
+    box-shadow: 0 14px 30px -10px color-mix(in srgb, var(--tenant-accent) 55%, transparent);
+  }
+
   .secondary:hover {
     background: rgba(245, 239, 230, 0.08);
   }
@@ -529,23 +561,45 @@
   }
 
   .header {
-    grid-template-columns: 1fr;
-    justify-items: stretch;
-    align-items: start;
-    gap: 14px;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    row-gap: 14px;
     height: auto;
     padding: 14px 24px;
   }
 
-  .nav {
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    gap: 16px;
+  .brandBlock {
+    grid-column: 1;
+  }
+
+  .navToggle {
+    display: inline-flex;
+    grid-column: 2;
   }
 
   .headerActions {
-    width: 100%;
+    grid-column: 3;
+    width: auto;
     justify-content: flex-end;
+  }
+
+  .nav {
+    grid-column: 1 / -1;
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(245, 239, 230, 0.1);
+  }
+
+  .navOpen {
+    display: flex;
+  }
+
+  .navLink {
+    width: 100%;
+    padding: 10px 0;
   }
 
   .footerInner {
@@ -597,6 +651,6 @@
   }
 
   .heroContent h1 {
-    font-size: 3.15rem;
+    font-size: clamp(1.9rem, 8vw, 2.6rem);
   }
 }
