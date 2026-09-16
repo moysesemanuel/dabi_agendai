@@ -12,6 +12,25 @@
   --tenant-accent: #c39a5c;
   --tenant-accent-light: color-mix(in srgb, var(--tenant-accent) 65%, white 35%);
   --tenant-accent-dark: color-mix(in srgb, var(--tenant-accent) 80%, black 20%);
+
+  /* Escala de espaçamento: substitui os valores quase-duplicados (18/20,
+     28, 72) que cada CSS module vinha reinventando sozinho. */
+  --space-1: 8px;
+  --space-2: 12px;
+  --space-3: 16px;
+  --space-4: 20px;
+  --space-5: 24px;
+  --space-6: 28px;
+  --space-7: 44px;
+  --space-8: 72px;
+  --space-9: 104px;
+
+  /* Texto secundário: um papel, um token, em vez de rgba solto com
+     opacidade escolhida arquivo por arquivo. */
+  --text-secondary-on-light: rgba(31, 23, 18, 0.75);
+  --text-faint-on-light: rgba(31, 23, 18, 0.64);
+  --text-secondary-on-dark: rgba(245, 239, 230, 0.78);
+  --text-faint-on-dark: rgba(245, 239, 230, 0.68);
 }
 
 html {

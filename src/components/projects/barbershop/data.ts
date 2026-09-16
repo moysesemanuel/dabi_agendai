@@ -6,12 +6,12 @@ export const plans = [
   },
   {
     name: "Cabelo Ilimitado",
-    summary: "Para clientes que preferem visual impecável durante todo o mês.",
+    summary: "Para quem corta o cabelo quantas vezes quiser, sem contar visita.",
     price: "R$ 149,90",
   },
   {
     name: "Cabelo + Barba",
-    summary: "Plano completo para manter o visual sempre alinhado.",
+    summary: "Cabelo e barba alinhados no mesmo agendamento, todo mês.",
     price: "R$ 219,90",
   },
 ] as const;
@@ -19,7 +19,7 @@ export const plans = [
 export const services = [
   {
     name: "Cabelo",
-    description: "Corte personalizado com acabamento preciso.",
+    description: "Corte sob medida — do degradê ao social, com acabamento na tesoura.",
     price: "R$ 60",
     membership: "R$ 149,90 no clube",
     duration: "40 min",

@@ -77,7 +77,7 @@ function getTodayDateString() {
 
 function formatNextAvailable(slot: NextAvailableSlot) {
   if (!slot) {
-    return "Agenda temporariamente indisponivel";
+    return "Agenda temporariamente indisponível";
   }
 
   const today = getTodayDateString();
@@ -88,7 +88,7 @@ function formatNextAvailable(slot: NextAvailableSlot) {
     slot.date === today
       ? "Hoje"
       : slot.date === tomorrow
-        ? "Amanha"
+        ? "Amanhã"
         : new Intl.DateTimeFormat("pt-BR", {
             day: "2-digit",
             month: "2-digit",
@@ -268,7 +268,7 @@ export function Header({
       };
 
       if (!response.ok || !payload.customer) {
-        throw new Error(payload.error ?? "Nao foi possivel acessar sua conta.");
+        throw new Error(payload.error ?? "Não foi possível acessar sua conta.");
       }
 
       writeCustomerSession(payload.customer);
@@ -282,7 +282,7 @@ export function Header({
       });
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Nao foi possivel acessar sua conta.";
+        error instanceof Error ? error.message : "Não foi possível acessar sua conta.";
       setAuthError(message);
       showToast({ variant: "error", message });
     } finally {
@@ -631,7 +631,7 @@ function HeroSection({
   return (
     <section className={styles.hero}>
       <div className={styles.heroContent}>
-        <p className={styles.kicker}>Seu estilo tratado com padrão de studio</p>
+        <p className={styles.kicker}>Corte, barba e acabamento sob agendamento</p>
         <h1>{config.headline}</h1>
         <p className={styles.description}>{config.heroDescription}</p>
         <div className={styles.ctas}>
@@ -645,11 +645,11 @@ function HeroSection({
       </div>
 
       <div className={styles.heroPanel}>
-        <span className={styles.panelTag}>Atendimento com hora marcada</span>
-        <h2>Agende em poucos passos. Atendimento no horário, sem espera.</h2>
+        <span className={styles.panelTag}>Agenda em tempo real</span>
+        <h2>Veja o próximo horário livre agora.</h2>
         <p>
-          Escolha o serviço, selecione o profissional e confirme seu horário em
-          poucos passos.
+          Escolha o serviço, o profissional e o horário — a confirmação chega
+          na hora.
         </p>
         <div className={styles.panelHighlights}>
           <div>
@@ -701,17 +701,16 @@ function AboutSection() {
     <section className={styles.aboutSection} id="studio">
       <SectionHeading
         eyebrow="Nosso negócio é o seu estilo"
-        title="Mais que agenda cheia: padrão de atendimento e resultado."
+        title="Cada barbeiro tem uma especialidade. Você escolhe a sua."
       />
       <div className={styles.aboutGrid}>
         <article className={styles.aboutCardLarge}>
-          <p className={styles.benefitsTitle}>Por que escolher a gente?</p>
+          <p className={styles.benefitsTitle}>O que você ganha ao virar cliente</p>
           <ul className={styles.benefitsList}>
-            <li>Atendimento personalizado para o seu estilo</li>
-            <li>Profissionais experientes e atualizados</li>
-            <li>Ambiente confortável e acolhedor</li>
-            <li>Agendamento prático e rápido</li>
-            <li>Resultado consistente em cada visita</li>
+            <li>Rafael no degradê, Mateus na barba clássica, João no contemporâneo.</li>
+            <li>Clube com corte ilimitado por um valor fixo todo mês.</li>
+            <li>Agenda com horário real — sem fila, sem combinar por WhatsApp.</li>
+            <li>Pontos de fidelidade em cada visita, trocáveis por upgrades no corte.</li>
           </ul>
         </article>
       </div>
@@ -724,7 +723,7 @@ function PlansSection({ config }: { config: SiteConfig }) {
     <section className={styles.section} id="clube">
       <SectionHeading
         eyebrow="Clube Prime"
-        title="Planos pensados para fidelização e recorrência."
+        title="Se você já vem todo mês, pague menos por isso."
       />
       <div className={styles.planGrid}>
         {config.plans.map((plan) => (
@@ -732,7 +731,7 @@ function PlansSection({ config }: { config: SiteConfig }) {
             <h3>{plan.name}</h3>
             <p>{plan.summary}</p>
             <strong>{plan.price}</strong>
-            <a href="#contato">Saiba mais</a>
+            <a href="#contato">Quero esse plano</a>
           </article>
         ))}
       </div>
@@ -745,7 +744,7 @@ function ServicesSection({ config }: { config: SiteConfig }) {
     <section className={styles.section} id="servicos">
       <SectionHeading
         eyebrow="Serviços"
-        title="Catálogo claro, preços objetivos e atendimento com tempo definido."
+        title="Preço e duração antes de sentar na cadeira."
       />
       <div className={styles.serviceGrid}>
         {config.services.map((service) => (
@@ -863,7 +862,7 @@ export function BookingSection({
         const payload = (await response.json()) as AvailabilityResponse & { error?: string };
 
         if (!response.ok) {
-          throw new Error(payload.error ?? "Nao foi possivel consultar os horarios.");
+          throw new Error(payload.error ?? "Não foi possível consultar os horários.");
         }
 
         if (!active) {
@@ -874,7 +873,7 @@ export function BookingSection({
         setAvailableTimes(payload.slots);
         setAvailabilityMessage(
           payload.closedReason ??
-            (payload.slots.length === 0 ? "Nenhum horario livre para esta selecao." : ""),
+            (payload.slots.length === 0 ? "Nenhum horário livre para esta seleção." : ""),
         );
         setSelectedTime((currentTime) =>
           payload.slots.includes(currentTime) ? currentTime : payload.slots[0] ?? "",
@@ -890,7 +889,7 @@ export function BookingSection({
         setAvailabilityMessage(
           error instanceof Error
             ? error.message
-            : "Nao foi possivel consultar os horarios.",
+            : "Não foi possível consultar os horários.",
         );
       } finally {
         if (active) {
@@ -912,7 +911,7 @@ export function BookingSection({
     if (!selectedTime) {
       setBookingFeedback({
         type: "error",
-        message: "Selecione um horario disponivel antes de confirmar.",
+        message: "Selecione um horário disponível antes de confirmar.",
       });
       return;
     }
@@ -946,7 +945,7 @@ export function BookingSection({
       const payload = (await response.json()) as { message?: string; error?: string };
 
       if (!response.ok) {
-        throw new Error(payload.error ?? "Nao foi possivel concluir o agendamento.");
+        throw new Error(payload.error ?? "Não foi possível concluir o agendamento.");
       }
 
       setBookingFeedback({
@@ -969,7 +968,7 @@ export function BookingSection({
         message:
           error instanceof Error
             ? error.message
-            : "Nao foi possivel concluir o agendamento.",
+            : "Não foi possível concluir o agendamento.",
       });
     } finally {
       setIsSubmitting(false);
@@ -1054,12 +1053,12 @@ export function BookingSection({
           <div className={styles.bookingIntro}>
             <span className={styles.panelTag}>Horários disponíveis</span>
             <h3>{formattedDate}</h3>
-            <p>Selecione o horário ideal e confirme em minutos.</p>
+            <p>Selecione um horário e confirme em minutos.</p>
           </div>
 
           <div className={styles.timeGrid}>
             {loadingAvailability ? (
-              <p className={styles.bookingStatus}>Carregando horarios...</p>
+              <p className={styles.bookingStatus}>Carregando horários...</p>
             ) : availableTimes.length > 0 ? (
               availableTimes.map((time) => (
                 <button
@@ -1393,7 +1392,7 @@ export function HomePage({ homeBasePath = "/" }: { homeBasePath?: string }) {
         const payload = (await response.json()) as AvailabilityResponse & { error?: string };
 
         if (!response.ok) {
-          throw new Error(payload.error ?? "Nao foi possivel consultar a agenda.");
+          throw new Error(payload.error ?? "Não foi possível consultar a agenda.");
         }
 
         if (active) {
