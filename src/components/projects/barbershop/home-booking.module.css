@@ -122,15 +122,15 @@
   border: 1px solid rgba(139, 99, 50, 0.24);
   border-radius: 999px;
   background: #fff;
-  color: #8b6332;
+  color: var(--tenant-accent-dark);
   font: inherit;
   font-weight: 700;
   cursor: pointer;
 }
 
 .timeSlotActive {
-  background: #8b6332;
-  border-color: #8b6332;
+  background: var(--tenant-accent-dark);
+  border-color: var(--tenant-accent-dark);
   color: #fff;
 }
 

@@ -7,7 +7,7 @@
 .heroShell {
   padding-top: 132px;
   background:
-    radial-gradient(circle at top, rgba(195, 154, 92, 0.2), transparent 32%),
+    radial-gradient(circle at top, color-mix(in srgb, var(--tenant-accent) 20%, transparent), transparent 32%),
     linear-gradient(180deg, #201712 0%, #120e0b 100%);
 }
 
@@ -25,7 +25,7 @@
 .overviewCard,
 .rewardCard,
 .emptyCard {
-  border: 1px solid rgba(195, 154, 92, 0.18);
+  border: 1px solid color-mix(in srgb, var(--tenant-accent) 18%, transparent);
   border-radius: 30px;
   background: rgba(30, 22, 18, 0.72);
   backdrop-filter: blur(16px);
@@ -119,7 +119,7 @@
 .progressFill {
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--tenant-accent) 0%, #f2c46d 100%);
+  background: linear-gradient(90deg, var(--tenant-accent) 0%, var(--tenant-accent-light) 100%);
 }
 
 .progressMeta {
@@ -202,7 +202,7 @@
   min-height: 36px;
   padding: 0 12px;
   border-radius: 999px;
-  background: rgba(195, 154, 92, 0.16);
+  background: color-mix(in srgb, var(--tenant-accent) 16%, transparent);
   color: #7b5a2f;
   font-size: 0.82rem;
   font-weight: 800;
