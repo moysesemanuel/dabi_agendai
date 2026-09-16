@@ -590,8 +590,8 @@ export function ServiceBookingFlow({ config }: { config: SiteConfig }) {
                       ? "Entrando..."
                       : "Criando conta..."
                     : authMode === "login"
-                      ? "Entrar"
-                      : "Criar conta"}
+                      ? "Entrar e continuar"
+                      : "Criar conta e continuar"}
                 </button>
               </div>
             </form>

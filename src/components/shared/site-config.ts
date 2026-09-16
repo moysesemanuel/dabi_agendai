@@ -109,9 +109,9 @@ export const weekdayLabels = [
 export const defaultSiteConfig: SiteConfig = {
   businessName: "Prime Cut Studio",
   businessTag: "Barbearia premium",
-  headline: "Visual alinhado, atendimento pontual e experiência premium.",
+  headline: "Hora marcada, cadeira livre e corte no ponto.",
   heroDescription:
-    "Cortes precisos, atendimento pontual e uma experiência pensada para quem valoriza resultado.",
+    "Profissionais especializados em degradê, navalha e barba clássica — sem pressa, sem imprevisto.",
   whatsapp: "(11) 99876-4521",
   address: "Rua Haddock Lobo",
   addressNumber: "412",
