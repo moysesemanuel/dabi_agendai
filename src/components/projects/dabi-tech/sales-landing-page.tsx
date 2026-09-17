@@ -106,7 +106,7 @@ export function SalesLandingPage() {
     <div className={`${styles.page} ${spaceGrotesk.variable} ${inter.variable}`}>
       <div className={styles.dark}>
         <header className={styles.header}>
-          <DaBiTechLogo className={styles.logo} />
+          <DaBiTechLogo className={styles.logo} variant="light" />
           <div className={styles.headerLinks}>
             <Link className={styles.headerLogin} href="/platform/login">
               Já sou cliente
@@ -278,7 +278,7 @@ export function SalesLandingPage() {
         </section>
 
         <footer className={styles.footer}>
-          <DaBiTechLogo className={styles.footerLogo} />
+          <DaBiTechLogo className={styles.footerLogo} variant="light" />
           <div className={styles.footerLinks}>
             <Link href="/privacidade">Privacidade</Link>
           </div>
