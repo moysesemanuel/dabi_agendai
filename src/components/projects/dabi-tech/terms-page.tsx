@@ -14,13 +14,13 @@ export function TermsPage() {
     <div className={`${styles.page} ${inter.variable}`}>
       <header className={styles.header}>
         <DaBiTechLogo className={styles.logo} variant="light" />
-        <Link className={styles.backLink} href="/barbearias">
-          Voltar
-        </Link>
       </header>
 
       <main className={styles.main}>
         <div className={styles.intro}>
+          <Link className={styles.backLink} href="/barbearias">
+            ← Voltar
+          </Link>
           <span>Termos de Uso</span>
           <h1>Termos de Uso do DaBi Agendaí</h1>
           <p>
