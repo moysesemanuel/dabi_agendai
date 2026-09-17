@@ -1,8 +1,14 @@
 type DaBiTechLogoProps = {
   className?: string;
+  variant?: "navy" | "light";
 };
 
-export function DaBiTechLogo({ className }: DaBiTechLogoProps) {
+export function DaBiTechLogo({ className, variant = "navy" }: DaBiTechLogoProps) {
+  const isLight = variant === "light";
+  const markFill = isLight ? "#eef3fa" : "#0B2A57";
+  const markIconFill = isLight ? "#0B2A57" : "#ffffff";
+  const wordmarkFill = isLight ? "#eef3fa" : "#0B2A57";
+
   return (
     <svg
       className={className}
@@ -12,12 +18,12 @@ export function DaBiTechLogo({ className }: DaBiTechLogoProps) {
       aria-label="DaBi Tech Digital Solutions"
     >
       <g transform="translate(120,85)">
-        <rect x="0" y="0" width="110" height="110" rx="24" ry="24" fill="#0B2A57" />
+        <rect x="0" y="0" width="110" height="110" rx="24" ry="24" fill={markFill} />
 
         <g transform="translate(5,0)">
           <path
             d="M25 10 H53 C73 10 88 22 88 35 C88 48 73 60 53 60 H25 Z"
-            fill="#ffffff"
+            fill={markIconFill}
           />
           <path
             d="M25 50 H53 C73 50 88 62 88 75 C88 88 73 100 53 100 H25 Z"
@@ -33,7 +39,7 @@ export function DaBiTechLogo({ className }: DaBiTechLogoProps) {
         fontSize="64"
         fontFamily="Inter, system-ui, Arial, sans-serif"
         fontWeight="700"
-        fill="#0B2A57"
+        fill={wordmarkFill}
       >
         DaBi Tech
       </text>
