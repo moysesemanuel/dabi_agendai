@@ -428,6 +428,11 @@
   opacity: 0.9;
 }
 
+.footerSignature {
+  font-size: 0.86rem;
+  color: var(--muted-on-dark);
+}
+
 .footerLinks {
   display: flex;
   gap: var(--space-5);

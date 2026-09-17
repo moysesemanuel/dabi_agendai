@@ -282,6 +282,7 @@ export default async function Page() {
             <DaBiTechSignature
               containerClassName={styles.adminFooterInner}
               labelClassName={styles.adminFooterLabel}
+              labelLinkClassName={styles.adminFooterLabelLink}
               logoClassName={styles.adminFooterLogo}
               linkClassName={styles.adminFooterLink}
             />

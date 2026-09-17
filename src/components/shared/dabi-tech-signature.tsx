@@ -4,6 +4,7 @@ import { DaBiTechLogo } from "@/components/shared/dabi-tech-logo";
 type DaBiTechSignatureProps = {
   containerClassName?: string;
   labelClassName?: string;
+  labelLinkClassName?: string;
   logoClassName?: string;
   linkClassName?: string;
 };
@@ -11,6 +12,7 @@ type DaBiTechSignatureProps = {
 export function DaBiTechSignature({
   containerClassName,
   labelClassName,
+  labelLinkClassName,
   logoClassName,
   linkClassName,
 }: DaBiTechSignatureProps) {
@@ -18,14 +20,18 @@ export function DaBiTechSignature({
 
   return (
     <div className={containerClassName}>
+      <p className={labelClassName}>
+        Desenvolvido por{" "}
+        <Link className={labelLinkClassName} href="/barbearias">
+          DaBi Tech - Digital Solutions
+        </Link>{" "}
+        © {year}
+      </p>
       <Link
         className={linkClassName}
         href="/barbearias"
         aria-label="Conhecer o DaBi Agendaí para a sua barbearia"
       >
-        <p className={labelClassName}>
-          Desenvolvido por DaBi Tech - Digital Solutions © {year}
-        </p>
         <DaBiTechLogo className={logoClassName} />
       </Link>
     </div>

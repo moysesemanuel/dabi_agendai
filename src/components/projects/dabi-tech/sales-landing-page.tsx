@@ -278,6 +278,9 @@ export function SalesLandingPage() {
 
         <footer className={styles.footer}>
           <DaBiTechLogo className={styles.footerLogo} variant="light" />
+          <p className={styles.footerSignature}>
+            Desenvolvido por DaBi Tech - Digital Solutions © {new Date().getFullYear()}
+          </p>
           <div className={styles.footerLinks}>
             <Link href="/termos-de-uso">Termos de Uso</Link>
           </div>
