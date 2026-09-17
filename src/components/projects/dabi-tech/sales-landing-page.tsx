@@ -21,6 +21,10 @@ const WHATSAPP_MESSAGE =
   "Oi! Vi a página do DaBi Agendaí e quero saber como colocar minha barbearia lá.";
 const whatsappUrl = buildWhatsappUrl(WHATSAPP_PHONE, WHATSAPP_MESSAGE);
 
+const WHATSAPP_CLIENT_MESSAGE =
+  "Oi! Já sou cliente do DaBi Agendaí e preciso de ajuda pra acessar minha conta.";
+const whatsappClientUrl = buildWhatsappUrl(WHATSAPP_PHONE, WHATSAPP_CLIENT_MESSAGE);
+
 const beforeSlots = [
   { time: "08:40", text: '"oi, vc abre hj?"' },
   { time: "09:15", text: '"tem horário pra sábado de manhã?"' },
@@ -110,9 +114,14 @@ export function SalesLandingPage() {
         <header className={styles.header}>
           <DaBiTechLogo className={styles.logo} variant="light" />
           <div className={styles.headerLinks}>
-            <Link className={styles.headerLogin} href="/platform/login">
+            <a
+              className={styles.headerLogin}
+              href={whatsappClientUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
               Já sou cliente
-            </Link>
+            </a>
             <a className={styles.buttonPrimary} href={whatsappUrl} target="_blank" rel="noreferrer">
               Falar no WhatsApp
             </a>
