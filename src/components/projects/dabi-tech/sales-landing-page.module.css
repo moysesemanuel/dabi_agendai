@@ -52,16 +52,6 @@
   gap: var(--space-5);
 }
 
-.headerLogin {
-  font-size: 0.92rem;
-  color: var(--muted-on-dark);
-  white-space: nowrap;
-}
-
-.headerLogin:hover {
-  color: #eef3fa;
-}
-
 /* Buttons */
 
 .buttonPrimary {
