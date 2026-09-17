@@ -1250,6 +1250,7 @@ export function FooterSection() {
       <DaBiTechSignature
         containerClassName={styles.footerInner}
         labelClassName={styles.footerLabel}
+        labelLinkClassName={styles.footerLabelLink}
         logoClassName={styles.footerLogo}
         linkClassName={styles.footerLink}
       />

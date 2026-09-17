@@ -488,6 +488,12 @@
   line-height: 1.7;
 }
 
+.footerLabelLink {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .footerLogo {
   width: 220px;
   max-width: 100%;

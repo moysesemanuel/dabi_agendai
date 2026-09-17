@@ -415,8 +415,8 @@
 .footer {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
+  justify-content: flex-start;
+  gap: var(--space-6);
   padding: var(--space-6) var(--space-4) var(--space-7);
   border-top: 1px solid rgba(238, 243, 250, 0.12);
   flex-wrap: wrap;
@@ -426,6 +426,22 @@
   width: 180px;
   height: auto;
   opacity: 0.9;
+}
+
+.footerSignature {
+  font-size: 0.86rem;
+  color: var(--muted-on-dark);
+}
+
+.footerLinks {
+  display: flex;
+  gap: var(--space-5);
+  font-size: 0.86rem;
+  color: var(--muted-on-dark);
+}
+
+.footerLinks a:hover {
+  color: #eef3fa;
 }
 
 @media (max-width: 860px) {
@@ -454,10 +470,6 @@
 
   .painRow {
     grid-template-columns: 2rem 1fr;
-  }
-
-  .footer {
-    justify-content: flex-start;
   }
 }
 

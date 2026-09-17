@@ -1,10 +1,10 @@
+import Link from "next/link";
 import { DaBiTechLogo } from "@/components/shared/dabi-tech-logo";
-
-export const DABI_TECH_CONTACT_URL = "https://wa.me/5541920038570";
 
 type DaBiTechSignatureProps = {
   containerClassName?: string;
   labelClassName?: string;
+  labelLinkClassName?: string;
   logoClassName?: string;
   linkClassName?: string;
 };
@@ -12,21 +12,28 @@ type DaBiTechSignatureProps = {
 export function DaBiTechSignature({
   containerClassName,
   labelClassName,
+  labelLinkClassName,
   logoClassName,
   linkClassName,
 }: DaBiTechSignatureProps) {
+  const year = new Date().getFullYear();
+
   return (
     <div className={containerClassName}>
-      <p className={labelClassName}>Criado por DaBi Tech - Digital Solutions - Todos os direitos reservados</p>
-      <a
+      <p className={labelClassName}>
+        Desenvolvido por{" "}
+        <Link className={labelLinkClassName} href="/barbearias">
+          DaBi Tech - Digital Solutions
+        </Link>{" "}
+        © {year}
+      </p>
+      <Link
         className={linkClassName}
-        href={DABI_TECH_CONTACT_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Abrir contato da DaBi Tech em nova aba"
+        href="/barbearias"
+        aria-label="Conhecer o DaBi Agendaí para a sua barbearia"
       >
         <DaBiTechLogo className={logoClassName} />
-      </a>
+      </Link>
     </div>
   );
 }

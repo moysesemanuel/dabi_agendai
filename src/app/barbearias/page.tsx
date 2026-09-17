@@ -9,17 +9,17 @@ export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
   alternates: {
-    canonical: "/para-barbearias",
+    canonical: "/barbearias",
   },
   icons: {
-    icon: "/para-barbearias/icon.svg",
-    shortcut: "/para-barbearias/icon.svg",
-    apple: "/para-barbearias/icon.svg",
+    icon: "/barbearias/icon.svg",
+    shortcut: "/barbearias/icon.svg",
+    apple: "/barbearias/icon.svg",
   },
   openGraph: {
     title: TITLE,
     description: DESCRIPTION,
-    url: "/para-barbearias",
+    url: "/barbearias",
     siteName: "DaBi Agendaí",
     locale: "pt_BR",
     type: "website",
