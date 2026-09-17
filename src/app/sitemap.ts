@@ -5,7 +5,7 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://dabiagendai.vercel
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
-      url: `${SITE_URL}/para-barbearias`,
+      url: `${SITE_URL}/barbearias`,
       changeFrequency: "monthly",
       priority: 1,
     },
