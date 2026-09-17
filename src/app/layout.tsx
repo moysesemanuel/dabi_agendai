@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { BackToTopButton } from "@/components/shared/back-to-top-button";
 import { ToastProvider } from "@/components/shared/toast-provider";
@@ -27,6 +28,7 @@ export default function RootLayout({
           {children}
           <BackToTopButton />
         </ToastProvider>
+        <Analytics />
       </body>
     </html>
   );
