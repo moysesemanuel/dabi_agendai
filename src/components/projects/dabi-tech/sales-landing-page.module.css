@@ -427,17 +427,6 @@
   opacity: 0.9;
 }
 
-.footerLinks {
-  display: flex;
-  gap: var(--space-5);
-  font-size: 0.86rem;
-  color: var(--muted-on-dark);
-}
-
-.footerLinks a:hover {
-  color: #eef3fa;
-}
-
 @media (max-width: 860px) {
   .hero {
     grid-template-columns: 1fr;
