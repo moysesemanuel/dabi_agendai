@@ -81,6 +81,7 @@ const features = [
 const plans = [
   {
     name: "Essencial",
+    price: "R$ 59/mês",
     for: "Para quem está começando a organizar a agenda.",
     items: [
       "Agenda online para os clientes",
@@ -91,6 +92,7 @@ const plans = [
   },
   {
     name: "Completo",
+    price: "R$ 99/mês",
     for: "Para quem já tem fluxo de clientes e quer fidelizar.",
     items: [
       "Tudo do plano Essencial",
@@ -232,8 +234,8 @@ export function SalesLandingPage() {
           <div className={styles.sectionNarrow}>
             <h2 className={styles.sectionHeading}>Planos</h2>
             <p className={styles.plansIntro}>
-              Os planos abaixo são o ponto de partida da conversa — a gente ajusta
-              junto com você o que faz sentido pro momento da sua barbearia.
+              Sem taxa de adesão. A gente ajusta os detalhes com você na
+              implantação, mas o valor mensal é este.
             </p>
           </div>
           <div className={styles.plans}>
@@ -243,13 +245,13 @@ export function SalesLandingPage() {
                 key={plan.name}
               >
                 <h3 className={styles.planName}>{plan.name}</h3>
+                <p className={styles.planPrice}>{plan.price}</p>
                 <p className={styles.planFor}>{plan.for}</p>
                 <ul className={styles.planList}>
                   {plan.items.map((item) => (
                     <li key={item}>{item}</li>
                   ))}
                 </ul>
-                <p className={styles.planPrice}>Valor sob consulta</p>
               </div>
             ))}
           </div>

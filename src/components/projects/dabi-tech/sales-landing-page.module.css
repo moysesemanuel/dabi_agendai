@@ -359,7 +359,7 @@
 }
 
 .planFor {
-  margin-top: var(--space-1);
+  margin-top: var(--space-4);
   color: var(--muted-on-paper);
   font-size: 0.92rem;
 }
@@ -388,9 +388,11 @@
 }
 
 .planPrice {
-  margin-top: var(--space-5);
-  font-size: 0.92rem;
-  color: var(--muted-on-paper);
+  margin-top: var(--space-2);
+  font-family: var(--font-display-marketing), sans-serif;
+  font-weight: 600;
+  font-size: 1.6rem;
+  color: var(--navy);
 }
 
 /* Closing CTA */
