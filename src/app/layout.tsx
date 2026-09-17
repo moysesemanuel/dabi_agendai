@@ -4,6 +4,7 @@ import { BackToTopButton } from "@/components/shared/back-to-top-button";
 import { ToastProvider } from "@/components/shared/toast-provider";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://dabiagendai.vercel.app"),
   title: "Prime Cut Studio",
   description:
     "Barbearia premium com atendimento por agendamento, serviços de corte e barba e presença digital profissional.",
