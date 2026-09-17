@@ -52,16 +52,6 @@
   gap: var(--space-5);
 }
 
-.headerLogin {
-  font-size: 0.92rem;
-  color: var(--muted-on-dark);
-  white-space: nowrap;
-}
-
-.headerLogin:hover {
-  color: #eef3fa;
-}
-
 /* Buttons */
 
 .buttonPrimary {
@@ -369,6 +359,7 @@
   display: grid;
   gap: var(--space-2);
   font-size: 0.95rem;
+  list-style: none;
 }
 
 .planList li {
@@ -435,17 +426,6 @@
   width: 180px;
   height: auto;
   opacity: 0.9;
-}
-
-.footerLinks {
-  display: flex;
-  gap: var(--space-5);
-  font-size: 0.86rem;
-  color: var(--muted-on-dark);
-}
-
-.footerLinks a:hover {
-  color: #eef3fa;
 }
 
 @media (max-width: 860px) {

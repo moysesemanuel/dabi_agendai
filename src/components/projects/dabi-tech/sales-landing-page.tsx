@@ -1,5 +1,4 @@
 import { Inter, Space_Grotesk } from "next/font/google";
-import Link from "next/link";
 import { DaBiTechLogo } from "@/components/shared/dabi-tech-logo";
 import { buildWhatsappUrl } from "@/components/shared/whatsapp";
 import styles from "./sales-landing-page.module.css";
@@ -110,9 +109,6 @@ export function SalesLandingPage() {
         <header className={styles.header}>
           <DaBiTechLogo className={styles.logo} variant="light" />
           <div className={styles.headerLinks}>
-            <Link className={styles.headerLogin} href="/platform/login">
-              Já sou cliente
-            </Link>
             <a className={styles.buttonPrimary} href={whatsappUrl} target="_blank" rel="noreferrer">
               Falar no WhatsApp
             </a>
@@ -281,9 +277,6 @@ export function SalesLandingPage() {
 
         <footer className={styles.footer}>
           <DaBiTechLogo className={styles.footerLogo} variant="light" />
-          <div className={styles.footerLinks}>
-            <Link href="/privacidade">Privacidade</Link>
-          </div>
         </footer>
       </div>
     </div>
