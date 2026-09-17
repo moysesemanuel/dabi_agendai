@@ -2,6 +2,7 @@ import { Inter, Space_Grotesk } from "next/font/google";
 import Link from "next/link";
 import { DaBiTechLogo } from "@/components/shared/dabi-tech-logo";
 import { buildWhatsappUrl } from "@/components/shared/whatsapp";
+import { WhatsappCtaLink } from "./whatsapp-cta-link";
 import styles from "./sales-landing-page.module.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -110,9 +111,9 @@ export function SalesLandingPage() {
         <header className={styles.header}>
           <DaBiTechLogo className={styles.logo} variant="light" />
           <div className={styles.headerLinks}>
-            <a className={styles.buttonPrimary} href={whatsappUrl} target="_blank" rel="noreferrer">
+            <WhatsappCtaLink className={styles.buttonPrimary} href={whatsappUrl} location="header">
               Falar no WhatsApp
-            </a>
+            </WhatsappCtaLink>
           </div>
         </header>
 
@@ -126,14 +127,9 @@ export function SalesLandingPage() {
                 automático.
               </p>
               <div className={styles.heroActions}>
-                <a
-                  className={styles.buttonPrimary}
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                >
+                <WhatsappCtaLink className={styles.buttonPrimary} href={whatsappUrl} location="hero">
                   Falar no WhatsApp
-                </a>
+                </WhatsappCtaLink>
                 <a className={styles.buttonGhost} href="#como-funciona">
                   Ver como funciona
                 </a>
@@ -264,14 +260,9 @@ export function SalesLandingPage() {
               os serviços e horários da sua barbearia.
             </p>
             <div className={styles.closingActions}>
-              <a
-                className={styles.buttonPrimary}
-                href={whatsappUrl}
-                target="_blank"
-                rel="noreferrer"
-              >
+              <WhatsappCtaLink className={styles.buttonPrimary} href={whatsappUrl} location="closing">
                 Falar no WhatsApp
-              </a>
+              </WhatsappCtaLink>
             </div>
           </div>
         </section>
