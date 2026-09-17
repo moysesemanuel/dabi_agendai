@@ -15,12 +15,25 @@
 
 .header {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
   padding: var(--space-5) var(--space-4);
 }
 
 .logo {
   width: 180px;
   height: auto;
+}
+
+.backLink {
+  font-size: 0.92rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.backLink:hover {
+  color: var(--ink-light);
 }
 
 .main {

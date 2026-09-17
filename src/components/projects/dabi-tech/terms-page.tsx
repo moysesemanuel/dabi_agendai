@@ -1,4 +1,5 @@
 import { Inter } from "next/font/google";
+import Link from "next/link";
 import { DaBiTechLogo } from "@/components/shared/dabi-tech-logo";
 import styles from "./terms-page.module.css";
 
@@ -13,6 +14,9 @@ export function TermsPage() {
     <div className={`${styles.page} ${inter.variable}`}>
       <header className={styles.header}>
         <DaBiTechLogo className={styles.logo} variant="light" />
+        <Link className={styles.backLink} href="/barbearias">
+          Voltar
+        </Link>
       </header>
 
       <main className={styles.main}>
