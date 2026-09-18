@@ -82,22 +82,31 @@ export function AdminCatalogSection({ state }: { state: AdminPageState }) {
                           <input
                             className={styles.serviceFieldInput}
                             value={service.price}
+                            onFocus={(event) => event.target.select()}
                             onChange={(event) => updateService(index, "price", event.target.value)}
                           />
                         </label>
                         <label className={styles.serviceField}>
                           <span>Duração</span>
-                          <input
-                            className={styles.serviceFieldInput}
-                            value={service.duration}
-                            onChange={(event) => updateService(index, "duration", event.target.value)}
-                          />
+                          <div className={styles.serviceFieldSuffixGroup}>
+                            <input
+                              className={styles.serviceFieldInput}
+                              type="number"
+                              min={0}
+                              value={service.duration.replace(/\D/g, "")}
+                              onFocus={(event) => event.target.select()}
+                              onChange={(event) => updateService(index, "duration", `${event.target.value} min`)}
+                            />
+                            <span className={styles.serviceFieldSuffix}>min</span>
+                          </div>
                         </label>
                         <label className={styles.serviceField}>
                           <span>Clube / assinatura</span>
                           <input
                             className={styles.serviceFieldInput}
                             value={service.membership}
+                            placeholder="Ex: incluso no plano mensal"
+                            onFocus={(event) => event.target.select()}
                             onChange={(event) => updateService(index, "membership", event.target.value)}
                           />
                         </label>

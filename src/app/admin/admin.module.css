@@ -68,12 +68,21 @@
 
 .adminContent {
   padding: 32px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .adminFooter {
-  margin-top: 36px;
-  padding-top: 24px;
+  margin-top: auto;
+  position: sticky;
+  bottom: 0;
+  padding: 24px 32px;
+  margin-left: -32px;
+  margin-right: -32px;
   border-top: 1px solid rgba(245, 239, 230, 0.08);
+  background: #120e0b;
+  z-index: 5;
 }
 
 .adminFooterInner {
@@ -467,6 +476,34 @@
   min-height: 120px;
 }
 
+.inputPrefixGroup {
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(245, 239, 230, 0.12);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+}
+
+.inputPrefix {
+  padding: 14px 0 14px 16px;
+  color: rgba(245, 239, 230, 0.56);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.inputPrefixField {
+  border: none !important;
+  background: transparent !important;
+  padding-left: 4px !important;
+}
+
+.supportSubmitRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
 .formFieldInvalid {
   border-color: rgba(239, 112, 83, 0.72) !important;
   box-shadow: 0 0 0 3px rgba(239, 112, 83, 0.14);
@@ -685,6 +722,22 @@
   padding: 14px 16px;
   color: #f5efe6;
   font: inherit;
+}
+
+.serviceFieldSuffixGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.serviceFieldSuffixGroup .serviceFieldInput {
+  width: auto;
+  flex: 1;
+}
+
+.serviceFieldSuffix {
+  color: rgba(245, 239, 230, 0.72);
+  font-size: 0.9rem;
 }
 
 .serviceFieldDescription {
@@ -1231,6 +1284,12 @@
   .adminContent,
   .adminSidebar {
     padding: 24px 16px;
+  }
+
+  .adminFooter {
+    margin-left: -16px;
+    margin-right: -16px;
+    padding: 20px 16px;
   }
 
   .adminHeader,
