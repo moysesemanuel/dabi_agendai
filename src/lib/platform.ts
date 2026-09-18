@@ -9,6 +9,12 @@ export async function listTenantsWithStats() {
     include: {
       _count: { select: { barbers: true, customers: true, appointments: true } },
       subscription: true,
+      customers: {
+        where: { role: "ADMIN" },
+        orderBy: { createdAt: "asc" },
+        take: 1,
+        select: { name: true, email: true, phone: true },
+      },
     },
   });
 
@@ -24,6 +30,9 @@ export async function listTenantsWithStats() {
     appointmentsCount: tenant._count.appointments,
     subscriptionStatus: tenant.subscription?.status ?? null,
     subscriptionPlanId: tenant.subscription?.planId ?? null,
+    adminName: tenant.customers[0]?.name ?? null,
+    adminEmail: tenant.customers[0]?.email ?? null,
+    adminPhone: tenant.customers[0]?.phone ?? null,
   }));
 }
 

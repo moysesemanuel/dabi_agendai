@@ -161,6 +161,14 @@
   cursor: not-allowed;
 }
 
+.contactCell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
 .brandColorCell {
   display: flex;
   align-items: center;
