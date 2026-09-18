@@ -110,13 +110,17 @@ export default async function Page() {
                   </p>
                 </div>
 
-                <div className={styles.formFieldsGrid}>
-                  <SubscriptionCheckoutButton
-                    planId={subscription.planId as keyof typeof PLANS}
-                    planName={PLANS[subscription.planId as keyof typeof PLANS]?.name ?? subscription.planId}
-                    defaultEmail={admin?.email ?? ""}
-                  />
-                </div>
+                {admin?.email ? (
+                  <div className={styles.formFieldsGrid}>
+                    <SubscriptionCheckoutButton
+                      planId={subscription.planId as keyof typeof PLANS}
+                      planName={PLANS[subscription.planId as keyof typeof PLANS]?.name ?? subscription.planId}
+                      payerEmail={admin.email}
+                    />
+                  </div>
+                ) : (
+                  <p>Cadastre um e-mail no seu usuário admin para liberar o pagamento.</p>
+                )}
               </section>
             ) : null}
 

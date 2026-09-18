@@ -8,13 +8,12 @@ import type { PlanId } from "@/lib/billing/plans";
 export function SubscriptionCheckoutButton({
   planId,
   planName,
-  defaultEmail,
+  payerEmail,
 }: {
   planId: PlanId;
   planName: string;
-  defaultEmail: string;
+  payerEmail: string;
 }) {
-  const [email, setEmail] = useState(defaultEmail);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -26,7 +25,7 @@ export function SubscriptionCheckoutButton({
       const response = await fetch("/api/admin/billing/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planId, payerEmail: email }),
+        body: JSON.stringify({ planId, payerEmail }),
       });
 
       const payload = (await response.json()) as { initPoint?: string; error?: string };
@@ -46,15 +45,7 @@ export function SubscriptionCheckoutButton({
 
   return (
     <div className={styles.formField}>
-      <label htmlFor={`payer-email-${planId}`}>E-mail para cobrança ({planName})</label>
-      <input
-        id={`payer-email-${planId}`}
-        type="email"
-        value={email}
-        onChange={(event) => setEmail(event.target.value)}
-        placeholder="seu@email.com"
-      />
-      <AdminButton type="button" onClick={handleCheckout} disabled={loading || !email}>
+      <AdminButton type="button" onClick={handleCheckout} disabled={loading}>
         {loading ? "Abrindo checkout..." : `Assinar plano ${planName}`}
       </AdminButton>
       {error ? <p className={styles.formFieldHint}>{error}</p> : null}

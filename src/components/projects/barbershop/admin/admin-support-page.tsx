@@ -110,9 +110,11 @@ export function AdminSupportPage() {
                 </p>
               ) : null}
 
-              <AdminButton disabled={isSubmitting || !message.trim()} type="submit">
-                {isSubmitting ? "Enviando..." : "Enviar mensagem"}
-              </AdminButton>
+              <div className={styles.supportSubmitRow}>
+                <AdminButton disabled={isSubmitting || !message.trim()} type="submit">
+                  {isSubmitting ? "Enviando..." : "Enviar mensagem"}
+                </AdminButton>
+              </div>
             </form>
           </div>
 

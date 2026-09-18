@@ -48,10 +48,7 @@ export async function GET(request: NextRequest) {
 
     if (!service || !barber) {
       return NextResponse.json(
-        {
-          error:
-            "Os dados do site e da agenda ainda nao estao sincronizados. Ajuste isso na proxima etapa do backoffice real.",
-        },
+        { error: "Não foi possível carregar os horários disponíveis. Tente novamente." },
         { status: 400 },
       );
     }

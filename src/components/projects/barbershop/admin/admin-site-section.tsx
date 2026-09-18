@@ -125,12 +125,20 @@ export function AdminSiteSection({ state }: { state: AdminPageState }) {
                   </div>
                   <div className={styles.formField}>
                     <label htmlFor="business-instagram">Instagram</label>
-                    <input
-                      id="business-instagram"
-                      value={config.instagram}
-                      onChange={(event) => setBusinessField("instagram", event.target.value)}
-                      placeholder="https://instagram.com/suabarbearia"
-                    />
+                    <div className={styles.inputPrefixGroup}>
+                      <span className={styles.inputPrefix}>instagram.com/</span>
+                      <input
+                        id="business-instagram"
+                        className={styles.inputPrefixField}
+                        value={config.instagram.replace(/^https?:\/\/(www\.)?instagram\.com\//i, "")}
+                        onFocus={(event) => event.target.select()}
+                        onChange={(event) => {
+                          const handle = event.target.value.trim().replace(/^\/+/, "");
+                          setBusinessField("instagram", handle ? `https://instagram.com/${handle}` : "");
+                        }}
+                        placeholder="suabarbearia"
+                      />
+                    </div>
                   </div>
                   <div className={styles.formField}>
                     <label htmlFor="business-google-maps">Link do Google Maps</label>
@@ -194,6 +202,7 @@ export function AdminSiteSection({ state }: { state: AdminPageState }) {
                           <input
                             className={styles.serviceFieldInput}
                             value={plan.price}
+                            onFocus={(event) => event.target.select()}
                             onChange={(event) => updatePlan(index, "price", event.target.value)}
                           />
                         </label>
@@ -340,6 +349,7 @@ export function AdminSiteSection({ state }: { state: AdminPageState }) {
                           <input
                             className={styles.serviceFieldInput}
                             value={tier.minPoints}
+                            onFocus={(event) => event.target.select()}
                             onChange={(event) =>
                               updateLoyaltyTier(index, "minPoints", event.target.value)
                             }
@@ -351,6 +361,7 @@ export function AdminSiteSection({ state }: { state: AdminPageState }) {
                             className={styles.serviceFieldInput}
                             value={tier.maxPoints ?? ""}
                             placeholder="Deixe vazio para nível máximo"
+                            onFocus={(event) => event.target.select()}
                             onChange={(event) =>
                               updateLoyaltyTier(index, "maxPoints", event.target.value)
                             }
@@ -401,6 +412,7 @@ export function AdminSiteSection({ state }: { state: AdminPageState }) {
                           <input
                             className={styles.serviceFieldInput}
                             value={reward.points}
+                            onFocus={(event) => event.target.select()}
                             onChange={(event) =>
                               updateLoyaltyReward(index, "points", event.target.value)
                             }
