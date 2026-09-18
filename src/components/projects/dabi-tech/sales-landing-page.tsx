@@ -137,8 +137,8 @@ export function SalesLandingPage() {
                 </a>
               </div>
               <p className={styles.heroNote}>
-                A implantação é feita com a gente, sem cadastro automático — você
-                fala com a DaBi Tech e a sua agenda entra no ar.
+                Assine direto pelo site ou fale com a gente antes — do jeito que for
+                melhor pra você, sua agenda entra no ar em minutos.
               </p>
             </div>
 
