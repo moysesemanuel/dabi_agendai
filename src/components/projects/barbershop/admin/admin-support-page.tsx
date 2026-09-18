@@ -65,6 +65,7 @@ export function AdminSupportPage() {
             <Link className={styles.sidebarNavLinkActive} href="/admin/suporte">
               Suporte
             </Link>
+            <Link href="/admin/assinatura">Assinatura</Link>
           </nav>
         </aside>
 

@@ -165,6 +165,7 @@ export default async function Page() {
               Dados
             </Link>
             <Link href="/admin/suporte">Suporte</Link>
+            <Link href="/admin/assinatura">Assinatura</Link>
           </nav>
 
           <div className={styles.sidebarStats}>

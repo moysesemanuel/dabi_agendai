@@ -17,7 +17,17 @@ export async function middleware(request: NextRequest) {
   const isAdmin = session?.role === "ADMIN";
 
   if (isAdmin) {
-    return NextResponse.next();
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.next();
+    }
+
+    // Repassa o pathname via header pra o layout de /admin (Server Component,
+    // roda em Node.js) conseguir saber qual pagina esta sendo renderizada sem
+    // resolver isso via Prisma aqui - middleware roda em Edge e nao tem acesso
+    // ao banco (ver comentario em session.ts).
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set("x-pathname", pathname);
+    return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
   if (pathname.startsWith("/api/")) {

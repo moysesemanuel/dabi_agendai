@@ -25,6 +25,13 @@ enum NotificationType {
   SYSTEM
 }
 
+enum SubscriptionStatus {
+  PENDING
+  ACTIVE
+  PAUSED
+  CANCELED
+}
+
 model Tenant {
   id         String   @id @default(cuid())
   name       String
@@ -43,6 +50,39 @@ model Tenant {
   closedDates        ClosedDate[]
   appointments       Appointment[]
   notifications      Notification[]
+  subscription       TenantSubscription?
+}
+
+model TenantSubscription {
+  id       String @id @default(cuid())
+  tenantId String @unique
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  planId      String
+  status      SubscriptionStatus @default(PENDING)
+  amountCents Int
+
+  provider               String  @default("mercado_pago")
+  providerSubscriptionId String? @unique
+  payerEmail             String?
+  initPoint              String?
+
+  currentPeriodEnd DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BillingWebhookEvent {
+  id              String    @id @default(cuid())
+  provider        String
+  providerEventId String
+  eventType       String
+  status          String
+  receivedAt      DateTime  @default(now())
+  processedAt     DateTime?
+
+  @@unique([provider, providerEventId])
 }
 
 model Notification {

@@ -11,6 +11,7 @@ const createTenantSchema = z.object({
   adminEmail: z.string().trim().email("E-mail invalido."),
   adminPhone: z.string().trim().min(8),
   adminPassword: z.string().trim().min(6),
+  planId: z.enum(["essencial", "completo"]),
 });
 
 export async function GET(request: NextRequest) {
