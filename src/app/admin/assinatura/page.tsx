@@ -98,11 +98,11 @@ export default async function Page() {
               )}
             </section>
 
-            {!isActive ? (
+            {!isActive && subscription ? (
               <section className={styles.contentCard}>
                 <div className={styles.contentCardHeader}>
-                  <p className={styles.sectionEyebrow}>Planos</p>
-                  <h2>Escolha um plano para assinar</h2>
+                  <p className={styles.sectionEyebrow}>Pagamento</p>
+                  <h2>Ativar plano {PLANS[subscription.planId as keyof typeof PLANS]?.name ?? subscription.planId}</h2>
                   <p>
                     Você será redirecionado ao Mercado Pago para escolher a forma de pagamento
                     (Pix, cartão ou boleto) e autorizar a cobrança mensal recorrente.
@@ -110,16 +110,21 @@ export default async function Page() {
                 </div>
 
                 <div className={styles.formFieldsGrid}>
-                  {(Object.entries(PLANS) as [keyof typeof PLANS, (typeof PLANS)[keyof typeof PLANS]][]).map(
-                    ([planId, plan]) => (
-                      <SubscriptionCheckoutButton
-                        key={planId}
-                        planId={planId}
-                        planName={`${plan.name} (${formatCurrency(plan.amountCents)}/mês)`}
-                        defaultEmail={admin?.email ?? ""}
-                      />
-                    ),
-                  )}
+                  <SubscriptionCheckoutButton
+                    planId={subscription.planId as keyof typeof PLANS}
+                    planName={PLANS[subscription.planId as keyof typeof PLANS]?.name ?? subscription.planId}
+                    defaultEmail={admin?.email ?? ""}
+                  />
+                </div>
+              </section>
+            ) : null}
+
+            {!isActive && !subscription ? (
+              <section className={styles.contentCard}>
+                <div className={styles.contentCardHeader}>
+                  <p className={styles.sectionEyebrow}>Plano não definido</p>
+                  <h2>Fale com a DaBi Tech pra ativar sua assinatura</h2>
+                  <p>Entre em contato com a DaBi Tech para escolher um plano e liberar a cobrança.</p>
                 </div>
               </section>
             ) : null}
