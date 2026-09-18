@@ -16,14 +16,21 @@ type Tenant = {
   appointmentsCount: number;
   subscriptionStatus: "PENDING" | "ACTIVE" | "PAUSED" | "CANCELED" | null;
   subscriptionPlanId: string | null;
+  adminName: string | null;
+  adminEmail: string | null;
+  adminPhone: string | null;
 };
 
 const subscriptionStatusLabels: Record<NonNullable<Tenant["subscriptionStatus"]>, string> = {
-  PENDING: "Aguardando pagamento",
+  PENDING: "Pendente",
   ACTIVE: "Ativa",
   PAUSED: "Pausada",
   CANCELED: "Cancelada",
 };
+
+function buildWhatsappLink(phone: string) {
+  return `https://wa.me/55${phone.replace(/\D/g, "")}`;
+}
 
 const emptyForm = {
   name: "",
@@ -222,6 +229,7 @@ export function PlatformDashboardPage() {
                 <tr>
                   <th>Nome</th>
                   <th>Dominio</th>
+                  <th>Contato</th>
                   <th>Status</th>
                   <th>Assinatura</th>
                   <th>Cor de marca</th>
@@ -240,6 +248,23 @@ export function PlatformDashboardPage() {
                       <a href={`https://${tenant.domain}`} target="_blank" rel="noreferrer">
                         {tenant.domain}
                       </a>
+                    </td>
+                    <td>
+                      {tenant.adminName || tenant.adminEmail || tenant.adminPhone ? (
+                        <div className={styles.contactCell}>
+                          {tenant.adminName ? <span>{tenant.adminName}</span> : null}
+                          {tenant.adminEmail ? (
+                            <a href={`mailto:${tenant.adminEmail}`}>{tenant.adminEmail}</a>
+                          ) : null}
+                          {tenant.adminPhone ? (
+                            <a href={buildWhatsappLink(tenant.adminPhone)} target="_blank" rel="noreferrer">
+                              {tenant.adminPhone}
+                            </a>
+                          ) : null}
+                        </div>
+                      ) : (
+                        "-"
+                      )}
                     </td>
                     <td>
                       <span
