@@ -81,6 +81,7 @@ const features = [
 
 const plans = [
   {
+    planId: "essencial",
     name: "Essencial",
     price: "R$ 59/mês",
     for: "Para quem está começando a organizar a agenda.",
@@ -92,6 +93,7 @@ const plans = [
     featured: false,
   },
   {
+    planId: "completo",
     name: "Completo",
     price: "R$ 99/mês",
     for: "Para quem já tem fluxo de clientes e quer fidelizar.",
@@ -135,8 +137,8 @@ export function SalesLandingPage() {
                 </a>
               </div>
               <p className={styles.heroNote}>
-                A implantação é feita com a gente, sem cadastro automático — você
-                fala com a DaBi Tech e a sua agenda entra no ar.
+                Assine direto pelo site ou fale com a gente antes — do jeito que for
+                melhor pra você, sua agenda entra no ar em minutos.
               </p>
             </div>
 
@@ -245,6 +247,9 @@ export function SalesLandingPage() {
                     <li key={item}>{item}</li>
                   ))}
                 </ul>
+                <Link className={styles.buttonPrimary} href={`/barbearias/assinar?plano=${plan.planId}`}>
+                  Assinar {plan.name}
+                </Link>
               </div>
             ))}
           </div>
