@@ -162,6 +162,7 @@ export function Header({
   const [privacyConsent, setPrivacyConsent] = useState(false);
   const [authError, setAuthError] = useState("");
   const [isSubmittingAuth, setIsSubmittingAuth] = useState(false);
+  const [isSendingPasswordReset, setIsSendingPasswordReset] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const profileMenuRef = useRef<HTMLDivElement | null>(null);
 
@@ -287,6 +288,37 @@ export function Header({
       showToast({ variant: "error", message });
     } finally {
       setIsSubmittingAuth(false);
+    }
+  }
+
+  async function handleForgotPassword() {
+    setAuthError("");
+
+    if (!authEmail.trim()) {
+      const message = "Preencha o e-mail para receber o link de redefinição.";
+      setAuthError(message);
+      showToast({ variant: "warning", message });
+      return;
+    }
+
+    setIsSendingPasswordReset(true);
+
+    try {
+      const response = await fetch("/api/customers/password-reset/request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: authEmail.trim() }),
+      });
+      const payload = (await response.json()) as { message?: string; error?: string };
+
+      showToast({
+        variant: response.ok ? "success" : "error",
+        message: payload.message ?? payload.error ?? "Não foi possível enviar o link.",
+      });
+    } catch {
+      showToast({ variant: "error", message: "Não foi possível enviar o link." });
+    } finally {
+      setIsSendingPasswordReset(false);
     }
   }
 
@@ -564,6 +596,16 @@ export function Header({
                   <small className={flowStyles.fieldHint}>
                     Use no mínimo 6 caracteres para criar sua senha.
                   </small>
+                ) : null}
+                {authMode === "login" ? (
+                  <button
+                    className={flowStyles.linkButton}
+                    type="button"
+                    disabled={isSendingPasswordReset}
+                    onClick={() => void handleForgotPassword()}
+                  >
+                    {isSendingPasswordReset ? "Enviando..." : "Esqueci minha senha"}
+                  </button>
                 ) : null}
               </label>
               {authMode === "register" ? (
