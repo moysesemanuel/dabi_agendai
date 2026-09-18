@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import styles from "@/app/admin/admin.module.css";
 import { AdminButton } from "@/components/projects/barbershop/admin/admin-button";
 import { DaBiTechSignature } from "@/components/shared/dabi-tech-signature";
@@ -45,23 +44,27 @@ export function AdminPage({ section = "overview" }: { section?: AdminSectionView
           </div>
 
           <nav className={styles.sidebarNav}>
-            <Link className={pathname === "/admin" ? styles.sidebarNavLinkActive : ""} href="/admin">
+            {/* <a> de proposito em toda a nav do admin: navegacao client-side
+                (<Link>) pode reaproveitar o layout ja renderizado (bloqueado
+                ou liberado) em vez de reavaliar o gate de assinatura pro novo
+                pathname a cada troca de pagina. */}
+            <a className={pathname === "/admin" ? styles.sidebarNavLinkActive : ""} href="/admin">
               Visão geral
-            </Link>
-            <Link className={pathname === "/admin/site" ? styles.sidebarNavLinkActive : ""} href="/admin/site">
+            </a>
+            <a className={pathname === "/admin/site" ? styles.sidebarNavLinkActive : ""} href="/admin/site">
               Site
-            </Link>
-            <Link className={pathname === "/admin/catalogo" ? styles.sidebarNavLinkActive : ""} href="/admin/catalogo">
+            </a>
+            <a className={pathname === "/admin/catalogo" ? styles.sidebarNavLinkActive : ""} href="/admin/catalogo">
               Catálogo
-            </Link>
-            <Link className={pathname === "/admin/agenda" ? styles.sidebarNavLinkActive : ""} href="/admin/agenda">
+            </a>
+            <a className={pathname === "/admin/agenda" ? styles.sidebarNavLinkActive : ""} href="/admin/agenda">
               Agenda
-            </Link>
-            <Link className={pathname === "/admin/dados" ? styles.sidebarNavLinkActive : ""} href="/admin/dados">
+            </a>
+            <a className={pathname === "/admin/dados" ? styles.sidebarNavLinkActive : ""} href="/admin/dados">
               Dados
-            </Link>
-            <Link href="/admin/suporte">Suporte</Link>
-            <Link href="/admin/assinatura">Assinatura</Link>
+            </a>
+            <a href="/admin/suporte">Suporte</a>
+            <a href="/admin/assinatura">Assinatura</a>
           </nav>
 
           <div className={styles.sidebarStats}>
@@ -123,9 +126,9 @@ export function AdminPage({ section = "overview" }: { section?: AdminSectionView
                     <h2>Conteúdo e fidelidade</h2>
                     <p>Textos do negócio, indicadores da home, níveis e recompensas.</p>
                   </div>
-                  <Link className={styles.inlineNavigationLink} href="/admin/site">
+                  <a className={styles.inlineNavigationLink} href="/admin/site">
                     Abrir configurações do site
-                  </Link>
+                  </a>
                 </article>
                 <article className={styles.contentCard}>
                   <div className={styles.contentCardHeader}>
@@ -133,9 +136,9 @@ export function AdminPage({ section = "overview" }: { section?: AdminSectionView
                     <h2>Serviços, imagens e equipe</h2>
                     <p>Catálogo público, galeria do site e barbeiros cadastrados.</p>
                   </div>
-                  <Link className={styles.inlineNavigationLink} href="/admin/catalogo">
+                  <a className={styles.inlineNavigationLink} href="/admin/catalogo">
                     Abrir catálogo e equipe
-                  </Link>
+                  </a>
                 </article>
                 <article className={styles.contentCard}>
                   <div className={styles.contentCardHeader}>
@@ -143,9 +146,9 @@ export function AdminPage({ section = "overview" }: { section?: AdminSectionView
                     <h2>Operação do dia</h2>
                     <p>Bloqueios, encaixes manuais, calendário e agendamentos reais.</p>
                   </div>
-                  <Link className={styles.inlineNavigationLink} href="/admin/agenda">
+                  <a className={styles.inlineNavigationLink} href="/admin/agenda">
                     Abrir agenda
-                  </Link>
+                  </a>
                 </article>
                 <article className={styles.contentCard}>
                   <div className={styles.contentCardHeader}>
@@ -153,9 +156,9 @@ export function AdminPage({ section = "overview" }: { section?: AdminSectionView
                     <h2>Clientes e desempenho</h2>
                     <p>Clientes, fidelidade, receita diária e dados para o futuro dashboard.</p>
                   </div>
-                  <Link className={styles.inlineNavigationLink} href="/admin/dados">
+                  <a className={styles.inlineNavigationLink} href="/admin/dados">
                     Abrir dados
-                  </Link>
+                  </a>
                 </article>
               </section>
             ) : null}

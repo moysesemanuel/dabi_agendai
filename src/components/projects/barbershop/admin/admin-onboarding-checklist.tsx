@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { SiteConfig } from "@/components/shared/site-config";
 import styles from "@/app/admin/admin.module.css";
 
@@ -74,9 +73,9 @@ export function AdminOnboardingChecklist({ config }: { config: SiteConfig }) {
               <p>{step.description}</p>
             </div>
             {!step.done ? (
-              <Link className={styles.inlineNavigationLink} href={step.href}>
+              <a className={styles.inlineNavigationLink} href={step.href}>
                 Resolver
-              </Link>
+              </a>
             ) : null}
           </li>
         ))}

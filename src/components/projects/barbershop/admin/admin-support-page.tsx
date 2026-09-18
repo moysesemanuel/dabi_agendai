@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import styles from "@/app/admin/admin.module.css";
 import { AdminButton } from "@/components/projects/barbershop/admin/admin-button";
@@ -59,15 +58,17 @@ export function AdminSupportPage() {
           </div>
 
           <nav className={styles.sidebarNav}>
-            <Link href="/admin">Visão geral</Link>
-            <Link href="/admin/site">Site</Link>
-            <Link href="/admin/catalogo">Catálogo</Link>
-            <Link href="/admin/agenda">Agenda</Link>
-            <Link href="/admin/dados">Dados</Link>
-            <Link className={styles.sidebarNavLinkActive} href="/admin/suporte">
+            {/* <a> de proposito: ver nota em admin-page.tsx sobre navegacao
+                client-side reaproveitando o gate de assinatura desatualizado. */}
+            <a href="/admin">Visão geral</a>
+            <a href="/admin/site">Site</a>
+            <a href="/admin/catalogo">Catálogo</a>
+            <a href="/admin/agenda">Agenda</a>
+            <a href="/admin/dados">Dados</a>
+            <a className={styles.sidebarNavLinkActive} href="/admin/suporte">
               Suporte
-            </Link>
-            <Link href="/admin/assinatura">Assinatura</Link>
+            </a>
+            <a href="/admin/assinatura">Assinatura</a>
           </nav>
         </aside>
 
@@ -82,9 +83,9 @@ export function AdminSupportPage() {
               </p>
             </div>
             <div className={styles.adminHeaderActions}>
-              <Link className={styles.inlineNavigationLink} href="/admin">
+              <a className={styles.inlineNavigationLink} href="/admin">
                 Voltar para visão geral
-              </Link>
+              </a>
             </div>
           </section>
 
