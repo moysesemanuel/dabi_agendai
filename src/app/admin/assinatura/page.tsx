@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { SubscriptionStatus } from "@prisma/client";
 import styles from "@/app/admin/admin.module.css";
 import { DaBiTechSignature } from "@/components/shared/dabi-tech-signature";
@@ -54,15 +53,17 @@ export default async function Page() {
           </div>
 
           <nav className={styles.sidebarNav}>
-            <Link href="/admin">Visão geral</Link>
-            <Link href="/admin/site">Site</Link>
-            <Link href="/admin/catalogo">Catálogo</Link>
-            <Link href="/admin/agenda">Agenda</Link>
-            <Link href="/admin/dados">Dados</Link>
-            <Link href="/admin/suporte">Suporte</Link>
-            <Link className={styles.sidebarNavLinkActive} href="/admin/assinatura">
+            {/* <a> de proposito: ver nota em admin-page.tsx sobre navegacao
+                client-side reaproveitando o gate de assinatura desatualizado. */}
+            <a href="/admin">Visão geral</a>
+            <a href="/admin/site">Site</a>
+            <a href="/admin/catalogo">Catálogo</a>
+            <a href="/admin/agenda">Agenda</a>
+            <a href="/admin/dados">Dados</a>
+            <a href="/admin/suporte">Suporte</a>
+            <a className={styles.sidebarNavLinkActive} href="/admin/assinatura">
               Assinatura
-            </Link>
+            </a>
           </nav>
         </aside>
 
@@ -74,9 +75,9 @@ export default async function Page() {
               <p>Gerencie o plano e o pagamento mensal de acesso ao sistema.</p>
             </div>
             <div className={styles.adminHeaderActions}>
-              <Link className={styles.inlineNavigationLink} href="/admin">
+              <a className={styles.inlineNavigationLink} href="/admin">
                 Voltar para visão geral
-              </Link>
+              </a>
             </div>
           </section>
 

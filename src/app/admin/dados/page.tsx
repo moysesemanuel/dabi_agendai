@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { AppointmentStatus } from "@prisma/client";
 import styles from "@/app/admin/admin.module.css";
 import { DaBiTechSignature } from "@/components/shared/dabi-tech-signature";
@@ -157,15 +156,19 @@ export default async function Page() {
           </div>
 
           <nav className={styles.sidebarNav}>
-            <Link href="/admin">Visão geral</Link>
-            <Link href="/admin/site">Site</Link>
-            <Link href="/admin/catalogo">Catálogo</Link>
-            <Link href="/admin/agenda">Agenda</Link>
-            <Link className={styles.sidebarNavLinkActive} href="/admin/dados">
+            {/* <a> de proposito em toda a nav do admin: navegacao client-side
+                (<Link>) pode reaproveitar o layout ja renderizado (bloqueado
+                ou liberado) em vez de reavaliar o gate de assinatura pro novo
+                pathname a cada troca de pagina. */}
+            <a href="/admin">Visão geral</a>
+            <a href="/admin/site">Site</a>
+            <a href="/admin/catalogo">Catálogo</a>
+            <a href="/admin/agenda">Agenda</a>
+            <a className={styles.sidebarNavLinkActive} href="/admin/dados">
               Dados
-            </Link>
-            <Link href="/admin/suporte">Suporte</Link>
-            <Link href="/admin/assinatura">Assinatura</Link>
+            </a>
+            <a href="/admin/suporte">Suporte</a>
+            <a href="/admin/assinatura">Assinatura</a>
           </nav>
 
           <div className={styles.sidebarStats}>
@@ -190,9 +193,9 @@ export default async function Page() {
               </p>
             </div>
             <div className={styles.adminHeaderActions}>
-              <Link className={styles.inlineNavigationLink} href="/admin">
+              <a className={styles.inlineNavigationLink} href="/admin">
                 Voltar para visão geral
-              </Link>
+              </a>
             </div>
           </section>
 
