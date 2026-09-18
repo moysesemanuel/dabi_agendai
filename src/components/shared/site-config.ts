@@ -76,6 +76,8 @@ export type SiteConfig = {
   headline: string;
   heroDescription: string;
   whatsapp: string;
+  instagram: string;
+  googleMapsUrl: string;
   address: string;
   addressNumber: string;
   city: string;
@@ -113,6 +115,9 @@ export const defaultSiteConfig: SiteConfig = {
   heroDescription:
     "Profissionais especializados em degradê, navalha e barba clássica — sem pressa, sem imprevisto.",
   whatsapp: "(11) 99876-4521",
+  instagram: "",
+  googleMapsUrl:
+    "https://www.google.com/maps/search/?api=1&query=Rua+Haddock+Lobo+412+Cerqueira+Cesar+Sao+Paulo",
   address: "Rua Haddock Lobo",
   addressNumber: "412",
   city: "São Paulo",
@@ -275,5 +280,47 @@ export function getBusinessAddress(config: SiteConfig) {
 export function getBusinessLocationLabel(config: SiteConfig) {
   const locationParts = [config.city, config.neighborhood].filter(Boolean);
   return locationParts.length > 0 ? locationParts.join(" - ") : "Localização da barbearia";
+}
+
+export const weekdayShortLabels = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+
+function formatHourLabel(time: string) {
+  const [hours, minutes] = time.split(":");
+  return minutes === "00" ? `${Number(hours)}h` : `${Number(hours)}h${minutes}`;
+}
+
+export function formatBusinessHours(businessHours: BusinessHoursItem[]) {
+  const displayOrder = [1, 2, 3, 4, 5, 6, 0];
+  const orderedDays = displayOrder
+    .map((weekday) => businessHours.find((day) => day.weekday === weekday))
+    .filter((day): day is BusinessHoursItem => Boolean(day));
+
+  const groups: BusinessHoursItem[][] = [];
+
+  for (const day of orderedDays) {
+    const currentGroup = groups[groups.length - 1];
+    const lastDay = currentGroup?.[currentGroup.length - 1];
+
+    if (lastDay && lastDay.closed === day.closed && lastDay.start === day.start && lastDay.end === day.end) {
+      currentGroup.push(day);
+    } else {
+      groups.push([day]);
+    }
+  }
+
+  return groups.map((group) => {
+    const first = group[0];
+    const last = group[group.length - 1];
+    const label =
+      group.length > 1
+        ? `${weekdayShortLabels[first.weekday]} a ${weekdayShortLabels[last.weekday]}`
+        : weekdayShortLabels[first.weekday];
+
+    if (first.closed) {
+      return `${label}: fechado`;
+    }
+
+    return `${label}, ${formatHourLabel(first.start)} às ${formatHourLabel(first.end)}`;
+  });
 }
 

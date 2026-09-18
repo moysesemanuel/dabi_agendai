@@ -69,6 +69,8 @@ const siteConfigSchema = z.object({
   headline: z.string(),
   heroDescription: z.string(),
   whatsapp: z.string(),
+  instagram: z.string(),
+  googleMapsUrl: z.string(),
   address: z.string(),
   addressNumber: z.string(),
   city: z.string(),

@@ -18,7 +18,7 @@ import { ServiceBookingFlow } from "./service-booking-flow";
 import { useSiteConfig } from "./use-site-config";
 import { buildWhatsappUrl } from "@/components/shared/whatsapp";
 import { formatWhatsappDisplay } from "@/components/shared/whatsapp";
-import { getBusinessAddress } from "@/components/shared/site-config";
+import { formatBusinessHours, getBusinessAddress } from "@/components/shared/site-config";
 
 const styles = {
   ...layoutStyles,
@@ -520,8 +520,9 @@ export function BookingPage() {
               </div>
               <div className={styles.infoBlock}>
                 <span className={styles.eyebrow}>Horários</span>
-                <p>Seg a sex, 9h às 20h</p>
-                <p>Sáb, 8h às 18h</p>
+                {formatBusinessHours(config.businessHours).map((line) => (
+                  <p key={line}>{line}</p>
+                ))}
               </div>
               <div className={styles.infoBlock}>
                 <span className={styles.eyebrow}>Formas de pagamento</span>
@@ -540,16 +541,20 @@ export function BookingPage() {
                       {formatWhatsappDisplay(config.whatsapp)}
                     </a>
                   </li>
-                  <li>
-                    <a href="https://instagram.com" target="_blank" rel="noreferrer">
-                      Instagram
-                    </a>
-                  </li>
-                  <li>
-                    <a href="https://www.google.com/maps" target="_blank" rel="noreferrer">
-                      Google Maps
-                    </a>
-                  </li>
+                  {config.instagram ? (
+                    <li>
+                      <a href={config.instagram} target="_blank" rel="noreferrer">
+                        Instagram
+                      </a>
+                    </li>
+                  ) : null}
+                  {config.googleMapsUrl ? (
+                    <li>
+                      <a href={config.googleMapsUrl} target="_blank" rel="noreferrer">
+                        Google Maps
+                      </a>
+                    </li>
+                  ) : null}
                 </ul>
               </div>
             </aside>

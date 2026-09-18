@@ -398,7 +398,7 @@ export function useAdminPageState(section: AdminSectionView) {
     setNewAppointmentAlerts((current) => current.filter((item) => item.id !== appointmentId));
   }
 
-  function setBusinessField<K extends "businessName" | "businessTag" | "headline" | "heroDescription" | "whatsapp" | "address" | "addressNumber" | "city" | "neighborhood" | "zipCode">(
+  function setBusinessField<K extends "businessName" | "businessTag" | "headline" | "heroDescription" | "whatsapp" | "instagram" | "googleMapsUrl" | "address" | "addressNumber" | "city" | "neighborhood" | "zipCode">(
     field: K,
     value: string,
   ) {

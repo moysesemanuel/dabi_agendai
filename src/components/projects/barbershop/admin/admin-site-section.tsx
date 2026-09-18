@@ -123,6 +123,24 @@ export function AdminSiteSection({ state }: { state: AdminPageState }) {
                       onChange={(event) => setBusinessField("whatsapp", event.target.value)}
                     />
                   </div>
+                  <div className={styles.formField}>
+                    <label htmlFor="business-instagram">Instagram</label>
+                    <input
+                      id="business-instagram"
+                      value={config.instagram}
+                      onChange={(event) => setBusinessField("instagram", event.target.value)}
+                      placeholder="https://instagram.com/suabarbearia"
+                    />
+                  </div>
+                  <div className={styles.formField}>
+                    <label htmlFor="business-google-maps">Link do Google Maps</label>
+                    <input
+                      id="business-google-maps"
+                      value={config.googleMapsUrl}
+                      onChange={(event) => setBusinessField("googleMapsUrl", event.target.value)}
+                      placeholder="https://maps.app.goo.gl/..."
+                    />
+                  </div>
                 </div>
               </article>
 
