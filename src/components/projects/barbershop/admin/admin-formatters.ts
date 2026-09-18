@@ -71,11 +71,11 @@ export function formatServiceDuration(value: string) {
   return `${minutes} min`;
 }
 
-export function buildAppointmentWhatsappMessage(appointment: AdminAppointment) {
+export function buildAppointmentWhatsappMessage(appointment: AdminAppointment, businessName: string) {
   return [
     `Olá, ${appointment.customerName}.`,
     "",
-    "Seu horário na Prime Cut Studio está confirmado:",
+    `Seu horário na ${businessName} está confirmado:`,
     `${appointment.serviceName} com ${appointment.barberName}`,
     `${formatDateToPtBr(appointment.startsAt.slice(0, 10))} às ${formatAppointmentTime(appointment.startsAt)}`,
     "",
@@ -83,11 +83,14 @@ export function buildAppointmentWhatsappMessage(appointment: AdminAppointment) {
   ].join("\n");
 }
 
-export function buildAppointmentCancellationWhatsappMessage(appointment: AdminAppointment) {
+export function buildAppointmentCancellationWhatsappMessage(
+  appointment: AdminAppointment,
+  businessName: string,
+) {
   return [
     `Olá, ${appointment.customerName}.`,
     "",
-    "Precisamos informar que seu horário na Prime Cut Studio foi cancelado.",
+    `Precisamos informar que seu horário na ${businessName} foi cancelado.`,
     `${appointment.serviceName} com ${appointment.barberName}`,
     `${formatDateToPtBr(appointment.startsAt.slice(0, 10))} às ${formatAppointmentTime(appointment.startsAt)}`,
     "",

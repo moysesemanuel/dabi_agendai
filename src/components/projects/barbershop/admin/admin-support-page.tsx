@@ -5,8 +5,10 @@ import { useState } from "react";
 import styles from "@/app/admin/admin.module.css";
 import { AdminButton } from "@/components/projects/barbershop/admin/admin-button";
 import { DaBiTechSignature } from "@/components/shared/dabi-tech-signature";
+import { useSiteConfig } from "@/components/projects/barbershop/use-site-config";
 
 export function AdminSupportPage() {
+  const config = useSiteConfig();
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; text: string } | null>(
@@ -52,7 +54,7 @@ export function AdminSupportPage() {
       <div className={styles.adminShell}>
         <aside className={styles.adminSidebar}>
           <div className={styles.sidebarBrand}>
-            <strong>Prime Cut Admin</strong>
+            <strong>{config.businessName}</strong>
             <span>Painel de gestão da barbearia</span>
           </div>
 

@@ -5,6 +5,7 @@ import styles from "@/app/admin/admin.module.css";
 import { AdminButton } from "@/components/projects/barbershop/admin/admin-button";
 import { DaBiTechSignature } from "@/components/shared/dabi-tech-signature";
 import { AdminCatalogSection } from "./admin-catalog-section";
+import { AdminOnboardingChecklist } from "./admin-onboarding-checklist";
 import { AdminOverlays } from "./admin-overlays";
 import { AdminScheduleSection } from "./admin-schedule-section";
 import { AdminSiteSection } from "./admin-site-section";
@@ -39,7 +40,7 @@ export function AdminPage({ section = "overview" }: { section?: AdminSectionView
       <div className={styles.adminShell}>
         <aside className={styles.adminSidebar}>
           <div className={styles.sidebarBrand}>
-            <strong>Prime Cut Admin</strong>
+            <strong>{config.businessName}</strong>
             <span>Painel de gestão da barbearia</span>
           </div>
 
@@ -113,6 +114,7 @@ export function AdminPage({ section = "overview" }: { section?: AdminSectionView
           </section>
 
           <div className={styles.adminSections}>
+            {showOverview ? <AdminOnboardingChecklist config={config} /> : null}
             {showOverview ? (
               <section className={styles.quickLinksGrid}>
                 <article className={styles.contentCard}>

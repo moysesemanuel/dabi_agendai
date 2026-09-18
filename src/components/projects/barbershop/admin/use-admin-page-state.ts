@@ -1262,7 +1262,7 @@ export function useAdminPageState(section: AdminSectionView) {
   function openAppointmentWhatsapp(appointment: AdminAppointment) {
     const url = buildWhatsappUrl(
       appointment.customerPhone,
-      buildAppointmentWhatsappMessage(appointment),
+      buildAppointmentWhatsappMessage(appointment, config.businessName),
     );
     window.open(url, "_blank", "noopener,noreferrer");
   }
@@ -1270,7 +1270,7 @@ export function useAdminPageState(section: AdminSectionView) {
   function openAppointmentCancellationWhatsapp(appointment: AdminAppointment) {
     const url = buildWhatsappUrl(
       appointment.customerPhone,
-      buildAppointmentCancellationWhatsappMessage(appointment),
+      buildAppointmentCancellationWhatsappMessage(appointment, config.businessName),
     );
     window.open(url, "_blank", "noopener,noreferrer");
   }

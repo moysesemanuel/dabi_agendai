@@ -24,13 +24,20 @@ export function SubscribeForm({ initialPlanId }: { initialPlanId: PlanId }) {
   const [adminEmail, setAdminEmail] = useState("");
   const [adminPhone, setAdminPhone] = useState("");
   const [adminPassword, setAdminPassword] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    setLoading(true);
     setError(null);
+
+    if (!termsAccepted) {
+      setError("Confirme que leu e concorda com os Termos de Uso e a Política de Privacidade.");
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const response = await fetch("/api/public/signup", {
@@ -123,6 +130,25 @@ export function SubscribeForm({ initialPlanId }: { initialPlanId: PlanId }) {
               onChange={(event) => setAdminPassword(event.target.value)}
             />
           </div>
+
+          <label className={styles.consentField}>
+            <input
+              type="checkbox"
+              checked={termsAccepted}
+              onChange={(event) => setTermsAccepted(event.target.checked)}
+            />
+            <span>
+              Li e concordo com os{" "}
+              <a href="/termos-de-uso" target="_blank" rel="noreferrer">
+                Termos de Uso
+              </a>{" "}
+              e a{" "}
+              <a href="/privacidade" target="_blank" rel="noreferrer">
+                Política de Privacidade
+              </a>
+              .
+            </span>
+          </label>
 
           {error ? <p className={styles.error}>{error}</p> : null}
 
