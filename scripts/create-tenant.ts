@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 
 function printUsageAndExit(): never {
   console.error(
-    "Uso: yarn create-tenant --name \"Nome da barbearia\" --domain dominio.com --admin-name \"Nome\" --admin-email email@dominio.com --admin-phone 11999999999 --admin-password senha123 --plan essencial|completo",
+    "Uso: yarn create-tenant --name \"Nome da barbearia\" --domain dominio.com --admin-name \"Nome\" --admin-email email@dominio.com --admin-phone 11999999999 --admin-password <senha> --plan essencial|completo",
   );
   process.exit(1);
 }

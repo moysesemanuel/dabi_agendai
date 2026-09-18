@@ -67,7 +67,21 @@ jobs:
             --admin-name "$ADMIN_NAME" \
             --admin-email "$ADMIN_EMAIL" \
             --admin-phone "$ADMIN_PHONE" \
-            --admin-password "$ADMIN_PASSWORD"
+            --admin-password "$ADMIN_PASSWORD" \
+            --plan essencial
+      - name: Ativar assinatura do tenant de teste (sem isso o /admin fica bloqueado pelo gate de cobranca)
+        run: |
+          npx tsx -e "
+          import { prisma } from './src/lib/prisma';
+          import { SubscriptionStatus } from '@prisma/client';
+          (async () => {
+            await prisma.tenantSubscription.updateMany({
+              where: { tenant: { domain: 'localhost:3002' } },
+              data: { status: SubscriptionStatus.ACTIVE },
+            });
+            await prisma.\$disconnect();
+          })();
+          "
       - run: yarn build
       - run: npx playwright install --with-deps chromium
       - run: yarn test:e2e
