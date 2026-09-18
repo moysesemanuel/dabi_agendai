@@ -19,6 +19,13 @@ const serviceSchema = z.object({
   image: z.string(),
 });
 
+const productSchema = z.object({
+  name: z.string().trim().min(1),
+  description: z.string(),
+  price: z.string(),
+  image: z.string(),
+});
+
 const showcaseImageSchema = z.object({
   src: z.string(),
   alt: z.string(),
@@ -78,6 +85,7 @@ const siteConfigSchema = z.object({
   zipCode: z.string(),
   plans: z.array(planSchema),
   services: z.array(serviceSchema),
+  products: z.array(productSchema),
   showcaseImages: z.array(showcaseImageSchema),
   barbers: z.array(barberSchema),
   stats: z.array(z.object({ value: z.string(), label: z.string() })),

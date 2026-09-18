@@ -14,6 +14,7 @@ export function AdminCatalogSection({ state }: { state: AdminPageState }) {
     setBarberRole,
     showcaseImageInputRefs,
     serviceImageInputRefs,
+    productImageInputRefs,
     updateService,
     openCreateServiceModal,
     addBarber,
@@ -21,6 +22,11 @@ export function AdminCatalogSection({ state }: { state: AdminPageState }) {
     updateShowcaseImage,
     openServiceImagePicker,
     updateServiceImage,
+    updateProduct,
+    addProduct,
+    removeProduct,
+    openProductImagePicker,
+    updateProductImage,
   } = state;
 
   return (
@@ -131,6 +137,85 @@ export function AdminCatalogSection({ state }: { state: AdminPageState }) {
                         }
                       >
                         Remover serviço
+                      </AdminButton>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className={styles.contentCard} id="produtos">
+              <div className={styles.contentCardHeader}>
+                <p className={styles.sectionEyebrow}>Catálogo</p>
+                <h2>Produtos</h2>
+                <p>Itens à venda na barbearia (pomada, óleo de barba, etc.), exibidos no site.</p>
+              </div>
+
+              <AdminButton variant="primary" type="button" onClick={addProduct}>
+                Adicionar produto
+              </AdminButton>
+
+              <div className={styles.servicesEditorList}>
+                {config.products.map((product, index) => (
+                  <div className={styles.serviceEditorCard} key={`${product.name}-${index}`}>
+                    <div className={styles.galleryCard}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        className={styles.galleryPreview}
+                        src={product.image}
+                        alt={`Preview do produto ${product.name}`}
+                      />
+                      <div className={styles.galleryCardBody}>
+                        <strong>Imagem do produto</strong>
+                        <span>{product.name || "Sem nome"}</span>
+                        <input
+                          ref={(element) => {
+                            productImageInputRefs.current[index] = element;
+                          }}
+                          className={styles.visuallyHiddenInput}
+                          type="file"
+                          accept="image/*"
+                          onChange={(event) => updateProductImage(index, event.target.files?.[0] ?? null)}
+                        />
+                        <AdminButton
+                          variant="secondary"
+                          type="button"
+                          onClick={() => openProductImagePicker(index)}
+                        >
+                          Trocar imagem
+                        </AdminButton>
+                      </div>
+                    </div>
+                    <div className={styles.serviceEditorContent}>
+                      <div className={styles.serviceEditorFields}>
+                        <label className={styles.serviceField}>
+                          <span>Nome do produto</span>
+                          <input
+                            className={styles.serviceFieldInput}
+                            value={product.name}
+                            onChange={(event) => updateProduct(index, "name", event.target.value)}
+                          />
+                        </label>
+                        <label className={styles.serviceField}>
+                          <span>Valor</span>
+                          <input
+                            className={styles.serviceFieldInput}
+                            value={product.price}
+                            onFocus={(event) => event.target.select()}
+                            onChange={(event) => updateProduct(index, "price", event.target.value)}
+                          />
+                        </label>
+                        <label className={`${styles.serviceField} ${styles.serviceFieldDescription}`}>
+                          <span>Descrição</span>
+                          <textarea
+                            className={styles.serviceFieldInput}
+                            value={product.description}
+                            onChange={(event) => updateProduct(index, "description", event.target.value)}
+                          />
+                        </label>
+                      </div>
+                      <AdminButton variant="danger" type="button" onClick={() => removeProduct(index)}>
+                        Remover produto
                       </AdminButton>
                     </div>
                   </div>

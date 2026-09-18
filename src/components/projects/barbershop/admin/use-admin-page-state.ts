@@ -90,6 +90,7 @@ export function useAdminPageState(section: AdminSectionView) {
   const [newAppointmentAlerts, setNewAppointmentAlerts] = useState<AdminAppointment[]>([]);
   const showcaseImageInputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const serviceImageInputRefs = useRef<Array<HTMLInputElement | null>>([]);
+  const productImageInputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const newServiceImageInputRef = useRef<HTMLInputElement | null>(null);
   const newServiceDescriptionInputRef = useRef<HTMLTextAreaElement | null>(null);
   const autoDetectedHolidayRef = useRef<string | null>(null);
@@ -549,6 +550,58 @@ export function useAdminPageState(section: AdminSectionView) {
     }));
     setStatusMessage("Serviço removido. Salve para aplicar no site.");
     showToast({ variant: "warning", title: "Aviso", message: "Serviço removido. Salve para aplicar no site." });
+  }
+
+  function updateProduct(index: number, field: keyof (typeof config.products)[number], value: string) {
+    setConfig((current) => ({
+      ...current,
+      products: current.products.map((product, productIndex) =>
+        productIndex === index ? { ...product, [field]: value } : product,
+      ),
+    }));
+  }
+
+  function addProduct() {
+    setConfig((current) => ({
+      ...current,
+      products: [
+        ...current.products,
+        { name: "", description: "", price: "R$ 0,00", image: current.services[0]?.image ?? "" },
+      ],
+    }));
+  }
+
+  function removeProduct(index: number) {
+    setConfig((current) => ({
+      ...current,
+      products: current.products.filter((_, productIndex) => productIndex !== index),
+    }));
+    setStatusMessage("Produto removido. Salve para aplicar no site.");
+    showToast({ variant: "warning", title: "Aviso", message: "Produto removido. Salve para aplicar no site." });
+  }
+
+  function openProductImagePicker(index: number) {
+    productImageInputRefs.current[index]?.click();
+  }
+
+  function updateProductImage(index: number, file: File | null) {
+    if (!file) {
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = typeof reader.result === "string" ? reader.result : "";
+      setConfig((current) => ({
+        ...current,
+        products: current.products.map((product, productIndex) =>
+          productIndex === index ? { ...product, image: result } : product,
+        ),
+      }));
+      setStatusMessage("Imagem do produto atualizada. Salve para aplicar no site.");
+      showToast({ variant: "success", message: "Imagem do produto atualizada. Salve para aplicar no site." });
+    };
+    reader.readAsDataURL(file);
   }
 
   function openCreateServiceModal() {
@@ -1648,6 +1701,12 @@ export function useAdminPageState(section: AdminSectionView) {
     removeLoyaltyTier,
     updateService,
     removeService,
+    updateProduct,
+    addProduct,
+    removeProduct,
+    productImageInputRefs,
+    openProductImagePicker,
+    updateProductImage,
     openCreateServiceModal,
     closeCreateServiceModal,
     updateNewServiceField,
