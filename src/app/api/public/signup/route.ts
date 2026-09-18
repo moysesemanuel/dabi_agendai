@@ -6,6 +6,7 @@ import { createSubscriptionCheckout } from "@/lib/billing/subscription-service";
 import { resolveErrorResponse, UserFacingError } from "@/lib/errors";
 import { prisma } from "@/lib/prisma";
 import { MercadoPagoApiError } from "@/lib/payments/mercado-pago";
+import { sendEmail } from "@/lib/email/resend";
 
 const bodySchema = z.object({
   businessName: z.string().trim().min(2),
@@ -47,6 +48,26 @@ export async function POST(request: NextRequest) {
         payerEmail: adminEmail,
         backUrl,
       });
+
+      const siteUrl = `https://${domain}`;
+
+      try {
+        await sendEmail({
+          to: adminEmail,
+          subject: `Seu link de acesso - ${businessName}`,
+          html: `
+            <p>Olá, ${adminName}!</p>
+            <p>O site da <strong>${businessName}</strong> no DaBi Agendaí é:</p>
+            <p><a href="${siteUrl}">${siteUrl}</a></p>
+            <p>Guarde esse link — ele é o endereço da sua barbearia. Tanto o painel administrativo
+            (<a href="${siteUrl}/admin">${siteUrl}/admin</a>) quanto a recuperação de senha só
+            funcionam nesse endereço específico, não em outro site do DaBi Agendaí.</p>
+            <p>Finalize o pagamento da assinatura para liberar o acesso completo ao painel.</p>
+          `,
+        });
+      } catch (emailError) {
+        console.error("signup.welcome_email_failed", emailError);
+      }
 
       return NextResponse.json({ initPoint, domain });
     } catch (checkoutError) {

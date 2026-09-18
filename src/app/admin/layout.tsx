@@ -1,5 +1,4 @@
 import { headers } from "next/headers";
-import Link from "next/link";
 import { SubscriptionStatus } from "@prisma/client";
 import styles from "@/app/admin/admin.module.css";
 import { getCurrentTenant } from "@/lib/tenant";
@@ -44,9 +43,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
                 sistema.
               </p>
             </div>
-            <Link className={styles.buttonPrimary} href={SUBSCRIPTION_PAGE_PATH}>
+            {/* <a> de propósito, não <Link>: a navegação client-side do Next.js
+                reaproveita o layout já renderizado (bloqueado) em vez de reavaliar
+                o gate para o novo pathname - só uma navegação completa garante que
+                o servidor reexecuta a checagem de assinatura. */}
+            <a className={styles.buttonPrimary} href={SUBSCRIPTION_PAGE_PATH}>
               Ver assinatura
-            </Link>
+            </a>
           </section>
         </main>
       </div>
