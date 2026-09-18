@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 test.describe("smoke", () => {
   test("home carrega e mostra o nome do negocio", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByText("Prime Cut Studio").first()).toBeVisible();
+    await expect(page.getByText("Barbearia CI").first()).toBeVisible();
   });
 
   test("pagina de agendamento carrega", async ({ page }) => {
