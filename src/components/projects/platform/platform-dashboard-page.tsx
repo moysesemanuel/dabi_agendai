@@ -14,6 +14,15 @@ type Tenant = {
   barbersCount: number;
   customersCount: number;
   appointmentsCount: number;
+  subscriptionStatus: "PENDING" | "ACTIVE" | "PAUSED" | "CANCELED" | null;
+  subscriptionPlanId: string | null;
+};
+
+const subscriptionStatusLabels: Record<NonNullable<Tenant["subscriptionStatus"]>, string> = {
+  PENDING: "Aguardando pagamento",
+  ACTIVE: "Ativa",
+  PAUSED: "Pausada",
+  CANCELED: "Cancelada",
 };
 
 const emptyForm = {
@@ -23,6 +32,7 @@ const emptyForm = {
   adminEmail: "",
   adminPhone: "",
   adminPassword: "",
+  planId: "essencial",
 };
 
 function formatDate(date: string) {
@@ -180,6 +190,16 @@ export function PlatformDashboardPage() {
               onChange={(event) => setForm({ ...form, adminPassword: event.target.value })}
             />
           </label>
+          <label className={styles.field}>
+            <span>Plano</span>
+            <select
+              value={form.planId}
+              onChange={(event) => setForm({ ...form, planId: event.target.value })}
+            >
+              <option value="essencial">Essencial (R$ 59/mês)</option>
+              <option value="completo">Completo (R$ 99/mês)</option>
+            </select>
+          </label>
 
           {formError ? <div className={styles.error}>{formError}</div> : null}
           {formSuccess ? <div className={styles.success}>{formSuccess}</div> : null}
@@ -203,6 +223,7 @@ export function PlatformDashboardPage() {
                   <th>Nome</th>
                   <th>Dominio</th>
                   <th>Status</th>
+                  <th>Assinatura</th>
                   <th>Cor de marca</th>
                   <th>Barbeiros</th>
                   <th>Clientes</th>
@@ -228,6 +249,11 @@ export function PlatformDashboardPage() {
                       >
                         {tenant.active ? "Ativo" : "Inativo"}
                       </span>
+                    </td>
+                    <td>
+                      {tenant.subscriptionStatus
+                        ? `${subscriptionStatusLabels[tenant.subscriptionStatus]} (${tenant.subscriptionPlanId ?? "-"})`
+                        : "Sem assinatura"}
                     </td>
                     <td>
                       <div className={styles.brandColorCell}>

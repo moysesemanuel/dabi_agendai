@@ -60,6 +60,7 @@ export function AdminPage({ section = "overview" }: { section?: AdminSectionView
               Dados
             </Link>
             <Link href="/admin/suporte">Suporte</Link>
+            <Link href="/admin/assinatura">Assinatura</Link>
           </nav>
 
           <div className={styles.sidebarStats}>

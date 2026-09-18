@@ -1,12 +1,14 @@
 import { UserFacingError } from "@/lib/errors";
 import { hashPassword } from "@/lib/password";
 import { prisma } from "@/lib/prisma";
+import { getPlan, type PlanId } from "@/lib/billing/plans";
 
 export async function listTenantsWithStats() {
   const tenants = await prisma.tenant.findMany({
     orderBy: { createdAt: "desc" },
     include: {
       _count: { select: { barbers: true, customers: true, appointments: true } },
+      subscription: true,
     },
   });
 
@@ -20,6 +22,8 @@ export async function listTenantsWithStats() {
     barbersCount: tenant._count.barbers,
     customersCount: tenant._count.customers,
     appointmentsCount: tenant._count.appointments,
+    subscriptionStatus: tenant.subscription?.status ?? null,
+    subscriptionPlanId: tenant.subscription?.planId ?? null,
   }));
 }
 
@@ -30,6 +34,7 @@ export async function createTenantWithAdmin(input: {
   adminEmail: string;
   adminPhone: string;
   adminPassword: string;
+  planId: PlanId;
 }) {
   const domain = input.domain.toLowerCase().trim();
 
@@ -41,6 +46,16 @@ export async function createTenantWithAdmin(input: {
 
   const tenant = await prisma.tenant.create({
     data: { name: input.name, domain },
+  });
+
+  const plan = getPlan(input.planId);
+
+  await prisma.tenantSubscription.create({
+    data: {
+      tenantId: tenant.id,
+      planId: input.planId,
+      amountCents: plan.amountCents,
+    },
   });
 
   const admin = await prisma.customer.create({

@@ -1,10 +1,11 @@
 import { UserFacingError } from "@/lib/errors";
+import { isPlanId } from "@/lib/billing/plans";
 import { createTenantWithAdmin } from "@/lib/platform";
 import { prisma } from "@/lib/prisma";
 
 function printUsageAndExit(): never {
   console.error(
-    "Uso: yarn create-tenant --name \"Nome da barbearia\" --domain dominio.com --admin-name \"Nome\" --admin-email email@dominio.com --admin-phone 11999999999 --admin-password senha123",
+    "Uso: yarn create-tenant --name \"Nome da barbearia\" --domain dominio.com --admin-name \"Nome\" --admin-email email@dominio.com --admin-phone 11999999999 --admin-password <senha> --plan essencial|completo",
   );
   process.exit(1);
 }
@@ -36,8 +37,9 @@ function parseArgs(argv: string[]) {
   const adminEmail = values["admin-email"];
   const adminPhone = values["admin-phone"];
   const adminPassword = values["admin-password"];
+  const planId = values["plan"];
 
-  if (!name || !domain || !adminName || !adminEmail || !adminPhone || !adminPassword) {
+  if (!name || !domain || !adminName || !adminEmail || !adminPhone || !adminPassword || !planId) {
     printUsageAndExit();
   }
 
@@ -46,11 +48,16 @@ function parseArgs(argv: string[]) {
     process.exit(1);
   }
 
-  return { name, domain, adminName, adminEmail, adminPhone, adminPassword };
+  if (!isPlanId(planId)) {
+    console.error("--plan deve ser \"essencial\" ou \"completo\".");
+    process.exit(1);
+  }
+
+  return { name, domain, adminName, adminEmail, adminPhone, adminPassword, planId };
 }
 
 async function main() {
-  const { name, domain, adminName, adminEmail, adminPhone, adminPassword } = parseArgs(
+  const { name, domain, adminName, adminEmail, adminPhone, adminPassword, planId } = parseArgs(
     process.argv.slice(2),
   );
 
@@ -61,6 +68,7 @@ async function main() {
     adminEmail,
     adminPhone,
     adminPassword,
+    planId,
   });
 
   console.log("Tenant criado com sucesso:");
