@@ -781,6 +781,37 @@ function PlansSection({ config }: { config: SiteConfig }) {
   );
 }
 
+function ProductsSection({ config }: { config: SiteConfig }) {
+  if (config.products.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className={styles.section} id="produtos">
+      <SectionHeading eyebrow="Produtos" title="Leve pra casa o cuidado que você tem na cadeira." />
+      <div className={styles.serviceGrid}>
+        {config.products.map((product) => (
+          <article className={styles.serviceCard} key={product.name}>
+            <div className={styles.serviceVisual}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                className={styles.serviceImage}
+                src={product.image}
+                alt={`Imagem do produto ${product.name}`}
+              />
+            </div>
+            <h3>{product.name}</h3>
+            <p>{product.description}</p>
+            <div className={styles.serviceMeta}>
+              <strong>{product.price}</strong>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function ServicesSection({ config }: { config: SiteConfig }) {
   return (
     <section className={styles.section} id="servicos">
@@ -1485,6 +1516,7 @@ export function HomePage({ homeBasePath = "/" }: { homeBasePath?: string }) {
           <StatsSection config={config} averageRatingValue={averageRatingValue} />
           <PlansSection config={config} />
           <ServicesSection config={config} />
+          <ProductsSection config={config} />
           <ContactSection config={config} />
           <FooterSection />
         </div>

@@ -26,6 +26,13 @@ export type ServiceItem = {
   image: string;
 };
 
+export type ProductItem = {
+  name: string;
+  description: string;
+  price: string;
+  image: string;
+};
+
 export type ShowcaseImageItem = {
   src: string;
   alt: string;
@@ -85,6 +92,7 @@ export type SiteConfig = {
   zipCode: string;
   plans: PlanItem[];
   services: ServiceItem[];
+  products: ProductItem[];
   showcaseImages: ShowcaseImageItem[];
   barbers: BarberItem[];
   stats: { value: string; label: string }[];
@@ -125,6 +133,20 @@ export const defaultSiteConfig: SiteConfig = {
   zipCode: "01414-000",
   plans: plans.map((plan) => ({ ...plan })),
   services: services.map((service) => ({ ...service })),
+  products: [
+    {
+      name: "Pomada modeladora",
+      description: "Fixação forte com acabamento matte, ideal para degradê.",
+      price: "R$ 45,00",
+      image: "/service-cabelo.svg",
+    },
+    {
+      name: "Óleo para barba",
+      description: "Hidrata e amacia, com fragrância amadeirada leve.",
+      price: "R$ 39,00",
+      image: "/service-barba.svg",
+    },
+  ],
   showcaseImages: showcaseImages.map((image) => ({ ...image })),
   barbers: barbers.map((name) => ({
     name,
@@ -213,6 +235,7 @@ export function buildPlaceholderSiteConfig(input: {
         image: "/service-cabelo.svg",
       },
     ],
+    products: [],
     showcaseImages: [],
     barbers: [{ name: input.ownerName, role: "Profissional" }],
     stats: [
@@ -282,6 +305,7 @@ export function mergeSiteConfig(parsed: Partial<SiteConfig> | null | undefined):
     ...parsed,
     plans: parsed.plans ?? defaultSiteConfig.plans,
     services: normalizeServiceImages(parsed.services ?? defaultSiteConfig.services),
+    products: parsed.products ?? defaultSiteConfig.products,
     showcaseImages: normalizeShowcaseImages(parsed.showcaseImages ?? defaultSiteConfig.showcaseImages),
     barbers: parsed.barbers ?? defaultSiteConfig.barbers,
     stats: parsed.stats ?? defaultSiteConfig.stats,

@@ -3,6 +3,7 @@ import type {
   BarberItem,
   BarberTimeOffItem,
   ClosedDateItem,
+  ProductItem,
   ServiceItem,
   SiteConfig,
 } from "@/components/shared/site-config";
@@ -47,6 +48,48 @@ async function syncServices(tenantId: string, services: ServiceItem[]) {
   }
 
   await prisma.service.updateMany({
+    where: {
+      tenantId,
+      name: {
+        notIn: currentNames.length > 0 ? currentNames : ["__none__"],
+      },
+    },
+    data: {
+      active: false,
+    },
+  });
+}
+
+async function syncProducts(tenantId: string, products: ProductItem[]) {
+  const currentNames = products.map((product) => product.name.trim()).filter(Boolean);
+
+  for (const product of products) {
+    const name = product.name.trim();
+
+    if (!name) {
+      continue;
+    }
+
+    await prisma.product.upsert({
+      where: { tenantId_name: { tenantId, name } },
+      update: {
+        description: product.description,
+        priceInCents: parseMoneyToCents(product.price),
+        image: product.image,
+        active: true,
+      },
+      create: {
+        tenantId,
+        name,
+        description: product.description,
+        priceInCents: parseMoneyToCents(product.price),
+        image: product.image,
+        active: true,
+      },
+    });
+  }
+
+  await prisma.product.updateMany({
     where: {
       tenantId,
       name: {
@@ -173,6 +216,7 @@ async function saveSiteConfig(tenantId: string, config: SiteConfig) {
 
 export async function syncOperationalData(tenantId: string, config: SiteConfig) {
   await syncServices(tenantId, config.services);
+  await syncProducts(tenantId, config.products);
   await syncBarbers(tenantId, config.barbers);
   await syncClosedDates(tenantId, config.closedDates);
   await syncBarberTimeOff(tenantId, config.barberTimeOff);
