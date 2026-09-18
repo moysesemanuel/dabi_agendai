@@ -224,6 +224,23 @@
   line-height: 1.5;
 }
 
+.linkButton {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  padding: 0;
+  margin-top: 4px;
+  color: var(--tenant-accent);
+  font-size: 0.84rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.linkButton:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .field input,
 .field textarea {
   width: 100%;
