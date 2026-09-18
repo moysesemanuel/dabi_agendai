@@ -2,6 +2,8 @@ import { UserFacingError } from "@/lib/errors";
 import { hashPassword } from "@/lib/password";
 import { prisma } from "@/lib/prisma";
 import { getPlan, type PlanId } from "@/lib/billing/plans";
+import { buildPlaceholderSiteConfig } from "@/components/shared/site-config";
+import { syncOperationalData } from "@/lib/admin-sync";
 
 export async function listTenantsWithStats() {
   const tenants = await prisma.tenant.findMany({
@@ -77,6 +79,15 @@ export async function createTenantWithAdmin(input: {
       role: "ADMIN",
     },
   });
+
+  await syncOperationalData(
+    tenant.id,
+    buildPlaceholderSiteConfig({
+      businessName: input.name,
+      ownerName: input.adminName,
+      whatsapp: admin.phone,
+    }),
+  );
 
   await createNotification({
     type: "SYSTEM",

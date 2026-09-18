@@ -183,6 +183,68 @@ export const defaultSiteConfig: SiteConfig = {
   ignoredHolidayDates: [],
 };
 
+export function buildPlaceholderSiteConfig(input: {
+  businessName: string;
+  ownerName: string;
+  whatsapp: string;
+}): SiteConfig {
+  return {
+    businessName: input.businessName,
+    businessTag: "Barbearia",
+    headline: "Agende seu horário online, sem precisar mandar mensagem.",
+    heroDescription:
+      "Escolha o serviço, o profissional e o melhor horário — tudo direto pelo site, a qualquer hora.",
+    whatsapp: input.whatsapp,
+    instagram: "",
+    googleMapsUrl: "",
+    address: "",
+    addressNumber: "",
+    city: "",
+    neighborhood: "",
+    zipCode: "",
+    plans: [],
+    services: [
+      {
+        name: "Corte",
+        description: "Edite a descrição e o preço desse serviço no painel.",
+        price: "R$ 0,00",
+        membership: "",
+        duration: "30 min",
+        image: "/service-cabelo.svg",
+      },
+    ],
+    showcaseImages: [],
+    barbers: [{ name: input.ownerName, role: "Profissional" }],
+    stats: [
+      { value: "-", label: "Avaliação" },
+      { value: "0", label: "Clientes atendidos" },
+      { value: "-", label: "Anos de experiência" },
+      { value: "+1", label: "Profissionais" },
+    ],
+    testimonials: [],
+    loyaltyTiers: [
+      { name: "Bronze", minPoints: 0, maxPoints: 99, accent: "#b3835a" },
+      { name: "Silver", minPoints: 100, maxPoints: 249, accent: "#b8c0cc" },
+      { name: "Gold", minPoints: 250, maxPoints: 499, accent: "#d6aa4d" },
+      { name: "Black", minPoints: 500, maxPoints: null, accent: "#1f1712" },
+    ],
+    loyaltyRewards: [],
+    availableTimes: [...availableTimes],
+    businessHours: [
+      { weekday: 0, closed: true, start: "09:00", end: "18:00" },
+      { weekday: 1, closed: false, start: "09:00", end: "20:00" },
+      { weekday: 2, closed: false, start: "09:00", end: "20:00" },
+      { weekday: 3, closed: false, start: "09:00", end: "20:00" },
+      { weekday: 4, closed: false, start: "09:00", end: "20:00" },
+      { weekday: 5, closed: false, start: "09:00", end: "20:00" },
+      { weekday: 6, closed: false, start: "08:00", end: "18:00" },
+    ],
+    closedDates: [],
+    barberTimeOff: [],
+    ignoredHolidayDates: [],
+  };
+}
+
 const legacyShowcaseImageMap: Record<string, string> = {
   "/hero-ambiente.svg": "/img/espaco-masculino-interior-de-barbearia-moderna-gerado-por-ia_866663-5580.avif",
   "/hero-acabamento.svg": "/img/VISS-Babearia-Visagista.jpg",

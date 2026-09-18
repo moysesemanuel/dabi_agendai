@@ -152,7 +152,7 @@ export default async function Page() {
       <div className={styles.adminShell}>
         <aside className={styles.adminSidebar}>
           <div className={styles.sidebarBrand}>
-            <strong>Prime Cut Admin</strong>
+            <strong>{tenant.name}</strong>
             <span>Painel de gestão da barbearia</span>
           </div>
 

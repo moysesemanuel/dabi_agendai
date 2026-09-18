@@ -89,6 +89,25 @@
   font-weight: 600;
 }
 
+.consentField {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.consentField input {
+  margin-top: 3px;
+}
+
+.consentField a {
+  color: var(--navy);
+  text-decoration: underline;
+}
+
 .field input {
   border: 1px solid rgba(11, 25, 48, 0.16);
   border-radius: 10px;

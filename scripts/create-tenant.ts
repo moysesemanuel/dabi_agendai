@@ -80,7 +80,7 @@ async function main() {
   console.log(`  email: ${admin.email}`);
   console.log("");
   console.log(
-    "Nenhum servico/barbeiro foi criado ainda. O admin deve cadastrar os dados reais pelo painel /admin depois do primeiro login.",
+    "Site criado com um servico e um profissional de placeholder. O admin deve personalizar tudo pelo painel /admin depois do primeiro login.",
   );
 }
 
