@@ -1,0 +1,129 @@
+.page {
+  --navy: #0b2a57;
+  --navy-deep: #050d1c;
+  --cyan: #00b6e6;
+  --paper: #f4f7fb;
+  --ink-on-paper: #0b1930;
+  --muted: rgba(11, 25, 48, 0.66);
+
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  background: var(--paper);
+  color: var(--ink-on-paper);
+  font-family: var(--font-body-marketing), "Inter", sans-serif;
+}
+
+.card {
+  width: 100%;
+  max-width: 480px;
+  background: #fff;
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 30px 60px rgba(11, 25, 48, 0.12);
+}
+
+.logo {
+  height: 32px;
+  width: auto;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-family: var(--font-display-marketing), sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+
+.subtitle {
+  color: var(--muted);
+  margin: 0 0 28px;
+  line-height: 1.5;
+}
+
+.planPicker {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.planOption {
+  flex: 1;
+  border: 2px solid rgba(11, 42, 87, 0.12);
+  border-radius: 14px;
+  padding: 12px 14px;
+  cursor: pointer;
+  text-align: left;
+  background: transparent;
+  font-family: inherit;
+}
+
+.planOptionActive {
+  border-color: var(--navy);
+  background: rgba(11, 42, 87, 0.04);
+}
+
+.planOptionName {
+  display: block;
+  font-weight: 700;
+}
+
+.planOptionPrice {
+  display: block;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.field label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.field input {
+  border: 1px solid rgba(11, 25, 48, 0.16);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 15px;
+  font-family: inherit;
+}
+
+.submit {
+  width: 100%;
+  border: none;
+  border-radius: 999px;
+  padding: 14px 20px;
+  background: var(--navy);
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.error {
+  color: #c0392b;
+  font-size: 14px;
+  margin: 0 0 16px;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 16px;
+  text-align: center;
+}
