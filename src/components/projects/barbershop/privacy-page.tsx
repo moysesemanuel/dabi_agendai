@@ -3,9 +3,10 @@
 import styles from "./privacy-page.module.css";
 import { FooterSection, Header } from "./home-page";
 import { useSiteConfig } from "./use-site-config";
+import type { SiteConfig } from "@/components/shared/site-config";
 
-export function PrivacyPage() {
-  const config = useSiteConfig();
+export function PrivacyPage({ initialConfig }: { initialConfig?: SiteConfig } = {}) {
+  const config = useSiteConfig(initialConfig);
 
   return (
     <div className={styles.page}>

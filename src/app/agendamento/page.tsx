@@ -1,5 +1,7 @@
 import { BookingPage } from "@/components/projects/barbershop/booking-page";
+import { loadSiteConfigForCurrentTenant } from "@/lib/site-config-server";
 
-export default function Page() {
-  return <BookingPage />;
+export default async function Page() {
+  const { config } = await loadSiteConfigForCurrentTenant();
+  return <BookingPage initialConfig={config} />;
 }

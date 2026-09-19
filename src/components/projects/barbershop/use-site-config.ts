@@ -5,10 +5,11 @@ import {
   defaultSiteConfig,
   fetchSiteConfig,
   SITE_CONFIG_UPDATED_EVENT,
+  type SiteConfig,
 } from "@/components/shared/site-config";
 
-export function useSiteConfig() {
-  const [config, setConfig] = useState(defaultSiteConfig);
+export function useSiteConfig(initialConfig?: SiteConfig) {
+  const [config, setConfig] = useState(initialConfig ?? defaultSiteConfig);
 
   useEffect(() => {
     let active = true;

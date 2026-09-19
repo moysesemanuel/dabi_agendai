@@ -18,7 +18,7 @@ import { ServiceBookingFlow } from "./service-booking-flow";
 import { useSiteConfig } from "./use-site-config";
 import { buildWhatsappUrl } from "@/components/shared/whatsapp";
 import { formatWhatsappDisplay } from "@/components/shared/whatsapp";
-import { formatBusinessHours, getBusinessAddress } from "@/components/shared/site-config";
+import { formatBusinessHours, getBusinessAddress, type SiteConfig } from "@/components/shared/site-config";
 
 const styles = {
   ...layoutStyles,
@@ -112,8 +112,8 @@ function writeCustomerReviews(items: ReviewItem[]) {
   window.localStorage.setItem(REVIEW_STORAGE_KEY, JSON.stringify(items));
 }
 
-export function BookingPage() {
-  const config = useSiteConfig();
+export function BookingPage({ initialConfig }: { initialConfig?: SiteConfig } = {}) {
+  const config = useSiteConfig(initialConfig);
   const [activeTab, setActiveTab] = useState<TabItem>("Serviços");
   const [customerSession, setCustomerSession] = useState<CustomerSession | null>(null);
   const [loyalty, setLoyalty] = useState<LoyaltyResponse | null>(null);

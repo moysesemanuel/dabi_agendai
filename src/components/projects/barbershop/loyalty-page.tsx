@@ -18,9 +18,10 @@ import {
 } from "./loyalty";
 import { useToast } from "@/components/shared/toast-provider";
 import { useSiteConfig } from "./use-site-config";
+import type { SiteConfig } from "@/components/shared/site-config";
 
-export function LoyaltyPage() {
-  const config = useSiteConfig();
+export function LoyaltyPage({ initialConfig }: { initialConfig?: SiteConfig } = {}) {
+  const config = useSiteConfig(initialConfig);
   const { showToast } = useToast();
   const [customerSession, setCustomerSession] = useState<CustomerSession | null>(null);
   const [loyalty, setLoyalty] = useState<LoyaltyResponse | null>(null);
