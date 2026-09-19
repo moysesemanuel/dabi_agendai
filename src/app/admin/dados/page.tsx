@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { AppointmentStatus } from "@prisma/client";
 import styles from "@/app/admin/admin.module.css";
+import { AdminSidebarNav } from "@/components/projects/barbershop/admin/admin-sidebar-nav";
 import { DaBiTechSignature } from "@/components/shared/dabi-tech-signature";
 import { prisma } from "@/lib/prisma";
 import { getCurrentTenant } from "@/lib/tenant";
@@ -155,21 +156,7 @@ export default async function Page() {
             <span>Painel de gestão da barbearia</span>
           </div>
 
-          <nav className={styles.sidebarNav}>
-            {/* <a> de proposito em toda a nav do admin: navegacao client-side
-                (<Link>) pode reaproveitar o layout ja renderizado (bloqueado
-                ou liberado) em vez de reavaliar o gate de assinatura pro novo
-                pathname a cada troca de pagina. */}
-            <a href="/admin">Visão geral</a>
-            <a href="/admin/site">Site</a>
-            <a href="/admin/catalogo">Catálogo</a>
-            <a href="/admin/agenda">Agenda</a>
-            <a className={styles.sidebarNavLinkActive} href="/admin/dados">
-              Dados
-            </a>
-            <a href="/admin/suporte">Suporte</a>
-            <a href="/admin/assinatura">Assinatura</a>
-          </nav>
+          <AdminSidebarNav pathname="/admin/dados" />
 
           <div className={styles.sidebarStats}>
             <div>

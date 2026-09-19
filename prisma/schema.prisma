@@ -52,6 +52,9 @@ model Tenant {
   appointments       Appointment[]
   notifications      Notification[]
   subscription       TenantSubscription?
+  pushSubscriptions  PushSubscription[]
+  telegramLinks      TelegramLink[]
+  telegramLinkCodes  TelegramLinkCode[]
 }
 
 model TenantSubscription {
@@ -142,11 +145,57 @@ model Customer {
   role               UserRole            @default(CUSTOMER)
   appointments       Appointment[]
   loyaltyRedemptions LoyaltyRedemption[]
+  pushSubscriptions  PushSubscription[]
+  telegramLinks      TelegramLink[]
+  telegramLinkCodes  TelegramLinkCode[]
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
 
   @@unique([tenantId, phone])
   @@unique([tenantId, email])
+  @@index([tenantId])
+}
+
+model PushSubscription {
+  id         String   @id @default(cuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  endpoint   String   @unique
+  p256dh     String
+  auth       String
+  createdAt  DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([customerId])
+}
+
+model TelegramLink {
+  id         String   @id @default(cuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  chatId     String
+  createdAt  DateTime @default(now())
+
+  @@unique([tenantId, chatId])
+  @@index([tenantId])
+  @@index([customerId])
+}
+
+model TelegramLinkCode {
+  id         String    @id @default(cuid())
+  code       String    @unique
+  tenantId   String
+  tenant     Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customerId String
+  customer   Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
   @@index([tenantId])
 }
 
