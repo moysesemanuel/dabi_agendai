@@ -44,7 +44,7 @@ export function AdminCatalogSection({ state }: { state: AdminPageState }) {
 
               <div className={styles.servicesEditorList}>
                 {config.services.map((service, index) => (
-                  <div className={styles.serviceEditorCard} key={`${service.name}-${index}`}>
+                  <div className={styles.serviceEditorCard} key={index}>
                     <div className={styles.galleryCard}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
@@ -157,7 +157,7 @@ export function AdminCatalogSection({ state }: { state: AdminPageState }) {
 
               <div className={styles.servicesEditorList}>
                 {config.products.map((product, index) => (
-                  <div className={styles.serviceEditorCard} key={`${product.name}-${index}`}>
+                  <div className={styles.serviceEditorCard} key={index}>
                     <div className={styles.galleryCard}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
@@ -232,7 +232,7 @@ export function AdminCatalogSection({ state }: { state: AdminPageState }) {
 
               <div className={styles.galleryGrid}>
                 {config.showcaseImages.map((image, index) => (
-                  <article className={styles.galleryCard} key={`${image.label}-${index}`}>
+                  <article className={styles.galleryCard} key={index}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img className={styles.galleryPreview} src={image.src} alt={image.alt} />
                     <div className={styles.galleryCardBody}>
