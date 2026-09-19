@@ -4,9 +4,10 @@ import styles from "@/app/admin/admin.module.css";
 import { AdminSidebarNav } from "@/components/projects/barbershop/admin/admin-sidebar-nav";
 import { DaBiTechSignature } from "@/components/shared/dabi-tech-signature";
 import { SubscriptionCheckoutButton } from "@/components/projects/barbershop/admin/subscription-checkout-button";
+import { SubscriptionCancelButton } from "@/components/projects/barbershop/admin/subscription-cancel-button";
 import { prisma } from "@/lib/prisma";
 import { getCurrentTenant } from "@/lib/tenant";
-import { getTenantSubscription } from "@/lib/billing/subscription-service";
+import { getTenantSubscription, hasActiveTenantAccess } from "@/lib/billing/subscription-service";
 import { PLANS } from "@/lib/billing/plans";
 
 export const dynamic = "force-dynamic";
@@ -43,6 +44,7 @@ export default async function Page() {
   ]);
 
   const isActive = subscription?.status === SubscriptionStatus.ACTIVE;
+  const isInGracePeriod = Boolean(subscription) && !isActive && hasActiveTenantAccess(subscription);
 
   return (
     <div className={styles.adminPage}>
@@ -82,11 +84,31 @@ export default async function Page() {
                   <li>Status: {statusLabels[subscription.status]}</li>
                   <li>Valor: {formatCurrency(subscription.amountCents)}/mês</li>
                   {isActive ? <li>Próxima cobrança: {formatDate(subscription.currentPeriodEnd)}</li> : null}
+                  {isInGracePeriod ? (
+                    <li>Cancelada — acesso liberado até {formatDate(subscription.currentPeriodEnd)}</li>
+                  ) : null}
                 </ul>
               ) : (
                 <p>Nenhuma assinatura iniciada ainda. Escolha um plano abaixo para ativar o acesso.</p>
               )}
             </section>
+
+            {isActive && subscription ? (
+              <section className={styles.contentCard}>
+                <div className={styles.contentCardHeader}>
+                  <p className={styles.sectionEyebrow}>Cancelamento</p>
+                  <h2>Cancelar assinatura</h2>
+                  <p>
+                    A cobrança recorrente para imediatamente no Mercado Pago. Como o mês atual já
+                    está pago, o acesso ao painel continua liberado até{" "}
+                    {formatDate(subscription.currentPeriodEnd)} — depois disso, o acesso é
+                    bloqueado até uma nova assinatura ser feita.
+                  </p>
+                </div>
+
+                <SubscriptionCancelButton periodEndLabel={formatDate(subscription.currentPeriodEnd)} />
+              </section>
+            ) : null}
 
             {!isActive && subscription ? (
               <section className={styles.contentCard}>

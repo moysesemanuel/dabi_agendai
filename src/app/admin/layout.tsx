@@ -1,8 +1,7 @@
 import { headers } from "next/headers";
-import { SubscriptionStatus } from "@prisma/client";
 import styles from "@/app/admin/admin.module.css";
 import { getCurrentTenant } from "@/lib/tenant";
-import { getTenantSubscription } from "@/lib/billing/subscription-service";
+import { getTenantSubscription, hasActiveTenantAccess } from "@/lib/billing/subscription-service";
 
 const SUBSCRIPTION_PAGE_PATH = "/admin/assinatura";
 
@@ -21,11 +20,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   const subscription = await getTenantSubscription(tenant.id);
 
-  // Sem linha de assinatura = tenant criado antes desse recurso existir - nao
-  // bloqueia retroativamente quem ja usava o sistema sem esse conceito. Todo
-  // tenant novo a partir de agora ja nasce com uma assinatura "pending" (ver
-  // scripts/create-tenant.ts), entao o gate vale pra eles desde o primeiro dia.
-  if (!subscription || subscription.status === SubscriptionStatus.ACTIVE) {
+  // hasActiveTenantAccess cobre: sem linha de assinatura (tenant criado antes
+  // desse recurso existir - nao bloqueia retroativamente), status ATIVO, e o
+  // periodo de carencia apos cancelamento (cliente ja pagou o mes, continua
+  // com acesso ate currentPeriodEnd mesmo com status CANCELED).
+  if (hasActiveTenantAccess(subscription)) {
     return children;
   }
 

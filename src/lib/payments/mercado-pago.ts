@@ -114,6 +114,18 @@ export async function getMercadoPagoSubscription(subscriptionId: string) {
   return mercadoPagoApiRequest<MercadoPagoSubscription>(`/preapproval/${subscriptionId}`);
 }
 
+// Cancelamento e imediato e irreversivel do lado do Mercado Pago (nao da pra
+// reativar essa mesma assinatura depois) - so para a cobranca recorrente.
+// A regra de "cliente mantem acesso ate o fim do periodo ja pago" e local,
+// ver `cancelTenantSubscription` em subscription-service.ts.
+export async function cancelMercadoPagoSubscription(subscriptionId: string) {
+  return mercadoPagoApiMutation<MercadoPagoSubscription>(
+    `/preapproval/${subscriptionId}`,
+    { status: "canceled" },
+    "PUT",
+  );
+}
+
 export async function getMercadoPagoAuthorizedPayment(authorizedPaymentId: string) {
   return mercadoPagoApiRequest<MercadoPagoAuthorizedPayment>(
     `/authorized_payments/${authorizedPaymentId}`,
@@ -228,9 +240,13 @@ async function mercadoPagoApiRequest<T>(path: string) {
   return (await response.json()) as T;
 }
 
-async function mercadoPagoApiMutation<T>(path: string, body: Record<string, unknown>) {
+async function mercadoPagoApiMutation<T>(
+  path: string,
+  body: Record<string, unknown>,
+  method: "POST" | "PUT" = "POST",
+) {
   const response = await fetch(`https://api.mercadopago.com${path}`, {
-    method: "POST",
+    method,
     headers: {
       Accept: "application/json",
       Authorization: `Bearer ${getMercadoPagoAccessToken()}`,
