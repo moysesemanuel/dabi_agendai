@@ -11,6 +11,7 @@
     "start": "next start --port 3002",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
+    "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "prisma:generate": "prisma generate",
     "db:push": "prisma db push",
@@ -40,6 +41,8 @@
     "eslint-config-next": "16.2.1",
     "prisma": "6.16.2",
     "tsx": "^4.23.13",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^3"
   }
 }
