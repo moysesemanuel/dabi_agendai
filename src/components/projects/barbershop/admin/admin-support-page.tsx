@@ -6,9 +6,10 @@ import { AdminButton } from "@/components/projects/barbershop/admin/admin-button
 import { AdminSidebarNav } from "@/components/projects/barbershop/admin/admin-sidebar-nav";
 import { DaBiTechSignature } from "@/components/shared/dabi-tech-signature";
 import { useSiteConfig } from "@/components/projects/barbershop/use-site-config";
+import type { SiteConfig } from "@/components/shared/site-config";
 
-export function AdminSupportPage() {
-  const config = useSiteConfig();
+export function AdminSupportPage({ initialConfig }: { initialConfig?: SiteConfig } = {}) {
+  const config = useSiteConfig(initialConfig);
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; text: string } | null>(
