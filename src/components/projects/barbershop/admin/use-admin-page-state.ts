@@ -11,6 +11,7 @@ import {
   type LoyaltyRewardItem,
   type LoyaltyTierItem,
   type BusinessHoursItem,
+  type SiteConfig,
   SITE_CONFIG_UPDATED_EVENT,
 } from "@/components/shared/site-config";
 import { useToast } from "@/components/shared/toast-provider";
@@ -39,10 +40,10 @@ import {
   type ServiceDraft,
 } from "./admin-types";
 
-export function useAdminPageState(section: AdminSectionView) {
+export function useAdminPageState(section: AdminSectionView, initialConfig?: SiteConfig) {
   const { showToast } = useToast();
   const pathname = usePathname();
-  const siteConfigSnapshot = useSiteConfig();
+  const siteConfigSnapshot = useSiteConfig(initialConfig);
   const [config, setConfig] = useState(siteConfigSnapshot);
   const [closingDate, setClosingDate] = useState("2026-03-30");
   const [closingReason, setClosingReason] = useState("Treinamento interno");

@@ -6,6 +6,7 @@ import { AdminButton } from "@/components/projects/barbershop/admin/admin-button
 import { AdminSidebarNav } from "@/components/projects/barbershop/admin/admin-sidebar-nav";
 import { DaBiTechSignature } from "@/components/shared/dabi-tech-signature";
 import { useSiteConfig } from "@/components/projects/barbershop/use-site-config";
+import type { SiteConfig } from "@/components/shared/site-config";
 
 type TelegramLinkRow = {
   id: string;
@@ -37,11 +38,13 @@ function formatDateTime(iso: string) {
 export function AdminNotificationsPage({
   initialPushDeviceCount,
   initialTelegramLinks,
+  initialConfig,
 }: {
   initialPushDeviceCount: number;
   initialTelegramLinks: TelegramLinkRow[];
+  initialConfig?: SiteConfig;
 }) {
-  const config = useSiteConfig();
+  const config = useSiteConfig(initialConfig);
   const [pushSupported, setPushSupported] = useState(false);
   const [pushSubscribed, setPushSubscribed] = useState(false);
   const [pushBusy, setPushBusy] = useState(false);

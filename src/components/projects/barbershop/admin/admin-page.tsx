@@ -11,9 +11,16 @@ import { AdminSidebarNav } from "./admin-sidebar-nav";
 import { AdminSiteSection } from "./admin-site-section";
 import { type AdminSectionView } from "./admin-types";
 import { useAdminPageState } from "./use-admin-page-state";
+import type { SiteConfig } from "@/components/shared/site-config";
 
-export function AdminPage({ section = "overview" }: { section?: AdminSectionView }) {
-  const state = useAdminPageState(section);
+export function AdminPage({
+  section = "overview",
+  initialConfig,
+}: {
+  section?: AdminSectionView;
+  initialConfig?: SiteConfig;
+}) {
+  const state = useAdminPageState(section, initialConfig);
   const {
     pathname,
     config,
