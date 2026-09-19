@@ -1,7 +1,9 @@
-import { SubscriptionStatus } from "@prisma/client";
+import { SubscriptionStatus, type TenantSubscription } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { UserFacingError } from "@/lib/errors";
 import { getPlan, type PlanId } from "@/lib/billing/plans";
 import {
+  cancelMercadoPagoSubscription,
   createMercadoPagoRecurringSubscription,
   getMercadoPagoAuthorizedPayment,
   getMercadoPagoSubscription,
@@ -56,6 +58,43 @@ export async function createSubscriptionCheckout(input: {
 
 export async function getTenantSubscription(tenantId: string) {
   return prisma.tenantSubscription.findUnique({ where: { tenantId } });
+}
+
+// Cancelar para no Mercado Pago imediatamente (nao da pra reverter isso la -
+// ver comentario em cancelMercadoPagoSubscription), mas o tenant continua com
+// acesso ao /admin ate currentPeriodEnd (o periodo que ja foi pago). O gate
+// em admin/layout.tsx usa hasActiveTenantAccess pra aplicar essa regra.
+export async function cancelTenantSubscription(tenantId: string) {
+  const subscription = await prisma.tenantSubscription.findUnique({ where: { tenantId } });
+
+  if (!subscription || subscription.status !== SubscriptionStatus.ACTIVE || !subscription.providerSubscriptionId) {
+    throw new UserFacingError("Nao ha uma assinatura ativa para cancelar.");
+  }
+
+  await cancelMercadoPagoSubscription(subscription.providerSubscriptionId);
+
+  return prisma.tenantSubscription.update({
+    where: { id: subscription.id },
+    data: { status: SubscriptionStatus.CANCELED },
+  });
+}
+
+export function hasActiveTenantAccess(
+  subscription: Pick<TenantSubscription, "status" | "currentPeriodEnd"> | null,
+) {
+  if (!subscription) {
+    return true;
+  }
+
+  if (subscription.status === SubscriptionStatus.ACTIVE) {
+    return true;
+  }
+
+  return (
+    subscription.status === SubscriptionStatus.CANCELED &&
+    subscription.currentPeriodEnd !== null &&
+    subscription.currentPeriodEnd > new Date()
+  );
 }
 
 export async function processMercadoPagoWebhookEvent(input: {
