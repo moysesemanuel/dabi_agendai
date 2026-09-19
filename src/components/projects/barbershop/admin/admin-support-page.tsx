@@ -3,6 +3,7 @@
 import { useState } from "react";
 import styles from "@/app/admin/admin.module.css";
 import { AdminButton } from "@/components/projects/barbershop/admin/admin-button";
+import { AdminSidebarNav } from "@/components/projects/barbershop/admin/admin-sidebar-nav";
 import { DaBiTechSignature } from "@/components/shared/dabi-tech-signature";
 import { useSiteConfig } from "@/components/projects/barbershop/use-site-config";
 
@@ -57,19 +58,7 @@ export function AdminSupportPage() {
             <span>Painel de gestão da barbearia</span>
           </div>
 
-          <nav className={styles.sidebarNav}>
-            {/* <a> de proposito: ver nota em admin-page.tsx sobre navegacao
-                client-side reaproveitando o gate de assinatura desatualizado. */}
-            <a href="/admin">Visão geral</a>
-            <a href="/admin/site">Site</a>
-            <a href="/admin/catalogo">Catálogo</a>
-            <a href="/admin/agenda">Agenda</a>
-            <a href="/admin/dados">Dados</a>
-            <a className={styles.sidebarNavLinkActive} href="/admin/suporte">
-              Suporte
-            </a>
-            <a href="/admin/assinatura">Assinatura</a>
-          </nav>
+          <AdminSidebarNav pathname="/admin/suporte" />
         </aside>
 
         <main className={styles.adminContent}>

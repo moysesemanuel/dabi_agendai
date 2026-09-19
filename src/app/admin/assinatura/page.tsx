@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { SubscriptionStatus } from "@prisma/client";
 import styles from "@/app/admin/admin.module.css";
+import { AdminSidebarNav } from "@/components/projects/barbershop/admin/admin-sidebar-nav";
 import { DaBiTechSignature } from "@/components/shared/dabi-tech-signature";
 import { SubscriptionCheckoutButton } from "@/components/projects/barbershop/admin/subscription-checkout-button";
 import { prisma } from "@/lib/prisma";
@@ -52,19 +53,7 @@ export default async function Page() {
             <span>Painel de gestão da barbearia</span>
           </div>
 
-          <nav className={styles.sidebarNav}>
-            {/* <a> de proposito: ver nota em admin-page.tsx sobre navegacao
-                client-side reaproveitando o gate de assinatura desatualizado. */}
-            <a href="/admin">Visão geral</a>
-            <a href="/admin/site">Site</a>
-            <a href="/admin/catalogo">Catálogo</a>
-            <a href="/admin/agenda">Agenda</a>
-            <a href="/admin/dados">Dados</a>
-            <a href="/admin/suporte">Suporte</a>
-            <a className={styles.sidebarNavLinkActive} href="/admin/assinatura">
-              Assinatura
-            </a>
-          </nav>
+          <AdminSidebarNav pathname="/admin/assinatura" />
         </aside>
 
         <main className={styles.adminContent}>

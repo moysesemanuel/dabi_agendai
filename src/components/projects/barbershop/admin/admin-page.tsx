@@ -7,6 +7,7 @@ import { AdminCatalogSection } from "./admin-catalog-section";
 import { AdminOnboardingChecklist } from "./admin-onboarding-checklist";
 import { AdminOverlays } from "./admin-overlays";
 import { AdminScheduleSection } from "./admin-schedule-section";
+import { AdminSidebarNav } from "./admin-sidebar-nav";
 import { AdminSiteSection } from "./admin-site-section";
 import { type AdminSectionView } from "./admin-types";
 import { useAdminPageState } from "./use-admin-page-state";
@@ -43,29 +44,7 @@ export function AdminPage({ section = "overview" }: { section?: AdminSectionView
             <span>Painel de gestão da barbearia</span>
           </div>
 
-          <nav className={styles.sidebarNav}>
-            {/* <a> de proposito em toda a nav do admin: navegacao client-side
-                (<Link>) pode reaproveitar o layout ja renderizado (bloqueado
-                ou liberado) em vez de reavaliar o gate de assinatura pro novo
-                pathname a cada troca de pagina. */}
-            <a className={pathname === "/admin" ? styles.sidebarNavLinkActive : ""} href="/admin">
-              Visão geral
-            </a>
-            <a className={pathname === "/admin/site" ? styles.sidebarNavLinkActive : ""} href="/admin/site">
-              Site
-            </a>
-            <a className={pathname === "/admin/catalogo" ? styles.sidebarNavLinkActive : ""} href="/admin/catalogo">
-              Catálogo
-            </a>
-            <a className={pathname === "/admin/agenda" ? styles.sidebarNavLinkActive : ""} href="/admin/agenda">
-              Agenda
-            </a>
-            <a className={pathname === "/admin/dados" ? styles.sidebarNavLinkActive : ""} href="/admin/dados">
-              Dados
-            </a>
-            <a href="/admin/suporte">Suporte</a>
-            <a href="/admin/assinatura">Assinatura</a>
-          </nav>
+          <AdminSidebarNav pathname={pathname} />
 
           <div className={styles.sidebarStats}>
             <div>

@@ -1,6 +1,7 @@
 import { AppointmentStatus, Prisma, type Barber, type Service } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { UserFacingError } from "@/lib/errors";
+import { notifyNewAppointment } from "@/lib/notifications/notify-new-appointment";
 
 type PrismaTransactionClient = Prisma.TransactionClient;
 type DbClient = typeof prisma | PrismaTransactionClient;
@@ -355,7 +356,7 @@ export async function createAppointment(params: {
   }
 
   try {
-    return await prisma.$transaction(
+    const appointment = await prisma.$transaction(
       async (tx) => {
         const appointments = await listBookableAppointmentsWithOptions(
           tenantId,
@@ -390,6 +391,12 @@ export async function createAppointment(params: {
       },
       { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
     );
+
+    void notifyNewAppointment(tenantId, appointment, barber.name, service.name).catch((error) => {
+      console.error("Falha ao notificar novo agendamento", error);
+    });
+
+    return appointment;
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034") {
       throw new UserFacingError("Esse horario acabou de ser reservado. Escolha outro.");
