@@ -51,12 +51,12 @@ export function getTodayDateKey() {
   return getDateKey(new Date());
 }
 
-function getMinutesFromTime(time: string) {
+export function getMinutesFromTime(time: string) {
   const [hours, minutes] = time.split(":").map(Number);
   return hours * 60 + minutes;
 }
 
-function getTimeFromMinutes(totalMinutes: number) {
+export function getTimeFromMinutes(totalMinutes: number) {
   const hours = `${Math.floor(totalMinutes / 60)}`.padStart(2, "0");
   const minutes = `${totalMinutes % 60}`.padStart(2, "0");
   return `${hours}:${minutes}`;
@@ -99,11 +99,11 @@ async function getBusinessHours(tenantId: string, dateKey: string) {
   return hoursMap[date.getDay()] ?? null;
 }
 
-function combineDateAndTime(dateKey: string, time: string) {
+export function combineDateAndTime(dateKey: string, time: string) {
   return new Date(`${dateKey}T${time}:00${SAO_PAULO_OFFSET}`);
 }
 
-function overlaps(
+export function overlaps(
   rangeStart: Date,
   rangeEnd: Date,
   appointmentStart: Date,
