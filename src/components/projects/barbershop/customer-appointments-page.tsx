@@ -13,6 +13,7 @@ import { FooterSection, Header } from "./home-page";
 import { useSiteConfig } from "./use-site-config";
 import flowStyles from "./service-booking-flow.module.css";
 import { useToast } from "@/components/shared/toast-provider";
+import type { SiteConfig } from "@/components/shared/site-config";
 
 type CustomerAppointment = {
   id: string;
@@ -123,8 +124,8 @@ function isUpcomingAppointment(appointment: CustomerAppointment) {
   return appointment.status !== "CANCELLED" && new Date(appointment.startsAt).getTime() > Date.now();
 }
 
-export function CustomerAppointmentsPage() {
-  const config = useSiteConfig();
+export function CustomerAppointmentsPage({ initialConfig }: { initialConfig?: SiteConfig } = {}) {
+  const config = useSiteConfig(initialConfig);
   const { showToast } = useToast();
   const [customerSession, setCustomerSession] = useState<CustomerSession | null>(null);
   const [appointments, setAppointments] = useState<CustomerAppointment[]>([]);

@@ -1331,8 +1331,14 @@ export function FooterSection() {
   );
 }
 
-export function HomePage({ homeBasePath = "/" }: { homeBasePath?: string }) {
-  const config = useSiteConfig();
+export function HomePage({
+  homeBasePath = "/",
+  initialConfig,
+}: {
+  homeBasePath?: string;
+  initialConfig?: SiteConfig;
+}) {
+  const config = useSiteConfig(initialConfig);
   const [nextAvailable, setNextAvailable] = useState<NextAvailableSlot>(null);
   const [customerSession, setCustomerSession] = useState<CustomerSession | null>(null);
   const [profilePoints, setProfilePoints] = useState(0);

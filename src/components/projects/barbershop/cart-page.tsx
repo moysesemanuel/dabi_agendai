@@ -6,6 +6,7 @@ import cartStyles from "./cart-page.module.css";
 import { FooterSection, Header } from "./home-page";
 import { readBookingCart, writeBookingCart } from "./cart-storage";
 import { useSiteConfig } from "./use-site-config";
+import type { SiteConfig } from "@/components/shared/site-config";
 
 const styles = cartStyles;
 
@@ -36,8 +37,8 @@ function parsePriceToNumber(price: string) {
   return Number(normalized || "0");
 }
 
-export function CartPage() {
-  const config = useSiteConfig();
+export function CartPage({ initialConfig }: { initialConfig?: SiteConfig } = {}) {
+  const config = useSiteConfig(initialConfig);
   const [items, setItems] = useState<BookingCartItem[]>(() => readBookingCart<BookingCartItem>());
 
   const total = useMemo(
