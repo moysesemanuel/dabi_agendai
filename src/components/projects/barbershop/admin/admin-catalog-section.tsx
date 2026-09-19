@@ -1,8 +1,18 @@
 "use client";
 
+import type { ChangeEvent } from "react";
 import styles from "@/app/admin/admin.module.css";
 import { AdminButton } from "@/components/projects/barbershop/admin/admin-button";
+import { applyCurrencyMask } from "@/lib/currency-mask";
 import type { AdminPageState } from "./use-admin-page-state";
+
+function handleCurrencyChange(event: ChangeEvent<HTMLInputElement>, onChange: (value: string) => void) {
+  const formatted = applyCurrencyMask(event.target.value);
+  onChange(formatted);
+  requestAnimationFrame(() => {
+    event.target.setSelectionRange(formatted.length, formatted.length);
+  });
+}
 
 export function AdminCatalogSection({ state }: { state: AdminPageState }) {
   const {
@@ -89,7 +99,9 @@ export function AdminCatalogSection({ state }: { state: AdminPageState }) {
                             className={styles.serviceFieldInput}
                             value={service.price}
                             onFocus={(event) => event.target.select()}
-                            onChange={(event) => updateService(index, "price", event.target.value)}
+                            onChange={(event) =>
+                              handleCurrencyChange(event, (value) => updateService(index, "price", value))
+                            }
                           />
                         </label>
                         <label className={styles.serviceField}>
@@ -202,7 +214,9 @@ export function AdminCatalogSection({ state }: { state: AdminPageState }) {
                             className={styles.serviceFieldInput}
                             value={product.price}
                             onFocus={(event) => event.target.select()}
-                            onChange={(event) => updateProduct(index, "price", event.target.value)}
+                            onChange={(event) =>
+                              handleCurrencyChange(event, (value) => updateProduct(index, "price", value))
+                            }
                           />
                         </label>
                         <label className={`${styles.serviceField} ${styles.serviceFieldDescription}`}>
