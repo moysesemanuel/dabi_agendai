@@ -179,7 +179,7 @@ export function AdminSiteSection({ state }: { state: AdminPageState }) {
 
               <div className={styles.servicesEditorList}>
                 {config.plans.map((plan, index) => (
-                  <div className={styles.serviceEditorCard} key={`${plan.name}-${index}`}>
+                  <div className={styles.serviceEditorCard} key={index}>
                     <div className={styles.galleryCard}>
                       <div className={styles.galleryCardBody}>
                         <strong>Plano #{index + 1}</strong>
@@ -320,7 +320,7 @@ export function AdminSiteSection({ state }: { state: AdminPageState }) {
 
               <div className={styles.servicesEditorList}>
                 {config.loyaltyTiers.map((tier, index) => (
-                  <div className={styles.serviceEditorCard} key={`${tier.name}-${index}`}>
+                  <div className={styles.serviceEditorCard} key={index}>
                     <div className={styles.galleryCard}>
                       <div className={styles.galleryCardBody}>
                         <strong>Nível #{index + 1}</strong>
@@ -397,7 +397,7 @@ export function AdminSiteSection({ state }: { state: AdminPageState }) {
 
               <div className={styles.servicesEditorList}>
                 {config.loyaltyRewards.map((reward, index) => (
-                  <div className={styles.serviceEditorCard} key={`${reward.points}-${index}`}>
+                  <div className={styles.serviceEditorCard} key={index}>
                     <div className={styles.galleryCard}>
                       <div className={styles.galleryCardBody}>
                         <strong>Meta #{index + 1}</strong>
