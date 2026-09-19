@@ -1,6 +1,6 @@
 # DaBi Agendaí
 
-Sistema de agendamento para prestadores de serviço com atendimento por horário — barbearias, salões, estúdios e clínicas. Reúne site institucional, agendamento online, área do cliente, carrinho e backoffice operacional em um único produto.
+Sistema de agendamento multi-tenant para prestadores de serviço com atendimento por horário — barbearias, salões, estúdios e clínicas. Cada estabelecimento tem seu próprio subdomínio, com site institucional, agendamento online, área do cliente, cobrança recorrente e um backoffice completo.
 
 **Stack:** Next.js 16 (App Router) · React 19 · TypeScript · Prisma · PostgreSQL · Vercel
 
@@ -12,7 +12,7 @@ Sistema de agendamento para prestadores de serviço com atendimento por horário
 
 Quem atende por horário marcado normalmente opera no WhatsApp e no caderno. O custo disso aparece como conflito de agenda, tempo perdido confirmando horário por mensagem, cliente que não aparece e nenhuma visão do próprio negócio.
 
-O DaBi Agendaí estrutura essa operação: o cliente agenda sozinho, o estabelecimento vê a agenda em tempo real e o histórico fica registrado.
+O DaBi Agendaí estrutura essa operação: o cliente agenda sozinho, o estabelecimento vê a agenda em tempo real, o histórico fica registrado e o dono é avisado na hora de cada novo agendamento — sem precisar ficar de olho no WhatsApp.
 
 ---
 
@@ -20,32 +20,29 @@ O DaBi Agendaí estrutura essa operação: o cliente agenda sozinho, o estabelec
 
 | Módulo | O que faz |
 |---|---|
-| **Site institucional** | Home com serviços, equipe, prova social e contato |
-| **Agendamento** | Serviço → profissional → data → horário, com bloqueio de horário ocupado |
-| **Área do cliente** | Cadastro, login, histórico, cancelamento e remarcação |
-| **Carrinho** | Múltiplos serviços em uma mesma reserva |
-| **Fidelidade** | Pontuação por atendimento, faixas e recompensas |
-| **Backoffice** | Agenda do dia, reserva manual, catálogo de serviços, equipe, datas bloqueadas e cadastro de clientes |
-| **Notificações** | Alerta de novo agendamento no painel (Notification API + som), por polling |
+| **Site institucional** | Home com serviços, equipe, planos, prova social e contato — um subdomínio por barbearia |
+| **Cadastro self-service** | A barbearia se cadastra sozinha, escolhe um plano e já sai no ar com subdomínio próprio |
+| **Agendamento** | Serviço → profissional → data → horário, com bloqueio de horário ocupado e carrinho para múltiplos serviços |
+| **Área do cliente** | Cadastro, login, histórico, cancelamento, remarcação e recuperação de senha por e-mail |
+| **Fidelidade** | Pontuação por atendimento, níveis e recompensas configuráveis |
+| **Backoffice** | Agenda, catálogo de serviços e produtos, equipe, datas bloqueadas, dados de clientes/receita e FAQ |
+| **Cobrança** | Assinatura recorrente via Mercado Pago, com bloqueio automático de acesso em caso de inadimplência |
+| **Notificações** | Aviso automático de novo agendamento por Web Push e Telegram, mesmo com o painel fechado |
 
 ---
 
-## Estado atual
-
-Este é um **MVP funcional**, ainda não liberado para uso comercial:
+## O que já funciona hoje
 
 | Área | Estado |
 |---|---|
-| Fluxo de agendamento ponta a ponta | ✅ funcionando |
-| Backoffice operacional | ✅ funcionando |
-| Autenticação e autorização | ⛔ **ausente** — bloqueador |
-| Persistência das configurações do site | ⚠️ em `localStorage`, não no banco |
-| Fuso horário | ⚠️ depende do fuso do servidor |
-| Notificação para o **cliente** (WhatsApp/e-mail) | ⛔ não implementada |
-| Pagamento / checkout | ⛔ não implementado |
-| Testes automatizados | ⛔ inexistentes |
-
-**Não publique este sistema com acesso público enquanto o `/admin` não tiver autenticação.**
+| Multi-tenant real (subdomínio e dados isolados por barbearia) | ✅ |
+| Autenticação e autorização (admin e cliente, por tenant) | ✅ |
+| Cobrança recorrente com bloqueio por inadimplência | ✅ |
+| Cadastro self-service, sem intervenção manual | ✅ |
+| Notificação automática de novo agendamento (Web Push + Telegram) | ✅ |
+| Configuração do site persistida no banco, por tenant | ✅ |
+| Troca/upgrade de plano pelo próprio painel | ⛔ ainda manual, via suporte |
+| Testes automatizados | ⛔ ainda inexistentes |
 
 ---
 
@@ -55,55 +52,21 @@ Pré-requisitos: Node.js 20+, Yarn 1.x, PostgreSQL.
 
 ```bash
 yarn install
-cp .env.example .env   # preencha DATABASE_URL e DIRECT_URL
+cp .env.example .env   # preencha as variáveis (banco, sessão, Mercado Pago, Resend, VAPID, Telegram)
 yarn db:push
-yarn dev               # http://localhost:3001
+yarn dev
 ```
 
-### Variáveis de ambiente
-
-```bash
-DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DATABASE?sslmode=require"
-DIRECT_URL="postgresql://USER:PASSWORD@HOST:5432/DATABASE?sslmode=require"
-GOOGLE_PLACES_API_KEY=""   # opcional — avaliações do Google
-GOOGLE_PLACE_ID=""         # opcional
-```
-
-Na primeira execução o banco é populado com serviços, profissionais e agendamentos de demonstração.
-
----
-
-## Estrutura
-
-```
-prisma/schema.prisma                     modelagem (Barber, Customer, Service, Appointment, ClosedDate)
-src/app/                                 rotas e endpoints
-  ├── api/                               agendamentos, disponibilidade, sessão, sincronização
-  ├── admin/                             backoffice
-  ├── agendamento/  agendamentos/        fluxo do cliente
-  └── fidelidade/
-src/components/projects/barbershop/      componentes do produto
-src/components/shared/                   componentes reutilizáveis
-src/lib/booking.ts                       regras de agenda: slots, sobreposição, remarcação
-```
-
-O núcleo de negócio está em `src/lib/booking.ts`: geração de slots, checagem de sobreposição, horário de funcionamento, datas bloqueadas e busca do próximo horário livre.
+O schema não usa `prisma migrate` — mudanças de schema são aplicadas com `yarn db:push` (dev) e via SQL direto em produção.
 
 ---
 
 ## Roadmap
 
-**Antes de qualquer cliente real**
-- Autenticação com sessão no servidor e proteção de `/admin` e das rotas de API
-- Configuração do estabelecimento no banco, não no navegador
-- Fuso horário explícito em `America/Sao_Paulo`
-- Constraint e transação no horário, para eliminar reserva concorrente
-
-**Para o produto ficar completo**
-- Confirmação e lembrete automáticos por WhatsApp e e-mail
-- Horário de funcionamento e folga configuráveis por profissional
-- Checkout e pagamento no carrinho
-- Multi-tenant, para atender mais de um estabelecimento na mesma instalação
+- Testes automatizados para o fluxo de agendamento e de cobrança
+- Troca/upgrade de plano de assinatura pelo próprio painel
+- Reduzir o flash de conteúdo de demonstração ao carregar o `/admin` (já corrigido nas páginas públicas)
+- Adaptar copy e FAQ para outros tipos de negócio além de barbearia
 
 ---
 
